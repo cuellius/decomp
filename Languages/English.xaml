@@ -1,0 +1,102 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LocalizationCulture">en-US</system:String>
+    
+    <system:String x:Key="LocalizationSourcePath">Source Path:</system:String>
+    <system:String x:Key="LocalizationOutputPath">Output Path:</system:String>
+    <system:String x:Key="LocalizationAbout">About</system:String>
+    <system:String x:Key="LocalizationMode">Mode:</system:String>
+    <system:String x:Key="LocalizationDecompile">Decompile</system:String>
+    <system:String x:Key="LocalizationDecompilation">Decompilation</system:String>
+    <system:String x:Key="LocalizationClose">Close</system:String>
+    <system:String x:Key="LocalizationStop">Stop</system:String>
+    <system:String x:Key="LocalizationOpenAfter">Open after complete</system:String>
+    <system:String x:Key="LocalizationDecompileShaders">Decompile shaders</system:String>
+    <system:String x:Key="LocalizationHelp">Help</system:String>
+
+    <system:String x:Key="LocalizationChooseInput">Choose a file or folder which you want to decompile...</system:String>
+    <system:String x:Key="LocalizationChooseOutput">Choose output folder...</system:String>
+
+    <system:String x:Key="LocalizationRestore">Restore</system:String>
+    <system:String x:Key="LocalizationRestoreDown">Restore Down</system:String>
+    <system:String x:Key="LocalizationMove">Move</system:String>
+    <system:String x:Key="LocalizationSize">Size</system:String>
+    <system:String x:Key="LocalizationMinimize">Minimize</system:String>
+    <system:String x:Key="LocalizationMaximize">Maximize</system:String>
+
+    <system:String x:Key="LocalizationFatalError">Fatal error in the application. Please report author of the program about error.</system:String>
+    <system:String x:Key="LocalizationAboutError">Information about error</system:String>
+
+    <system:String x:Key="LocalizationAboutDecompiler">About Warband Module Decompiler</system:String>
+    <system:String x:Key="LocalizationVersion">Version: 2.1.0</system:String>
+    <system:String x:Key="LocalizationAboutDecompilerLong">Warband Module Decompiler converts text files into module system python files, ready for editing and compilation. By using this software you agree not to violate developers author's rights.</system:String>
+
+    <system:String x:Key="LocalizationCut">Cut</system:String>
+    <system:String x:Key="LocalizationCopy">Copy</system:String>
+    <system:String x:Key="LocalizationPaste">Paste</system:String>
+
+    <system:String x:Key="LocalizationCancel">Cancel</system:String>
+    <system:String x:Key="LocalizationFolder">Folder:</system:String>
+    <system:String x:Key="LocalizationCreateNewFolder">Create new folder</system:String>
+
+    <system:String x:Key="LocalizationInitialization">Initialization</system:String>
+    <system:String x:Key="LocalizationPleasePath">Please specify the source path or source file</system:String>
+    <system:String x:Key="LocalizationPleaseOutput">Please specify the output folder</system:String>
+    <system:String x:Key="LocalizationTotalTime">Total time: {0:0} ms</system:String>
+    <system:String x:Key="LocalizationTime">{0:0} ms</system:String>
+    <system:String x:Key="LocalizationFatalErrorDecompilationAborted">FATAL ERROR, DECOMPILATION ABORTED</system:String>
+    <system:String x:Key="LocalizationDecompilationCanceled">Decompilation was canceled by the user</system:String>
+
+    <system:String x:Key="LocalizationFileNotFound" xml:space="preserve">File &quot;{0}&quot; not found&#10;Decompilation Aborted</system:String>
+    <system:String x:Key="LocalizationDirectoryNotFound" xml:space="preserve">Directory &quot;{0}&quot; not found&#10;Decompilation Aborted</system:String>
+    <system:String x:Key="LocalizationFileNotFound2">File &quot;{0}\\{1}&quot; not found</system:String>
+    <system:String x:Key="LocalizationUnknownFormat">Unknown file format</system:String>
+
+    <system:String x:Key="LocalizationFileTime">{0} {1:0} ms</system:String>
+
+    <system:String x:Key="LocalizationGeneral">General</system:String>
+    <system:String x:Key="LocalizationUsing">How to use?</system:String>
+    <system:String x:Key="LocalizationDifferences">Differences between source and decompiled files</system:String>
+    <system:String x:Key="LocalizationCompilation">Compilation</system:String>
+    <system:String x:Key="LocalizationWarningMessage">Message: &quot;WARNING: Local variable never used&quot;</system:String>
+
+    <system:String x:Key="LocalizationGeneralDescription">Main ru-board: &lt;a href="http://rusmnb.ru/index.php?topic=17294.0"&gt;http://rusmnb.ru/index.php?topic=17294.0&lt;/a&gt;&lt;br&gt;
+        &lt;br&gt;
+        &lt;b&gt;Description:&lt;/b&gt; In fact, this program allows you to get a module system of any mod, regardless of whether the author published it.&lt;br&gt;
+        &lt;br&gt;
+        &lt;font color="red"&gt;&lt;b&gt;IMPORTANT!!!&lt;/b&gt;&lt;/font&gt; This program is published here solely for your own use, if you want to develop a mod &lt;b&gt;for yourself and for yourself&lt;/b&gt;. Publication of public works that use someone else's code obtained with the help of this program will be regarded as the use of foreign resources without the consent of the authors, with all the consequences.&lt;br&gt;
+        &lt;br&gt;
+        The program and sources are distributed under the GNU GLPv3 license (&lt;a href="http://www.gnu.org/copyleft/gpl.html"&gt;http://www.gnu.org/copyleft/gpl.html&lt;/a&gt;)&lt;br&gt;
+        &lt;br&gt;
+        &lt;i&gt;Note:&lt;/i&gt;&lt;br&gt;
+        If not only &lt;b&gt;module_&lt;/b&gt; files but also &lt;b&gt;process_&lt;/b&gt;, for example in Custom Commander, were modified to create the decompiled mod, then the correct work is not guaranteed.
+    </system:String>
+    <system:String x:Key="LocalizationUsingDescription">1) Select the folder of module or file  of module through the user interface, or drag it from the Windows Explorer to the program window, or manually enter the source path and, if necessary, the resulting path.&lt;br&gt;
+        2) Select the decompilation mode:&lt;br&gt;
+        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Vanilla&lt;/i&gt;, then select &lt;i&gt;Vanilla&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Warband v1.153 (+ WSE) or WFaS v1.143&lt;/i&gt; then select &lt;i&gt;WSE 3.2.0&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Warband v1.153+ with or without WSE&lt;/i&gt;, then select &lt;i&gt;WSE 4.5.0&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Caribbean(expremental)&lt;/i&gt;, then select &lt;i&gt;Caribbean&lt;/i&gt;;&lt;br&gt;
+        3) Click the Decompile button.&lt;br&gt;
+        For successful decompilation, all text files of the module must be in the folder of module.
+    </system:String>
+    <system:String x:Key="LocalizationDifferencesDescription">Names of local variables will be lost:&lt;br&gt;
+&lt;span style="font-family: Consolas;"&gt;(store_script_param_1, &amp;quot;:center_no&amp;quot;)&lt;/span&gt;&lt;br&gt;
+&lt;span style="font-family: Consolas;"&gt;(store_script_param_1, &amp;quot;:var0&amp;quot;)&lt;/span&gt;&lt;br&gt;
+&lt;br&gt;
+Sometimes, instead of constant names, their values will be:&lt;br&gt;
+&lt;span style="font-family: Consolas;"&gt;(unlock_achievement, ACHIEVEMENT_THIS_IS_OUR_LAND)&lt;/span&gt;&lt;br&gt;
+&lt;span style="font-family: Consolas;"&gt;(unlock_achievement, 56)&lt;/span&gt;&lt;br&gt;
+    </system:String>
+    <system:String x:Key="LocalizationCompilationDescription">1) Move the resulting files to the folder of module system, as well as &lt;i&gt;variables.txt&lt;/i&gt; and &lt;i&gt;variable_uses.txt&lt;/i&gt;&lt;br&gt;
+2) It is advisable to leave the original &lt;i&gt;variables.txt&lt;/i&gt; in the exported folder&lt;br&gt;
+3) Configure &lt;span style="font-family: Consolas;"&gt;export_dir&lt;/span&gt; in &lt;i&gt;module_info.py&lt;/i&gt;&lt;br&gt;
+4) Run &lt;i&gt;build_module.bat&lt;/i&gt; twice&lt;br&gt;
+5) If successful, you get the text files of the module almost identical to the original ones, except for the changes you made
+    </system:String>
+    <system:String x:Key="LocalizationWarningMessageDescription">Automatic naming of unused local variables as &lt;span style="font-family: Consolas;"&gt;&amp;quot;:unused&amp;quot;&lt;/span&gt; is disabled in order to approach the recompiled text files to the original ones. This warning is informative and does not affect the final result. You can disable it by itself by commenting out the corresponding line in &lt;i&gt;process_operations.py&lt;/i&gt;.</system:String>
+
+
+</ResourceDictionary>

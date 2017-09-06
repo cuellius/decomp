@@ -1,0 +1,101 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="LocalizationCulture">ru-RU</system:String>
+    
+    <system:String x:Key="LocalizationSourcePath">Исходный файл или папка:</system:String>
+    <system:String x:Key="LocalizationOutputPath">Результирующая папка:</system:String>
+    <system:String x:Key="LocalizationAbout">О программе...</system:String>
+    <system:String x:Key="LocalizationMode">Режим:</system:String>
+    <system:String x:Key="LocalizationDecompile">Декомпилировать</system:String>
+    <system:String x:Key="LocalizationDecompilation">Декомпиляция</system:String>
+    <system:String x:Key="LocalizationClose">Закрыть</system:String>
+    <system:String x:Key="LocalizationStop">Стоп</system:String>
+    <system:String x:Key="LocalizationOpenAfter">Открыть после завершения</system:String>
+    <system:String x:Key="LocalizationDecompileShaders">Декомпилировать шейдеры</system:String>
+    <system:String x:Key="LocalizationHelp">Помощь</system:String>
+
+    <system:String x:Key="LocalizationChooseInput">Выберите папку или файл, которую(-ый) вы хотите декомпилировать...</system:String>
+    <system:String x:Key="LocalizationChooseOutput">Выберите результирующую папку...</system:String>
+
+    <system:String x:Key="LocalizationRestore">Восстановить</system:String>
+    <system:String x:Key="LocalizationRestoreDown">Восстановить</system:String>
+    <system:String x:Key="LocalizationMove">Переместить</system:String>
+    <system:String x:Key="LocalizationSize">Размер</system:String>
+    <system:String x:Key="LocalizationMinimize">Свернуть</system:String>
+    <system:String x:Key="LocalizationMaximize">Развернуть</system:String>
+
+    <system:String x:Key="LocalizationFatalError">Фатальная ошибка в приложении. Пожалуйста, сообщите автору программы об ошибке.</system:String>
+    <system:String x:Key="LocalizationAboutError">Информация об ошибке</system:String>
+
+    <system:String x:Key="LocalizationAboutDecompiler">О Warband Module Decompiler...</system:String>
+    <system:String x:Key="LocalizationVersion">Версия: 2.1.0</system:String>
+    <system:String x:Key="LocalizationAboutDecompilerLong">Warband Module Decompiler преобразовывает текстовые файлы мода в питоновские файлы модульной системы, готовые для редактирования и компиляции. Используя эту программу, вы соглашаетесь не нарушать авторские права разработчиков.</system:String>
+
+    <system:String x:Key="LocalizationCut">Вырезать</system:String>
+    <system:String x:Key="LocalizationCopy">Копировать</system:String>
+    <system:String x:Key="LocalizationPaste">Вставить</system:String>
+
+    <system:String x:Key="LocalizationCancel">Отмена</system:String>
+    <system:String x:Key="LocalizationFolder">Папка:</system:String>
+    <system:String x:Key="LocalizationCreateNewFolder">Создать новую папку</system:String>
+
+    <system:String x:Key="LocalizationInitialization">Инициализация</system:String>
+    <system:String x:Key="LocalizationPleasePath">Пожалуйста, укажите исходный путь или исходный файл</system:String>
+    <system:String x:Key="LocalizationPleaseOutput">Пожалуйста, укажите результирующую папку</system:String>
+    <system:String x:Key="LocalizationTotalTime">Общее время: {0:0} мс</system:String>
+    <system:String x:Key="LocalizationTime">{0:0} мс</system:String>
+    <system:String x:Key="LocalizationFatalErrorDecompilationAborted">ФАТАЛЬНАЯ ОШИБКА, ДЕКОМПИЛЯЦИЯ ПРЕРВАНА</system:String>
+    <system:String x:Key="LocalizationDecompilationCanceled">Декомпиляция отменена пользователем</system:String>
+
+    <system:String x:Key="LocalizationFileNotFound" xml:space="preserve">Файл &quot;{0}&quot; не найден&#10;Декомпиляция прервана</system:String>
+    <system:String x:Key="LocalizationDirectoryNotFound" xml:space="preserve">Файл &quot;{0}&quot; не найден&#10;Декомпиляция прервана</system:String>
+    <system:String x:Key="LocalizationFileNotFound2">Файл &quot;{0}\\{1}&quot; не найден</system:String>
+    <system:String x:Key="LocalizationUnknownFormat">Неизвестный формат файла</system:String>
+
+    <system:String x:Key="LocalizationFileTime">{0} {1:0} мс</system:String>
+
+    <system:String x:Key="LocalizationGeneral">Общее</system:String>
+    <system:String x:Key="LocalizationUsing">Использование</system:String>
+    <system:String x:Key="LocalizationDifferences">Различия исходных и декомпилированных файлов</system:String>
+    <system:String x:Key="LocalizationCompilation">Компиляция</system:String>
+    <system:String x:Key="LocalizationWarningMessage">Сообщение: &quot;WARNING: Local variable never used&quot;</system:String>
+
+    <system:String x:Key="LocalizationGeneralDescription">Страница программы в интернете: &lt;a href="http://rusmnb.ru/index.php?topic=17294.0"&gt;http://rusmnb.ru/index.php?topic=17294.0&lt;/a&gt;&lt;br&gt;
+        &lt;br&gt;
+        &lt;b&gt;Description:&lt;/b&gt; Фактически эта программка позволяет получить модульную систему любого мода вне зависимости от того, публиковал ли её автор.&lt;br&gt;
+        &lt;br&gt;
+        &lt;font color="red"&gt;&lt;b&gt;ВАЖНО!!!&lt;/b&gt;&lt;/font&gt; Данная программа публикуется здесь исключительно для собственного использования, если вам хочется &lt;b&gt;под себя и для себя&lt;/b&gt; доработать какой-то мод. Публикация в общественный доступ работ, использующих чужой код, полученный с помощью этой программы, будет расцениваться, как использование чужих ресурсов без согласия авторов, со всеми вытекающими.&lt;br&gt;
+        &lt;br&gt;
+        Программа и исходники распространяются по лицензии GNU GLPv3 (&lt;a href="http://www.gnu.org/copyleft/gpl.html"&gt;http://www.gnu.org/copyleft/gpl.html&lt;/a&gt;)&lt;br&gt;
+        &lt;br&gt;
+        &lt;i&gt;Note:&lt;/i&gt;&lt;br&gt;
+        Если для создания декомпилируемого мода модификации подвергались не только &lt;b&gt;module_&lt;/b&gt; файлы, но и &lt;b&gt;process_&lt;/b&gt;, как например в Custom Commander, то корректная работа не гарантируется.
+    </system:String>
+    <system:String x:Key="LocalizationUsingDescription">1) Выбрать папку или файл модуля через пользовательский интерфейс, либо перетащить мышью из проводника в окно программы, либо вписать вручную исходный и, если требуется, результирующий путь.&lt;br&gt;
+        2) Выбрать режим декомпиляции:&lt;br&gt;
+        &#160;&#160;&#160;&#160;если Вы декомпилируете мод под &lt;i&gt;ИГ(Историю Героя)&lt;/i&gt;, то выберите &lt;i&gt;Vanilla&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;если Вы декомпилируете мод под &lt;i&gt;Warband v1.153 (+ WSE) or WFaS v1.143&lt;/i&gt;, то выберите &lt;i&gt;WSE 3.2.0&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;если Вы декомпилируете мод под &lt;i&gt;Warband v1.153+ с или без WSE&lt;/i&gt;, то выберите &lt;i&gt;WSE 4.5.0&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;если Вы декомпилируете мод под &lt;i&gt;Caribbean(экспериментально)&lt;/i&gt;, то выберите &lt;i&gt;Caribbean&lt;/i&gt;;&lt;br&gt;
+        3) Нажать кнопку Декомпилировать.&lt;br&gt;
+        Для успешной декомпиляции в папке должны быть все текстовые файлы модуля.
+    </system:String>
+    <system:String x:Key="LocalizationDifferencesDescription">Имена локальных переменных будут утеряны:&lt;br&gt;
+        &lt;span style="font-family: Consolas;"&gt;(store_script_param_1, &amp;quot;:center_no&amp;quot;)&lt;/span&gt;&lt;br&gt;
+        &lt;span style="font-family: Consolas;"&gt;(store_script_param_1, &amp;quot;:var0&amp;quot;)&lt;/span&gt;&lt;br&gt;
+        &lt;br&gt;
+        Иногда вместо имен констант будут их значения:&lt;br&gt;
+        &lt;span style="font-family: Consolas;"&gt;(unlock_achievement, ACHIEVEMENT_THIS_IS_OUR_LAND)&lt;/span&gt;&lt;br&gt;
+        &lt;span style="font-family: Consolas;"&gt;(unlock_achievement, 56)&lt;/span&gt;&lt;br&gt;
+    </system:String>
+    <system:String x:Key="LocalizationCompilationDescription">1) Переместить с заменой в папку модульной системы полученные файлы, а так же &lt;i&gt;variables.txt&lt;/i&gt; и &lt;i&gt;variable_uses.txt&lt;/i&gt;&lt;br&gt;
+        2) Желательно в экспортируемой папке оставить оригинальный &lt;i&gt;variables.txt&lt;/i&gt;&lt;br&gt;
+        3) Настроить &lt;span style="font-family: Consolas;"&gt;export_dir&lt;/span&gt; в &lt;i&gt;module_info.py&lt;/i&gt;&lt;br&gt;
+        4) Дважды запустить &lt;i&gt;build_module.bat&lt;/i&gt;&lt;br&gt;
+        5) В случае успеха вы получите текстовые файлы модуля практически идентичные оригинальным, за исключением изменений внесенных вами
+    </system:String>
+    <system:String x:Key="LocalizationWarningMessageDescription">Автоматическое именование неиспользуемых локальных переменных как &lt;span style="font-family: Consolas;"&gt;&amp;quot;:unused&amp;quot;&lt;/span&gt; отключено в целях приближения перекомплированных текстовых файлов к оригинальным. Это предупреждение носит информационный характер и не влияет на конечный результат. Вы можете самостоятельно отключить его, закомментировав соответствующую строку в &lt;i&gt;process_operations.py&lt;/i&gt;.</system:String>
+
+</ResourceDictionary>

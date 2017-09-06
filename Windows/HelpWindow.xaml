@@ -1,0 +1,72 @@
+﻿<Window x:Class="Decomp.Windows.HelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="{DynamicResource LocalizationHelp}" Icon="Images/help.png" Style="{StaticResource VS2012WindowToolStyle}" ResizeMode="CanMinimize" Height="342" Width="585">
+    <Window.Resources>
+        <Style x:Key="NavigationButton" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="PART_Border" Background="Transparent">
+                            <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Text="{TemplateBinding Content}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PART_Border" Property="Background" Value="#FFF" />
+                                <Setter TargetName="PART_Border" Property="Opacity" Value="0.7" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="PART_Border" Property="Background" Value="{StaticResource VS2012WindowBorderBrush}"/>
+                                <Setter TargetName="PART_Border" Property="Opacity" Value="1" />
+                                <Setter Property="Foreground" Value="#FFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!--<TabControl TabStripPlacement="Left">
+            <TabItem Header="General"></TabItem>
+            <TabItem Header="Using"></TabItem>
+            <TabItem Header="Differences between source and decompiled files"></TabItem>
+            <TabItem Header="Compilation"></TabItem>
+            <TabItem Header="Message: &quot;WARNING: Local variable never used&quot;"></TabItem>
+        </TabControl>-->
+        <Grid Margin="0,0,5,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="432*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Name="ButtonsStackPanel">
+                <Button Name="GeneralButton" Click="GeneralButtonClick" Style="{StaticResource NavigationButton}" Content="{DynamicResource LocalizationGeneral}" Height="50"></Button>
+                <Button Click="UseButtonClick" Style="{StaticResource NavigationButton}" Content="{DynamicResource LocalizationUsing}" Height="50"></Button>
+                <Button Click="DifferencesButtonClick" Style="{StaticResource NavigationButton}" Content="{DynamicResource LocalizationDifferences}" Height="50"></Button>
+                <Button Click="CompilationButtonClick" Style="{StaticResource NavigationButton}" Content="{DynamicResource LocalizationCompilation}" Height="50"></Button>
+                <Button Click="WarningMessageButtonClick" Style="{StaticResource NavigationButton}" Content="{DynamicResource LocalizationWarningMessage}" Height="50"></Button>
+            </StackPanel>
+            <GridSplitter Grid.Column="1" Width="3" VerticalAlignment="Stretch" HorizontalAlignment="Center"></GridSplitter>
+            <RichTextBox AutoWordSelection="False" IsDocumentEnabled="True" FontFamily="Segoe UI" VerticalScrollBarVisibility="Auto" FontSize="14" Name="HelpTextBlock" Grid.Column="2" IsReadOnly="True" Margin="0,0,0,0" >
+                <RichTextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource LocalizationCopy}" Command="Copy">
+                            <MenuItem.Icon>
+                                <Image Source="Images/copy.png"></Image>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </RichTextBox.ContextMenu>
+            </RichTextBox>
+        </Grid>
+        <Button IsDefault="True" Margin="0,10,0,10" Grid.Row="1" Content="OK" Height="24" Width="74" Click="OkButtonClick"></Button>
+    </Grid>
+</Window>

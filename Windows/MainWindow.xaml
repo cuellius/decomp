@@ -1,0 +1,111 @@
+﻿<Window x:Class="Decomp.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:decompwindows="clr-namespace:Decomp.Windows"
+        mc:Ignorable="d"
+        Title="M&amp;B Warband Module Decompiler" WindowStartupLocation="CenterScreen" Height="465" Width="750" Style="{StaticResource VS2012WindowStyle}" Icon="Images/knight.ico">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Help" Executed="HelpCommandExecuted" CanExecute="HelpCommandCanExecute" />
+    </Window.CommandBindings>
+    <Grid UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="32,10.6,32,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Content="{DynamicResource LocalizationSourcePath}" Grid.Row="0" Grid.Column="0" />
+                <decompwindows:AutoCompleteTextBox Height="22" x:Name="SourcePathTextBox" Text="" Grid.Row="1" Grid.Column="0"/>
+                <Button Margin="5,0,0,0" Content="..." Height="22" Width="23" x:Name="button1" Click="BrowseSoursePathButtonClick" Grid.Row="1" Grid.Column="1"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Label Content="{DynamicResource LocalizationOutputPath}" HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" />
+                <decompwindows:AutoCompleteTextBox Height="22" x:Name="OutputPathTextBox" Text="" Grid.Row="1" Grid.Column="0"/>
+                <Button Margin="5,0,0,0" Content="..." Height="22" x:Name="button2" Width="23" Click="BrowseOutputPathButtonClick" Grid.Row="1" Grid.Column="1" />
+            </Grid>
+            <TextBox Margin="0,5,0,5" x:Name="LogTextBox" Text="" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Grid.Row="2">
+                <TextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource LocalizationCopy}" Command="Copy">
+                            <MenuItem.Icon>
+                                <Image Source="Images/copy.png"></Image>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TextBox.ContextMenu>
+            </TextBox>
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="55"></ColumnDefinition>
+                    <ColumnDefinition Width="90"></ColumnDefinition>
+                    <ColumnDefinition Width="187"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="{DynamicResource LocalizationAbout}" Height="24" x:Name="button5" Click="AboutButtonClick"/>
+                <Label HorizontalAlignment="Right" Grid.Column="1" Content="{DynamicResource LocalizationMode}" Height="24"/>
+                <ComboBox Grid.Column="2" Name="ModeComboBox" Height="24">
+                    <system:String>Vanilla</system:String>
+                    <system:String>WSE v3.2.0</system:String>
+                    <system:String>WSE v4.5.0</system:String>
+                    <system:String>Caribbean</system:String>
+                </ComboBox>
+                <!--<CheckBox HorizontalAlignment="Center" Margin="0,5,0,0" Grid.Column="3" Content="Open after complete" x:Name="OpenAfterCompleteCheckBox" IsChecked="False" />-->
+                <StackPanel HorizontalAlignment="Center" Grid.Column="3">
+                    <CheckBox HorizontalAlignment="Left" Margin="6,5,0,0" Content="{DynamicResource LocalizationOpenAfter}" x:Name="OpenAfterCompleteCheckBox" IsChecked="False" />
+                    <CheckBox HorizontalAlignment="Left" Margin="6,5,0,0" Content="{DynamicResource LocalizationDecompileShaders}" x:Name="DecompileShadersCheckBox" IsChecked="False" />
+                </StackPanel>
+                <Button Margin="0,0,2.5,0" Grid.Column="4" Content="{DynamicResource LocalizationDecompile}" Height="24" x:Name="DecompileButton" Click="DecompileButtonClick" IsDefault="True" />
+                <Button Margin="2.5,0,0,0" Grid.Column="5" Content="{DynamicResource LocalizationClose}" Height="24" x:Name="button3" Click="CloseButtonClick" />
+            </Grid>
+        </Grid>
+        <StatusBar Grid.Row="1" Style="{StaticResource VS2012StatusBarStyle}"
+            VerticalAlignment="Bottom"
+            HorizontalAlignment="Stretch"
+            Height="24">
+            <TextBlock x:Name="StatusTextBlock" Margin="3,0,0,0"></TextBlock>
+            <StatusBarItem HorizontalAlignment="Right">
+                <ResizeGrip Opacity="0.75"/>
+            </StatusBarItem>
+        </StatusBar>
+        <Button Command="Help" ToolTip="{DynamicResource LocalizationHelp}" Grid.Row="0" Style="{StaticResource VS2012WindowStyleTitleBarHelpButton}" HorizontalAlignment="Right" Height="26" Margin="0,-32,102,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="34">
+            <Button.Content>
+                <Label Foreground="Black" Margin="0,-2,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="?" FontWeight="Bold"></Label>
+            </Button.Content>
+        </Button>
+        <Button Click="LanguageButtonClick" Grid.Row="0" Style="{StaticResource VS2012WindowStyleTitleBarHelpButton}" HorizontalAlignment="Right" Height="26" Visibility="Hidden" Margin="0,-32,136,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalAlignment="Top" Width="34">
+            <Button.Content>
+                <Label Name="CurrentLanguageLabel" Margin="0,-2,0,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Content="Eng" FontWeight="Bold"></Label>
+            </Button.Content>
+        </Button>
+    </Grid>
+</Window>

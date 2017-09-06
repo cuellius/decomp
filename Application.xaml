@@ -1,0 +1,15 @@
+﻿<Application x:Class="Decomp.Application"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="Windows/MainWindow.xaml" Startup="ApplicationStartup">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Decomp;component/Windows/Styles/VS2012WindowStyle.xaml" />
+                <ResourceDictionary Source="/Decomp;component/Windows/CustomContextSystemMenu.xaml" />
+                
+                <ResourceDictionary Source="Languages/English.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
