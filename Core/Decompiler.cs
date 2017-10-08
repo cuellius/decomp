@@ -86,6 +86,7 @@ namespace Decomp.Core
                 {
                     InitializeOpCodes();
                     InitializeModuleData();
+                    Common.NeedId = Window.GenerateIdFilesCheckBox.IsChecked();
                 }
                 else
                 {
@@ -210,7 +211,7 @@ namespace Decomp.Core
 
             Window.ModeComboBox.Dispatcher.Invoke(() => Common.SelectedMode = (Mode)Window.ModeComboBox.SelectedIndex);
             var operators = Operator.GetCollection(Common.SelectedMode);
-            foreach (var op in operators) Common.Operators[op.Code] = op; 
+            foreach (var op in operators) Common.Operators[op.Code] = op;
         }
 
         private static void InitializeModuleData()
@@ -394,6 +395,7 @@ namespace Decomp.Core
         private static void ProcessSingleFile()
         {
             var strFileName = GetSingleFileName();
+            Common.NeedId = false;
 
             var ext = Path.GetExtension(strFileName);
             if (ext == ".fx" || ext == ".fxo")

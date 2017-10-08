@@ -130,6 +130,8 @@ namespace Decomp.Core.Vanilla
             }
             fSource.Close();
             fTroops.Close();
+
+            Common.GenerateId("ID_troops.py", Common.Troops, "trp");
         }
     }
 }

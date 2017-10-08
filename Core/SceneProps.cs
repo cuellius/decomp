@@ -131,6 +131,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fSceneProps.Close();
+
+            Common.GenerateId("ID_scene_props.py", Common.SceneProps, "spr");
         }
     }
 }

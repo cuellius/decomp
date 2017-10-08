@@ -48,6 +48,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fMeshes.Close();
+
+            Common.GenerateId("ID_meshes.py", Common.Meshes, "mesh");
         }
     }
 }

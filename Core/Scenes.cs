@@ -121,6 +121,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fScenes.Close();
+
+            Common.GenerateId("ID_scenes.py", Common.Scenes, "scn");
         }
     }
 }

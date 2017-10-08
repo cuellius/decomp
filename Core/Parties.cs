@@ -139,6 +139,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fParties.Close();
+
+            Common.GenerateId("ID_parties.py", Common.Parties, "p");
         }
     }
 }

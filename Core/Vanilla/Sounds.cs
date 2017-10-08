@@ -36,6 +36,8 @@ namespace Decomp.Core.Vanilla
             fSource.Write("]");
             fSource.Close();
             fSounds.Close();
+
+            Common.GenerateId("ID_sounds.py", Common.Sounds, "snd");
         }
     }
 }

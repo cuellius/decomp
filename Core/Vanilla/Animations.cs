@@ -72,6 +72,8 @@ namespace Decomp.Core.Vanilla
             fSource.Write("]");
             fSource.Close();
             fActions.Close();
+
+            Common.GenerateId("ID_animations.py", Common.Animations, "anim");
         }
     }
 }

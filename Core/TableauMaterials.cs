@@ -40,6 +40,7 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fTableaus.Close();
+            Common.GenerateId("ID_tableau_materials.py", Common.Tableaus, "tableau");
         }
     }
 }

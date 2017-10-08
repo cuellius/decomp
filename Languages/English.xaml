@@ -30,7 +30,7 @@
     <system:String x:Key="LocalizationAboutError">Information about error</system:String>
 
     <system:String x:Key="LocalizationAboutDecompiler">About Warband Module Decompiler</system:String>
-    <system:String x:Key="LocalizationVersion">Version: 2.1.0</system:String>
+    <system:String x:Key="LocalizationVersion">Version: 2.1.1</system:String>
     <system:String x:Key="LocalizationAboutDecompilerLong">Warband Module Decompiler converts text files into module system python files, ready for editing and compilation. By using this software you agree not to violate developers author's rights.</system:String>
 
     <system:String x:Key="LocalizationCut">Cut</system:String>
@@ -55,6 +55,8 @@
     <system:String x:Key="LocalizationUnknownFormat">Unknown file format</system:String>
 
     <system:String x:Key="LocalizationFileTime">{0} {1:0} ms</system:String>
+    
+    <system:String x:Key="LocalizationMakeId">Make ID-files</system:String>
 
     <system:String x:Key="LocalizationGeneral">General</system:String>
     <system:String x:Key="LocalizationUsing">How to use?</system:String>
@@ -77,7 +79,7 @@
         2) Select the decompilation mode:&lt;br&gt;
         &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Vanilla&lt;/i&gt;, then select &lt;i&gt;Vanilla&lt;/i&gt;;&lt;br&gt;
         &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Warband v1.153 (+ WSE) or WFaS v1.143&lt;/i&gt; then select &lt;i&gt;WSE 3.2.0&lt;/i&gt;;&lt;br&gt;
-        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Warband v1.153+ with or without WSE&lt;/i&gt;, then select &lt;i&gt;WSE 4.5.0&lt;/i&gt;;&lt;br&gt;
+        &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Warband v1.153+ with or without WSE&lt;/i&gt;, then select &lt;i&gt;WSE 4.5.3&lt;/i&gt;;&lt;br&gt;
         &#160;&#160;&#160;&#160;If you decompile the mod under &lt;i&gt;Caribbean(expremental)&lt;/i&gt;, then select &lt;i&gt;Caribbean&lt;/i&gt;;&lt;br&gt;
         3) Click the Decompile button.&lt;br&gt;
         For successful decompilation, all text files of the module must be in the folder of module.

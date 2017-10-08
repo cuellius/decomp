@@ -44,6 +44,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fStrings.Close();
+
+            Common.GenerateId("ID_strings.py", Common.Strings, "str");
         }
     }
 }

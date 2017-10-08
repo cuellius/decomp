@@ -159,8 +159,9 @@ namespace Decomp.Windows
             
             OpenAfterCompleteCheckBox.IsChecked = key != null && ((int?)key.GetValue("OpenAfterComplete") ?? 1) != 0;
             ModeComboBox.SelectedIndex = (int?)key?.GetValue("Mode") ?? 2;
-            
+
             DecompileShadersCheckBox.IsChecked = key != null && ((int?)key.GetValue("DecompileShaders") ?? 0) != 0;
+            GenerateIdFilesCheckBox.IsChecked = key != null && ((int?)key.GetValue("MakeID") ?? 0) != 0;
         }
 
         protected void SaveUserInterface()
@@ -172,6 +173,7 @@ namespace Decomp.Windows
                 key?.SetValue("OpenAfterComplete", OpenAfterCompleteCheckBox.IsChecked(), RegistryValueKind.DWord);
                 key?.SetValue("Mode", ModeComboBox.SelectedIndex, RegistryValueKind.DWord);
                 key?.SetValue("DecompileShaders", DecompileShadersCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
+                key?.SetValue("MakeID", GenerateIdFilesCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
             }
         }
 

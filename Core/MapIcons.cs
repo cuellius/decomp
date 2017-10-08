@@ -97,6 +97,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fIcons.Close();
+
+            Common.GenerateId("ID_map_icons.py", Common.MapIcons, "icon");
         }
     }
 }

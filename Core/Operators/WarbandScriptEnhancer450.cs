@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace Decomp.Core.Operators
 {
+    //real version: 4.5.3
     public class WarbandScriptEnhancer450Version : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
@@ -90,6 +91,7 @@ namespace Decomp.Core.Operators
                 new Operator("dict_save_json", 3218),
                 new Operator("dict_from_url_encoded_json", 3219, Parameter.None, Parameter.String),
                 new Operator("dict_to_url_encoded_json", 3220, Parameter.String),
+                new Operator("dict_erase", 3221),
                 new Operator("agent_get_item_modifier", 3300),
                 new Operator("agent_get_item_slot_modifier", 3301, Parameter.None, Parameter.None, Parameter.InventorySlot),
                 new Operator("agent_get_animation_progress", 3302),
@@ -113,6 +115,7 @@ namespace Decomp.Core.Operators
                 new Operator("agent_get_personal_animation", 3320),
                 new Operator("agent_set_default_animations", 3321),
                 new Operator("agent_cancel_current_animation", 3322),
+                new Operator("agent_get_ranged_damage_modifier", 3323),
                 new Operator("multiplayer_send_chat_message_to_player", 3400),
                 new Operator("multiplayer_send_composite_message_to_player", 3401),
                 new Operator("multiplayer_send_composite_message_to_server", 3402),

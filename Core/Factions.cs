@@ -88,6 +88,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fFactions.Close();
+
+            Common.GenerateId("ID_factions.py", Common.Factions, "fac");
         }
     }
 }

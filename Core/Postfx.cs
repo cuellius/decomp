@@ -36,6 +36,7 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fPostfx.Close();
+            //Common.GenerateId("ID_postfx_params.py", Common.PostfxParams, "pfx");
         }
     }
 }

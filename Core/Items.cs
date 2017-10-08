@@ -515,6 +515,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fItems.Close();
+
+            Common.GenerateId("ID_items.py", Common.Items, "itm");
         }
     }
 }

@@ -51,6 +51,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fQuests.Close();
+
+            Common.GenerateId("ID_quests.py", Common.Quests, "qst");
         }
     }
 }

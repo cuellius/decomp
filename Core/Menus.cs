@@ -184,6 +184,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fMenus.Close();
+
+            Common.GenerateId("ID_menus.py", Common.Menus, "menu");
         }
     }
 }

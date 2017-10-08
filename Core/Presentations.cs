@@ -103,6 +103,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fPresentations.Close();
+
+            Common.GenerateId("ID_presentations.py", Common.Presentations, "prsnt");
         }
     }
 }

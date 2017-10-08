@@ -64,6 +64,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fSkills.Close();
+
+            Common.GenerateId("ID_skills.py", Common.Skills, "skl");
         }
     }
 }

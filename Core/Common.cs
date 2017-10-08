@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using Decomp.Core.Operators;
 
 namespace Decomp.Core
@@ -748,5 +749,15 @@ from ID_troops import *";
         {
             return String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2") : alpha.ToString("X"));
         }
+
+        public static bool NeedId = true;
+        public static void GenerateId(string fileOut, string[] content, string prefix = "")
+        {
+            if (!NeedId) return;
+            var f = new Win32FileWriter(Path.Combine(OutputPath, fileOut));
+            if (prefix.Length > 0 && prefix[prefix.Length - 1] != '_') prefix += '_';
+            for (int i = 0; i < content.Length; i++) f.WriteLine("{0}{1} = {2}", prefix, content[i], i);
+            f.Close();
+        } 
     }
 }

@@ -92,6 +92,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fParticles.Close();
+
+            Common.GenerateId("ID_particle_systems.py", Common.ParticleSystems, "psys");
         }
     }
 }

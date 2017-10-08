@@ -288,6 +288,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fMissionTemplates.Close();
+
+            Common.GenerateId("ID_mission_templates.py", Common.MissionTemplates, "mst");
         }
     }
 }

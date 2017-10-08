@@ -238,6 +238,8 @@ namespace Decomp.Core.Vanilla
             fSource.Write("]");
             fSource.Close();
             fItems.Close();
+
+            Common.GenerateId("ID_items.py", Common.Items, "itm");
         }
     }
 }

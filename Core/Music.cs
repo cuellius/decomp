@@ -87,6 +87,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fMusic.Close();
+
+            Common.GenerateId("ID_music.py", Common.Music, "track");
         }
     }
 }
