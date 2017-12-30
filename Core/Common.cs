@@ -270,9 +270,9 @@ from ID_troops import *";
 
         public static string GetIndentations(int indentation)
         {
-            return new String(' ', indentation << 1);
+            return new String(' ', Math.Max(indentation, 0) << 1);
         }
-
+        
         public static void PrintStatement(ref Text fInput, ref Win32FileWriter fOutput, int iRecords, string strDefaultIndentation)
         {
             int indentations = 0;

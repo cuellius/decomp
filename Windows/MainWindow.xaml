@@ -77,7 +77,7 @@
                 <ComboBox Grid.Column="2" Name="ModeComboBox" Height="24">
                     <system:String>Vanilla</system:String>
                     <system:String>WSE v3.2.0</system:String>
-                    <system:String>WSE v4.5.3</system:String>
+                    <system:String>WSE v4.5.6</system:String>
                     <system:String>Caribbean</system:String>
                 </ComboBox>
                 <Grid HorizontalAlignment="Center" Grid.Column="4">

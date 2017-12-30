@@ -32,11 +32,14 @@ namespace Decomp.Core
 
             for (int s = 0; s < iStrings; s++)
             {
-                string[] strDataArray = fStrings.GetString().Split(new []{ ' ' }, StringSplitOptions.RemoveEmptyEntries); //.st
+                var str = fStrings.GetString();
+                if(str == null) continue;
+                string[] strDataArray = str.Split(new []{ ' ' }, StringSplitOptions.RemoveEmptyEntries); //.st
                 //string strID = fStrings.GetWord();
                 //string strText = fStrings.GetWord();
                 string strID = strDataArray[0];
                 string strText = strDataArray[1];
+                //Console.WriteLine($@"process {s} = ""{strID}""");
                 fSource.WriteLine("  (\"{0}\", \"{1}\"),", strID.Remove(0, 4), strText.Replace('_', ' '));
                 //fSource.Close();
             }

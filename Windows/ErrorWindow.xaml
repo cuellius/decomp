@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d" ResizeMode="NoResize" 
-        Title="Error" Height="134" Width="433" Style="{StaticResource VS2012WindowStyle}">
+        Title="Error" Height="134" Width="526" Style="{StaticResource VS2012WindowStyle}">
     <Window.Resources>
         <ControlTemplate x:Key="AnimatedExpanderButtonTemp" TargetType="{x:Type ToggleButton}">
             <Border x:Name="ExpanderButtonBorder"

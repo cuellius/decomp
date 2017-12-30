@@ -145,7 +145,10 @@ namespace Decomp.Core
                 i++;
             } while (i < _bufferLength);
 
-            return null;
+            var t = new string(_buffer, _bufferPos, _bufferLength - _bufferPos);
+            _bufferPos = _bufferLength;
+            return t;
+            //return null;
         }
 
         public void Close() //for compatibility with old code

@@ -2,13 +2,16 @@ using System.Collections.Generic;
 
 namespace Decomp.Core.Operators
 {
-    //real version: 4.5.3
+    //real version: 4.5.6
     public class WarbandScriptEnhancer450Version : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
         {
             return new List<Operator>
             {
+                new Operator("break_loop", 8),
+                new Operator("continue_loop", 9),
+                new Operator("try_for_dict_keys", 18),
                 new Operator("server_set_max_num_players", 491),
                 new Operator("position_rotate_x", 723, Parameter.Position),
                 new Operator("position_rotate_y", 724, Parameter.Position),
@@ -130,6 +133,7 @@ namespace Decomp.Core.Operators
                 new Operator("multiplayer_cur_message_get_int", 3411),
                 new Operator("multiplayer_cur_message_get_position", 3412, Parameter.Position),
                 new Operator("multiplayer_cur_message_get_coordinate", 3413, Parameter.Position),
+                new Operator("multiplayer_cur_profile_get_skin", 3414),
                 new Operator("server_set_password_admin", 3500),
                 new Operator("server_set_password_private", 3501),
                 new Operator("server_map_rotation_get_count", 3502),
@@ -179,6 +183,7 @@ namespace Decomp.Core.Operators
                 new Operator("item_set_leg_armor", 3806, Parameter.ItemIdentifier),
                 new Operator("item_set_speed_rating", 3807, Parameter.ItemIdentifier),
                 new Operator("item_set_missile_speed", 3808, Parameter.ItemIdentifier),
+                new Operator("item_set_horse_blood_particles", 3809, Parameter.ItemIdentifier),
                 new Operator("party_stack_get_experience", 3900, Parameter.None, Parameter.PartyIdentifier),
                 new Operator("party_stack_get_num_upgradeable", 3901, Parameter.None, Parameter.PartyIdentifier),
                 new Operator("party_has_flag", 3902, Parameter.PartyIdentifier, Parameter.PartyFlags),
