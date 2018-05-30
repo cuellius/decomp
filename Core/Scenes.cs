@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,62 +9,56 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\scenes.txt");
-            fID.GetString();
-            int n = fID.GetInt();
+            if (!File.Exists(Path.Combine(Common.InputPath, "scenes.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "scenes.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
             var aScenes = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aScenes[i] = fID.GetWord().Remove(0, 4);
+                aScenes[i] = fId.GetWord().Remove(0, 4);
 
-                for (int j = 0; j < 10; j++)
-                {
-                    fID.GetWord();
-                }
+                for (int j = 0; j < 10; j++) fId.GetWord();
 
-                int iPassages = fID.GetInt();
-                for (int j = 0; j < iPassages; j++)
-                {
-                    fID.GetWord();
-                }
+                int iPassages = fId.GetInt();
+                for (int j = 0; j < iPassages; j++) fId.GetWord();
 
-                int iChestTroops = fID.GetInt();
-                for (int j = 0; j < iChestTroops; j++)
-                {
-                    fID.GetWord();
-                }
+                int iChestTroops = fId.GetInt();
+                for (int j = 0; j < iChestTroops; j++) fId.GetWord();
 
-                fID.GetWord();
-                //idFile.ReadLine();
-                //idFile.ReadLine();
-                //idFile.ReadLine();
+                fId.GetWord();
             }
-            fID.Close();
+            fId.Close();
 
             return aScenes;
         }
 
         public static string DecompileFlags(DWORD dwFlag)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(32);
             string[] strFlags = { "sf_indoors", "sf_force_skybox", "sf_generate", "sf_randomize", "sf_auto_entry_points", "sf_no_horses", "sf_muddy_water" };
             DWORD[] dwFlags = { 0x00000001, 0x00000002, 0x00000100, 0x00000200, 0x00000400, 0x00000800, 0x00001000 };
             
             for (int i = 0; i < dwFlags.Length; i++)
             {
-                if ((dwFlag & dwFlags[i]) != 0)
-                    strFlag += strFlags[i] + "|";
+                if ((dwFlag & dwFlags[i]) == 0) continue;
+                sbFlag.Append(strFlags[i]);
+                sbFlag.Append('|');
             }
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static void Decompile()
         {
-            var fScenes = new Text(Common.InputPath + @"\scenes.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_scenes.py");
+            var fScenes = new Text(Path.Combine(Common.InputPath, "scenes.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_scenes.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Scenes);
             fScenes.GetString();
@@ -93,7 +89,7 @@ namespace Decomp.Core
                     //    fprintf(g_fOutput, "\"\"");
                     else
                         fSource.Write("\"{0}\"", Common.Scenes[iScene]);
-                    if (i < (iPassages - 1))
+                    if (i < iPassages - 1)
                         fSource.Write(", ");
                 }
                 fSource.Write("], [");
@@ -107,7 +103,7 @@ namespace Decomp.Core
                         fSource.Write("\"{0}\"", Common.Troops[iTroop]);
                     else
                         fSource.Write("{0}", iTroop);
-                    if (i < (iChestTroops - 1))
+                    if (i < iChestTroops - 1)
                         fSource.Write(", ");
                 }
                 fSource.Write("]");

@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -11,54 +13,54 @@ namespace Decomp.Core
             DWORD dwClouds = (dwFlag & 0xF0) >> 4;
             DWORD dwShadow = dwFlag & 0xF0000000;
 
-            string strFlag = "";
+            var sbFlag = new StringBuilder(32);
             
             switch (dwTime)
             {
                 case 2:
-                    strFlag = "sf_night|";
+                    sbFlag.Append("sf_night|");
                     break;
                 case 1:
-                    strFlag = "sf_dawn|";
+                    sbFlag.Append("sf_dawn|");
                     break;
                 case 0:
-                    strFlag = "sf_day|";
+                    sbFlag.Append("sf_day|");
                     break;
             }
 
-            strFlag += "sf_clouds_" + dwClouds + "|";
+            sbFlag.Append("sf_clouds_" + dwClouds + "|");
 
             switch (dwShadow)
             {
-                case 0x10000000: 
-                    strFlag += "sf_no_shadows|"; 
+                case 0x10000000:
+                    sbFlag.Append("sf_no_shadows|"); 
                     break;
-                case 0x20000000: 
-                    strFlag += "sf_HDR|";
+                case 0x20000000:
+                    sbFlag.Append("sf_HDR|");
                     break;
                 case 0x30000000:
-                    strFlag += "sf_no_shadows|sf_HDR|";
+                    sbFlag.Append("sf_no_shadows|sf_HDR|");
                     break;
             }
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0) sbFlag.Append('0'); else sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static void Decompile()
         {
-            var fSkyboxes = new Text(Common.InputPath + @"\skyboxes.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_skyboxes.py");
+            var fSkyboxes = new Text(Path.Combine(Common.InputPath, "skyboxes.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_skyboxes.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Skyboxes);
 
             int iSkyboxes = fSkyboxes.GetInt();
             for (int i = 0; i < iSkyboxes; i++)
             {
-                string strID = fSkyboxes.GetWord();
+                string strId = fSkyboxes.GetWord();
                 DWORD dwFlags = fSkyboxes.GetDWord();
-                fSource.Write("  (\"{0}\", {1},", strID, DecompileFlags(dwFlags));
+                fSource.Write("  (\"{0}\", {1},", strId, DecompileFlags(dwFlags));
 
                 for(int j = 0; j < 3; j++)
                     fSource.Write(" {0},", fSkyboxes.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")));

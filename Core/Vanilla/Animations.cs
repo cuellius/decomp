@@ -9,12 +9,12 @@ namespace Decomp.Core.Vanilla
     {
         public static string[] GetIdFromFile(string strFileName)
         {
-            var fID = new StreamReader(strFileName);
-            int n = Convert.ToInt32(fID.ReadLine());
+            var fId = new StreamReader(strFileName);
+            int n = Convert.ToInt32(fId.ReadLine());
             var aAnimations = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var animation = fID.ReadLine();
+                var animation = fId.ReadLine();
                 if (animation == null)
                     continue;
 
@@ -23,27 +23,27 @@ namespace Decomp.Core.Vanilla
                 int j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2]);
                 while (j != 0)
                 {
-                    fID.ReadLine();
+                    fId.ReadLine();
                     j--;
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aAnimations;
         }
 
         public static void Decompile()
         {
-            var fActions = new Text(Common.InputPath + @"\actions.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_animations.py");
+            var fActions = new Text(Path.Combine(Common.InputPath, "actions.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_animations.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Animations);
             int iActions = fActions.GetInt();
             for (int a = 0; a < iActions; a++)
             {
-                string strAnimID = fActions.GetWord();
+                string strAnimId = fActions.GetWord();
                 DWORD dwAnimFlags = fActions.GetDWord();
-                fSource.WriteLine("  [\"{0}\", {1},", strAnimID, Core.Animations.DecompileFlags(dwAnimFlags));
+                fSource.WriteLine("  [\"{0}\", {1},", strAnimId, Core.Animations.DecompileFlags(dwAnimFlags));
                 int iAnimSequences = fActions.GetInt();
                 for (int s = 0; s < iAnimSequences; s++)
                 {

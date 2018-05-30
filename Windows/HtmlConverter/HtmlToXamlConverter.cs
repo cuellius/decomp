@@ -53,98 +53,95 @@ namespace Decomp.Windows.HtmlConverter
 			return value;
 		}
 
-		private static XmlNode AddBlock(XmlElement xamlParentElement, XmlNode htmlNode, Hashtable inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
+		private static XmlNode AddBlock(XmlElement xamlParentElement, XmlNode htmlNode, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-		    var comment = htmlNode as XmlComment;
-		    if (comment != null)
+		    if (htmlNode is XmlComment comment)
 				DefineInlineFragmentParent(comment, null);
 			else if (htmlNode is XmlText)
 				htmlNode = AddImplicitParagraph(xamlParentElement, htmlNode, inheritedProperties, stylesheet, sourceContext);
-			else if (htmlNode is XmlElement)
-			{
-				var htmlElement = (XmlElement)htmlNode;
+			else if (htmlNode is XmlElement htmlElement)
+            {
+                var htmlElementName = htmlElement.LocalName;
+                var htmlElementNamespace = htmlElement.NamespaceURI;
 
-				var htmlElementName = htmlElement.LocalName;
-				var htmlElementNamespace = htmlElement.NamespaceURI;
+                if (htmlElementNamespace != HtmlParser.XhtmlNamespace) return htmlElement;
 
-				if (htmlElementNamespace != HtmlParser.XhtmlNamespace) return htmlElement;
+                sourceContext.Add(htmlElement);
 
-				sourceContext.Add(htmlElement);
+                htmlElementName = htmlElementName.ToLower();
 
-				htmlElementName = htmlElementName.ToLower();
+                switch (htmlElementName)
+                {
+                    case "html":
+                    case "body":
+                    case "div":
+                    case "form":
+                    case "pre":
+                    case "blockquote":
+                    case "caption":
+                    case "center":
+                    case "cite":
+                        AddSection(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
 
-				switch (htmlElementName)
-				{
-					case "html":
-					case "body":
-					case "div":
-					case "form":
-					case "pre":
-					case "blockquote":
-					case "caption":
-					case "center":
-					case "cite":
-						AddSection(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
+                    case "p":
+                    case "h1":
+                    case "h2":
+                    case "h3":
+                    case "h4":
+                    case "h5":
+                    case "h6":
+                    case "nsrtitle":
+                    case "textarea":
+                    case "dd":
+                    case "dl":
+                    case "dt":
+                    case "tt":
+                        AddParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
 
-					case "p":
-					case "h1":
-					case "h2":
-					case "h3":
-					case "h4":
-					case "h5":
-					case "h6":
-					case "nsrtitle":
-					case "textarea":
-					case "dd":
-					case "dl":
-					case "dt":
-					case "tt":
-						AddParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
+                    case "ol":
+                    case "ul":
+                    case "dir":
+                    case "menu":
+                        AddList(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
+                    case "li":
+                        htmlNode = AddOrphanListItems(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
 
-					case "ol":
-					case "ul":
-					case "dir":
-					case "menu":
-						AddList(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
-					case "li":
-						htmlNode = AddOrphanListItems(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
+                    case "img":
+                        //AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
 
-					case "img":
-						//AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
+                    case "table":
+                        AddTable(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
 
-					case "table":
-						AddTable(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
+                    case "tbody":
+                    case "tfoot":
+                    case "thead":
+                    case "tr":
+                    case "td":
+                    case "th":
+                        goto default;
 
-					case "tbody":
-					case "tfoot":
-					case "thead":
-					case "tr":
-					case "td":
-					case "th":
-						goto default;
+                    case "style":
+                    case "meta":
+                    case "head":
+                    case "title":
+                    case "script":
+                        break;
 
-					case "style":
-					case "meta":
-					case "head":
-					case "title":
-					case "script":
-						break;
+                    default:
+                        htmlNode = AddImplicitParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
+                }
 
-					default:
-						htmlNode = AddImplicitParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
-				}
+                sourceContext.RemoveAt(sourceContext.Count - 1);
+            }
 
-				sourceContext.RemoveAt(sourceContext.Count - 1);
-			}
-
-			return htmlNode;
+            return htmlNode;
 		}
 
 		private static void AddBreak(XmlNode xamlParentElement, string htmlElementName)
@@ -170,8 +167,7 @@ namespace Decomp.Windows.HtmlConverter
 			var htmlElementContainsBlocks = false;
 			for (var htmlChildNode = htmlElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 			{
-			    var element = htmlChildNode as XmlElement;
-			    if (element == null) continue;
+			    if (!(htmlChildNode is XmlElement element)) continue;
 			    var htmlChildName = element.LocalName.ToLower();
 			    if (!HtmlSchema.IsBlockElement(htmlChildName)) continue;
 			    htmlElementContainsBlocks = true;
@@ -182,8 +178,7 @@ namespace Decomp.Windows.HtmlConverter
 				AddParagraph(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
 			else
 			{
-				Hashtable localProperties;
-				var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+			    var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
 			    if (xamlParentElement.OwnerDocument == null) return;
 
@@ -201,8 +196,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddParagraph(XmlNode xamlParentElement, XmlElement htmlElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-			Hashtable localProperties;
-			var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+		    var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
 		    if (xamlParentElement.OwnerDocument == null) return;
 
@@ -215,15 +209,14 @@ namespace Decomp.Windows.HtmlConverter
 		    xamlParentElement.AppendChild(xamlElement);
 		}
 
-		private static XmlNode AddImplicitParagraph(XmlNode xamlParentElement, XmlNode htmlNode, Hashtable inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
+		private static XmlNode AddImplicitParagraph(XmlNode xamlParentElement, XmlNode htmlNode, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
 		    if (xamlParentElement.OwnerDocument == null) return null;
 		    var xamlParagraph = xamlParentElement.OwnerDocument.CreateElement(XamlParagraph, XamlNamespace);
 		    XmlNode lastNodeProcessed = null;
 		    while (htmlNode != null)
 		    {
-		        var comment = htmlNode as XmlComment;
-		        if (comment != null)
+		        if (htmlNode is XmlComment comment)
 		            DefineInlineFragmentParent(comment, null);
 		        else if (htmlNode is XmlText)
 		        {
@@ -245,50 +238,47 @@ namespace Decomp.Windows.HtmlConverter
 		    return lastNodeProcessed;
 		}
 
-		private static void AddInline(XmlElement xamlParentElement, XmlNode htmlNode, Hashtable inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
+		private static void AddInline(XmlElement xamlParentElement, XmlNode htmlNode, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-		    var comment = htmlNode as XmlComment;
-		    if (comment != null)
+		    if (htmlNode is XmlComment comment)
 				DefineInlineFragmentParent(comment, xamlParentElement);
 			else if (htmlNode is XmlText)
 				AddTextRun(xamlParentElement, htmlNode.Value);
-			else if (htmlNode is XmlElement)
-			{
-				var htmlElement = (XmlElement)htmlNode; 
-				if (htmlElement.NamespaceURI != HtmlParser.XhtmlNamespace) return;
+			else if (htmlNode is XmlElement htmlElement)
+            {
+                if (htmlElement.NamespaceURI != HtmlParser.XhtmlNamespace) return;
 
-				var htmlElementName = htmlElement.LocalName.ToLower();
+                var htmlElementName = htmlElement.LocalName.ToLower();
 
-				sourceContext.Add(htmlElement);
+                sourceContext.Add(htmlElement);
 
-				switch (htmlElementName)
-				{
-					case "a":
-						AddHyperlink(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
-					case "img":
-						//AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
-					case "br":
-					case "hr":
-						AddBreak(xamlParentElement, htmlElementName);
-						break;
-					default:
-						if (HtmlSchema.IsInlineElement(htmlElementName) || HtmlSchema.IsBlockElement(htmlElementName)) AddSpanOrRun(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
-						break;
-				}
+                switch (htmlElementName)
+                {
+                    case "a":
+                        AddHyperlink(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
+                    case "img":
+                        //AddImage(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
+                    case "br":
+                    case "hr":
+                        AddBreak(xamlParentElement, htmlElementName);
+                        break;
+                    default:
+                        if (HtmlSchema.IsInlineElement(htmlElementName) || HtmlSchema.IsBlockElement(htmlElementName)) AddSpanOrRun(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
+                        break;
+                }
 
-				sourceContext.RemoveAt(sourceContext.Count - 1);
-			}
-		}
+                sourceContext.RemoveAt(sourceContext.Count - 1);
+            }
+        }
 
 		private static void AddSpanOrRun(XmlNode xamlParentElement, XmlElement htmlElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
 			var elementHasChildren = false;
 			for (var htmlNode = htmlElement.FirstChild; htmlNode != null; htmlNode = htmlNode.NextSibling)
 			{
-			    var node = htmlNode as XmlElement;
-			    if (node == null) continue;
+			    if (!(htmlNode is XmlElement node)) continue;
 			    var htmlChildName = node.LocalName.ToLower();
 			    if (!HtmlSchema.IsInlineElement(htmlChildName) && !HtmlSchema.IsBlockElement(htmlChildName) &&
 			        htmlChildName != "img" && htmlChildName != "br" && htmlChildName != "hr") continue;
@@ -298,8 +288,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			var xamlElementName = elementHasChildren ? XamlSpan : XamlRun;
 
-			Hashtable localProperties;
-			var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+		    var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
 		    if (xamlParentElement.OwnerDocument == null) return;
 		    var xamlElement = xamlParentElement.OwnerDocument.CreateElement(xamlElementName, XamlNamespace);
@@ -331,8 +320,7 @@ namespace Decomp.Windows.HtmlConverter
 				AddSpanOrRun(xamlParentElement, htmlElement, inheritedProperties, stylesheet, sourceContext);
 			else
 			{
-				Hashtable localProperties;
-				var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+			    var currentProperties = GetElementProperties(htmlElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
 			    if (xamlParentElement.OwnerDocument == null) return;
 
@@ -394,8 +382,7 @@ namespace Decomp.Windows.HtmlConverter
 		{
 			var htmlListElementName = htmlListElement.LocalName.ToLower();
 
-			Hashtable localProperties;
-			var currentProperties = GetElementProperties(htmlListElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+		    var currentProperties = GetElementProperties(htmlListElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
 		    if (xamlParentElement.OwnerDocument == null) return;
 		    var xamlListElement = xamlParentElement.OwnerDocument.CreateElement(null, XamlList, XamlNamespace);
@@ -407,8 +394,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		    for (var htmlChildNode = htmlListElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 		    {
-		        var node = htmlChildNode as XmlElement;
-		        if (node == null || htmlChildNode.LocalName.ToLower() != "li") continue;
+		        if (!(htmlChildNode is XmlElement node) || htmlChildNode.LocalName.ToLower() != "li") continue;
 		        sourceContext.Add(node);
 		        AddListItem(xamlListElement, node, currentProperties, stylesheet, sourceContext);
 		        sourceContext.RemoveAt(sourceContext.Count - 1);
@@ -432,7 +418,7 @@ namespace Decomp.Windows.HtmlConverter
 				xamlParentElement.AppendChild(xamlListElement);
 			}
 
-			XmlNode htmlChildNode = htmlLiElement;
+			var htmlChildNode = htmlLiElement;
 			var htmlChildNodeName = htmlChildNode?.LocalName.ToLower();
 
 			while (htmlChildNode != null && htmlChildNodeName == "li")
@@ -448,10 +434,9 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddListItem(XmlNode xamlListElement, XmlElement htmlLiElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-			Hashtable localProperties;
-			var currentProperties = GetElementProperties(htmlLiElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+            var currentProperties = GetElementProperties(htmlLiElement, inheritedProperties, out var _, stylesheet, sourceContext);
 
-		    if (xamlListElement.OwnerDocument == null) return;
+            if (xamlListElement.OwnerDocument == null) return;
 		    var xamlListItemElement = xamlListElement.OwnerDocument.CreateElement(null, XamlListItem, XamlNamespace);
 
 		    for (var htmlChildNode = htmlLiElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode?.NextSibling)
@@ -462,10 +447,8 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddTable(XmlElement xamlParentElement, XmlElement htmlTableElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-			Hashtable localProperties;
-			var currentProperties = GetElementProperties(htmlTableElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
-
-			var singleCell = GetCellFromSingleCellTable(htmlTableElement);
+            var currentProperties = GetElementProperties(htmlTableElement, inheritedProperties, out var _, stylesheet, sourceContext);
+            var singleCell = GetCellFromSingleCellTable(htmlTableElement);
 
 			if (singleCell != null)
 			{
@@ -500,10 +483,9 @@ namespace Decomp.Windows.HtmlConverter
 
 			                sourceContext.Add((XmlElement)htmlChildNode);
 
-			                Hashtable tbodyElementLocalProperties;
-			                var tbodyElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out tbodyElementLocalProperties, stylesheet, sourceContext);
+                            var tbodyElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out var _, stylesheet, sourceContext);
 
-			                AddTableRowsToTableBody(xamlTableBodyElement, htmlChildNode.FirstChild, tbodyElementCurrentProperties, columnStarts, stylesheet, sourceContext);
+                            AddTableRowsToTableBody(xamlTableBodyElement, htmlChildNode.FirstChild, tbodyElementCurrentProperties, columnStarts, stylesheet, sourceContext);
 			                if (xamlTableBodyElement.HasChildNodes) xamlTableElement.AppendChild(xamlTableBodyElement);
 			            }
 
@@ -539,19 +521,15 @@ namespace Decomp.Windows.HtmlConverter
 					if (singleCell != null) return null;
 					for (var tbodyChild = tableChild.FirstChild; tbodyChild != null; tbodyChild = tbodyChild.NextSibling)
 					{
-						if (tbodyChild.LocalName.ToLower() == "tr")
-						{
-							if (singleCell != null) return null;
-							for (var trChild = tbodyChild.FirstChild; trChild != null; trChild = trChild.NextSibling)
-							{
-								var cellName = trChild.LocalName.ToLower();
-								if (cellName == "td" || cellName == "th")
-								{
-									if (singleCell != null) return null;
-									singleCell = (XmlElement)trChild;
-								}
-							}
-						}
+					    if (tbodyChild.LocalName.ToLower() != "tr") continue;
+					    if (singleCell != null) return null;
+					    for (var trChild = tbodyChild.FirstChild; trChild != null; trChild = trChild.NextSibling)
+					    {
+					        var cellName = trChild.LocalName.ToLower();
+					        if (cellName != "td" && cellName != "th") continue;
+					        if (singleCell != null) return null;
+					        singleCell = (XmlElement)trChild;
+					    }
 					}
 				}
 				else if (tableChild.LocalName.ToLower() == "tr")
@@ -560,11 +538,9 @@ namespace Decomp.Windows.HtmlConverter
 					for (var trChild = tableChild.FirstChild; trChild != null; trChild = trChild.NextSibling)
 					{
 						var cellName = trChild.LocalName.ToLower();
-						if (cellName == "td" || cellName == "th")
-						{
-							if (singleCell != null) return null;
-							singleCell = (XmlElement)trChild;
-						}
+					    if (cellName != "td" && cellName != "th") continue;
+					    if (singleCell != null) return null;
+					    singleCell = (XmlElement)trChild;
 					}
 				}
 			}
@@ -600,13 +576,11 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddTableColumnGroup(XmlNode xamlTableElement, XmlElement htmlColgroupElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-			Hashtable localProperties;
-		    GetElementProperties(htmlColgroupElement, inheritedProperties, out localProperties, stylesheet, sourceContext);
+            GetElementProperties(htmlColgroupElement, inheritedProperties, out var _, stylesheet, sourceContext);
 
             for (var htmlNode = htmlColgroupElement.FirstChild; htmlNode != null; htmlNode = htmlNode.NextSibling)
 			{
-			    var node = htmlNode as XmlElement;
-			    if (node != null && htmlNode.LocalName.ToLower() == "col") AddTableColumn(xamlTableElement);
+			    if (htmlNode is XmlElement && htmlNode.LocalName.ToLower() == "col") AddTableColumn(xamlTableElement);
 			}
 		}
 
@@ -637,8 +611,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			            sourceContext.Add((XmlElement)htmlChildNode);
 
-			            Hashtable trElementLocalProperties;
-			            var trElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out trElementLocalProperties, stylesheet, sourceContext);
+			            var trElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out _, stylesheet, sourceContext);
 
 			            AddTableCellsToTableRow(xamlTableRowElement, htmlChildNode.FirstChild, trElementCurrentProperties, columnStarts, activeRowSpans, stylesheet, sourceContext);
 			            if (xamlTableRowElement.HasChildNodes) xamlTableBodyElement.AppendChild(xamlTableRowElement);
@@ -677,10 +650,9 @@ namespace Decomp.Windows.HtmlConverter
 
 				        sourceContext.Add((XmlElement)htmlChildNode);
 
-				        Hashtable tdElementLocalProperties;
-				        var tdElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out tdElementLocalProperties, stylesheet, sourceContext);
+                        var tdElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out var _, stylesheet, sourceContext);
 
-				        ApplyPropertiesToTableCellElement((XmlElement)htmlChildNode, xamlTableCellElement);
+                        ApplyPropertiesToTableCellElement((XmlElement)htmlChildNode, xamlTableCellElement);
 
 				        if (columnStarts != null)
 				        {
@@ -923,11 +895,8 @@ namespace Decomp.Windows.HtmlConverter
         
 		private static double GetColumnWidth(XmlElement htmlTdElement)
 		{
-		    double columnWidth;
-
-			var columnWidthAsString = GetAttribute(htmlTdElement, "width") ?? GetCssAttribute(GetAttribute(htmlTdElement, "style"), "width");
-
-		    if (!TryGetLengthValue(columnWidthAsString, out columnWidth) || Math.Abs(columnWidth) < 1e-6) columnWidth = -1;
+		    var columnWidthAsString = GetAttribute(htmlTdElement, "width") ?? GetCssAttribute(GetAttribute(htmlTdElement, "style"), "width");
+		    if (!TryGetLengthValue(columnWidthAsString, out var columnWidth) || Math.Abs(columnWidth) < 1e-6) columnWidth = -1;
 			return columnWidth;
 		}
 

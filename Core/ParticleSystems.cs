@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -9,18 +10,18 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\particle_systems.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            if (!File.Exists(Path.Combine(Common.InputPath, "particle_systems.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "particle_systems.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aParticleSystems = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aParticleSystems[i] = fID.GetWord().Remove(0, 5);
-
-                for (int j = 0; j < 37; j++)
-                    fID.GetWord();
+                aParticleSystems[i] = fId.GetWord().Remove(0, 5);
+                for (int j = 0; j < 37; j++) fId.GetWord();
             }
-            fID.Close();
+            fId.Close();
 
             return aParticleSystems;
         }
@@ -36,11 +37,9 @@ namespace Decomp.Core
 
             for (int i = 0; i < dwFlags.Length; i++)
             {
-                if ((dwFlag & dwFlags[i]) != 0)
-                {
-                    sbFlag.Append(strFlags[i]);
-                    sbFlag.Append('|');
-                }
+                if ((dwFlag & dwFlags[i]) == 0) continue;
+                sbFlag.Append(strFlags[i]);
+                sbFlag.Append('|');
             }
 
             if (sbFlag.Length == 0)
@@ -53,8 +52,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fParticles = new Text(Common.InputPath + @"\particle_systems.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_particle_systems.py");
+            var fParticles = new Text(Path.Combine(Common.InputPath, "particle_systems.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_particle_systems.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.ParticleSystems);
             fParticles.GetString();
@@ -65,10 +64,7 @@ namespace Decomp.Core
 
                 DWORD dwFlag = fParticles.GetDWord();
                 fSource.Write("{0}, \"{1}\",\r\n   ", DecompileFlags(dwFlag), fParticles.GetWord());
-                for (int j = 0; j < 6; j++)
-                {
-                    fSource.Write(" {0},", fParticles.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")));
-                }
+                for (int j = 0; j < 6; j++) fSource.Write(" {0},", fParticles.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")));
                 fSource.WriteLine();
                 
                 double d0, d1;

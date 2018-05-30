@@ -117,8 +117,7 @@ namespace Decomp.Windows.HtmlConverter
 			    _htmlLexicalAnalyzer.GetNextContentToken();
 			}
 
-		    var child = htmlRootElement.FirstChild as XmlElement;
-		    if (child != null && htmlRootElement.FirstChild == htmlRootElement.LastChild && htmlRootElement.FirstChild.LocalName.ToLower() == "html") htmlRootElement = child;
+		    if (htmlRootElement.FirstChild is XmlElement child && htmlRootElement.FirstChild == htmlRootElement.LastChild && htmlRootElement.FirstChild.LocalName.ToLower() == "html") htmlRootElement = child;
 
 			return htmlRootElement;
 		}

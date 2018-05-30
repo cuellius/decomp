@@ -305,9 +305,9 @@ namespace Decomp.Core.Shaders
 
             var sShaderSource = Marshal.PtrToStringAnsi(ID3DXBuffer_GetBufferPointer(pDisassembler));
 
-            var sOutFile = Common.OutputPath + @"\Shaders\mb.fx";
-            if (!Directory.Exists(Common.OutputPath + @"\Shaders"))
-                Directory.CreateDirectory(Common.OutputPath + @"\Shaders");
+            var sOutFile = Path.Combine(Common.OutputPath, "Shaders", "mb.fx");
+            if (!Directory.Exists(Path.Combine(Common.OutputPath, "Shaders")))
+                Directory.CreateDirectory(Path.Combine(Common.OutputPath, "Shaders"));
             Win32FileWriter.WriteAllText(sOutFile, Header.Shaders + sShaderSource);
 
             Release();

@@ -57,10 +57,7 @@ namespace Decomp.Windows
                 case WM_RBUTTONUP:
                 case WM_LBUTTONUP:
                     Popup.IsOpen = false;
-                    if (ItemsListBox.ItemsSource != null && ItemsListBox.SelectedIndex != -1)
-                    {
-                        SetText(ItemsListBox.SelectedItem.ToString());
-                    }
+                    if (ItemsListBox.ItemsSource != null && ItemsListBox.SelectedIndex != -1) SetText(ItemsListBox.SelectedItem.ToString());
                     break;
             }
             return IntPtr.Zero;
@@ -68,37 +65,18 @@ namespace Decomp.Windows
 
         public IEnumerable<string> GetItems(string textPattern)
         {
-            if (textPattern.Length < 2 || textPattern[1] != ':')
-            {
-                yield break;
-            }
+            if (textPattern.Length < 2 || textPattern[1] != ':') yield break;
             int lastSlashPos = textPattern.LastIndexOf('\\');
-            if (lastSlashPos == -1)
-            {
-                yield break;
-            }
+            if (lastSlashPos == -1) yield break;
             int fileNamePatternLength = textPattern.Length - lastSlashPos - 1;
             string baseFolder = textPattern.Substring(0, lastSlashPos + 1);
-            WIN32_FIND_DATA fd;
-            var hFind = FindFirstFile(textPattern + "*", out fd);
-            if (hFind.ToInt32() == INVALID_HANDLE_VALUE)
-            {
-                yield break;
-            }
+            var hFind = FindFirstFile(textPattern + "*", out var fd);
+            if (hFind.ToInt32() == INVALID_HANDLE_VALUE) yield break;
             do
             {
-                if (fd.cFileName[0] == '.')
-                {
-                    continue;
-                }
-                if ((fd.dwFileAttributes & FileAttributes.Hidden) != 0)
-                {
-                    continue;
-                }
-                if (fileNamePatternLength > fd.cFileName.Length)
-                {
-                    continue;
-                }
+                if (fd.cFileName[0] == '.') continue;
+                if ((fd.dwFileAttributes & FileAttributes.Hidden) != 0) continue;
+                if (fileNamePatternLength > fd.cFileName.Length) continue;
                 yield return baseFolder + fd.cFileName;
             } while (FindNextFile(hFind, out fd));
             FindClose(hFind);
@@ -118,8 +96,7 @@ namespace Decomp.Windows
         private Window GetParentWindow()
         {
             DependencyObject d = this;
-            while (d != null && !(d is Window))
-                d = LogicalTreeHelper.GetParent(d);
+            while (d != null && !(d is Window)) d = LogicalTreeHelper.GetParent(d);
             return d as Window;
         }
 
@@ -146,7 +123,7 @@ namespace Decomp.Windows
 
         private CustomPopupPlacement[] Repositioning(Size popupSize, Size targetSize, Point offset)
         {
-            return new[] { new CustomPopupPlacement(new Point((0.01 - offset.X), (Root.ActualHeight - offset.Y)), PopupPrimaryAxis.None) };
+            return new[] { new CustomPopupPlacement(new Point(0.01 - offset.X, Root.ActualHeight - offset.Y), PopupPrimaryAxis.None) };
         }
 
         private bool _setText;
@@ -227,20 +204,15 @@ namespace Decomp.Windows
             if (Text != null) Select(Text.Length, 0);
         }
 
-        void ItemsListBoxPreviewMouseDown(object sender, MouseEventArgs e)
+        private void ItemsListBoxPreviewMouseDown(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                var tb = e.OriginalSource as TextBlock;
-                if (tb != null)
-                {
-                    Text = tb.Text;
-                    Select(Text.Length, 0);
-                    UpdateSource();
-                    Popup.IsOpen = false;
-                    e.Handled = true;
-                }
-            }
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+            if (!(e.OriginalSource is TextBlock tb)) return;
+            Text = tb.Text;
+            Select(Text.Length, 0);
+            UpdateSource();
+            Popup.IsOpen = false;
+            e.Handled = true;
         }
 
         private void UpdateSource()
@@ -279,6 +251,6 @@ namespace Decomp.Windows
             _setText = false;
         }
         
-        public new string Text { get { return base.Text; } set { SetText(value); } }
+        public new string Text { get => base.Text; set => SetText(value); }
     }
 }

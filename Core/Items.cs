@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text;
 using BYTE = System.Byte;
 using WORD = System.UInt16;
@@ -11,54 +13,46 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\item_kinds1.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            if (!File.Exists(Path.Combine(Common.InputPath, "item_kinds1.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "item_kinds1.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strID = fID.GetWord();
-                //Console.WriteLine(strID);
-                aItems[i] = strID.Remove(0, 4);
-                fID.GetWord();
-                fID.GetWord();
+                string strId = fId.GetWord();
+                aItems[i] = strId.Remove(0, 4);
+                fId.GetWord();
+                fId.GetWord();
 
-                int iMeshes = fID.GetInt();
+                int iMeshes = fId.GetInt();
 
                 for (int m = 0; m < iMeshes; m++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
                 }
 
-                for (int v = 0; v < 17; v++)
-                {
-                    fID.GetWord();
-                }
+                for (int v = 0; v < 17; v++) fId.GetWord();
 
-                int iFactions = fID.GetInt();
-                for (int j = 0; j < iFactions; j++)
-                    fID.GetInt();
+                int iFactions = fId.GetInt();
+                for (int j = 0; j < iFactions; j++) fId.GetInt();
 
-                int iTriggers = fID.GetInt();
+                int iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    fID.GetWord();
-                    int iRecords = fID.GetInt();
+                    fId.GetWord();
+                    int iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
-
-
             }
-            fID.Close();
+            fId.Close();
 
             return aItems;
         }
@@ -106,49 +100,43 @@ namespace Decomp.Core
             for (int i = 0; i < dwImodConstans.Length; i++)
             {
                 DWORD64 temp = dwImodBit & dwImodConstans[i];
-                if (temp - dwImodConstans[i] == 0)
-                {
-                    sbFlag.Append(strImodConstants[i]);
-                    sbFlag.Append('|');
-                    dwImodBit ^= dwImodConstans[i];
-                    break;
-                }
+                if (temp - dwImodConstans[i] != 0) continue;
+                sbFlag.Append(strImodConstants[i]);
+                sbFlag.Append('|');
+                dwImodBit ^= dwImodConstans[i];
+                break;
             }
 
             if (dwImodBit != 0)
                 for (int i = 0; i < dwImodBits.Length; i++)
                 {
-                    if ((dwImodBit & dwImodBits[i]) != 0)
-                    {
-                        sbFlag.Append(strImodBits[i]);
-                        sbFlag.Append('|');
-                    }
+                    if ((dwImodBit & dwImodBits[i]) == 0) continue;
+                    sbFlag.Append(strImodBits[i]);
+                    sbFlag.Append('|');
                 }
 
             if (sbFlag.Length == 0)
                 sbFlag.Append("imodbits_none");
             else
                 sbFlag.Length--;
-
-            //strFlag = strFlag == "" ? "imodbits_none" : sbFlag.Remove(sbFlag.Length - 1, 1);
-
+            
             return sbFlag.ToString();
         }
 
         public static string DecompileMeshesImodBits(DWORD64 dwMeshBits)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(2048);
             DWORD64 dwMeshExtraBits = (dwMeshBits & 0xFF00000000000000) >> 56;
             switch (dwMeshExtraBits)
             {
                 case 0x10:
-                    strFlag = "ixmesh_inventory|";
+                    sbFlag.Append("ixmesh_inventory|");
                     break;
                 case 0x20:
-                    strFlag = "ixmesh_flying_ammo|";
+                    sbFlag.Append("ixmesh_flying_ammo|");
                     break;
                 case 0x30:
-                    strFlag = "ixmesh_carry|";
+                    sbFlag.Append("ixmesh_carry|");
                     break;
             }
             DWORD64 dwMeshImodBits = dwMeshBits & 0x00FFFFFFFFFFFFFF;
@@ -163,25 +151,28 @@ namespace Decomp.Core
 
             for (int i = 0; i < dwImodBits.Length; i++)
             {
-                if ((dwMeshImodBits & dwImodBits[i]) != 0)
-                    strFlag += strImodBits[i] + "|";
+                if ((dwMeshImodBits & dwImodBits[i]) == 0) continue;
+                sbFlag.Append(strImodBits[i]);
+                sbFlag.Append('|');
             }
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static string DecompileFlags(DWORD64 dwFlag)
         {
-            byte bType;
-            return DecompileFlags(dwFlag, out bType);
+            return DecompileFlags(dwFlag, out var _);
         }
 
         public static string DecompileFlags(DWORD64 dwFlag, out BYTE bType)
         {
-            string strFlag = "";
             //DWORD64 dwType = dwFlag & 0xFF;
+            var sbFlag = new StringBuilder(256);
             bType = (BYTE)dwFlag;
             
             string[] strItemTypes = { "itp_type_zero", "itp_type_horse", "itp_type_one_handed_wpn", "itp_type_two_handed_wpn", "itp_type_polearm", 
@@ -204,39 +195,46 @@ namespace Decomp.Core
             0x0008000000000000, 0x0010000000000000, 0x0020000000000000, 0x1000000000000000, 0x4000000000000000 };
 
             DWORD64 dwCustomKillInfo = (dwFlag & 0x0700000000000000U) >> 56;
-            if (dwCustomKillInfo != 0)
-                strFlag += "custom_kill_info(" + dwCustomKillInfo + ")|";                                 
+            if (dwCustomKillInfo != 0) sbFlag.Append("custom_kill_info(" + dwCustomKillInfo + ")|");                                 
 
             //uint dwItemType = uItemFlags & 0xFF;
             if (bType > 0 && bType < 0x15)
-                strFlag += strItemTypes[bType] + "|";
+            {
+                sbFlag.Append(strItemTypes[bType]);
+                sbFlag.Append('|');
+            }
             
             var wAttach = (WORD)(dwFlag & 0xF00);
 
             switch (wAttach)
             {
                 case 0x0100:
-                    strFlag += "itp_force_attach_left_hand|";
+                    sbFlag.Append("itp_force_attach_left_hand|");
                     break;
                 case 0x0200:
-                    strFlag += "itp_force_attach_right_hand|";
+                    sbFlag.Append("itp_force_attach_right_hand|");
                     break;
                 case 0x0300:
-                    strFlag += "itp_force_attach_left_forearm|";
+                    sbFlag.Append("itp_force_attach_left_forearm|");
                     break;
                 case 0x0F00:
-                    strFlag += "itp_attach_armature|";
+                    sbFlag.Append("itp_attach_armature|");
                     break;
             }
 
             for (int i = 0; i < dwItemFlags.Length; i++)
             {
-                if ((dwFlag & dwItemFlags[i]) != 0)
-                {
-                    strFlag += strItemTypeFlags[i] + "|";
-                }
+                if ((dwFlag & dwItemFlags[i]) == 0) continue;
+                sbFlag.Append(strItemTypeFlags[i]);
+                sbFlag.Append('|');
             }
 
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
+
+            var strFlag = sbFlag.ToString();
             switch (bType)
             {
                 case HEAD_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_offset_lance", "itp_fit_to_head").Replace("itp_couchable", "itp_covers_head").Replace("itp_can_penetrate_shield", "itp_doesnt_cover_hair"); break; //head armor
@@ -244,15 +242,13 @@ namespace Decomp.Core
                 case FOOT_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian"); break; //legs armor
                 case HAND_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_offset_lance", "itp_show_left_hand").Replace("itp_couchable", "itp_show_right_hand"); break; //hand armor
             }
-
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
-
+            
             return strFlag;
         }
         
         public static string DecompileCapabilities(DWORD64 dwCapacity)
         {
-            string strCapacity = "";
+            var sbCapacity = new StringBuilder(2048);
 
             /*string[] strItemCapsFlags = { "itcf_thrust_onehanded", "itcf_overswing_onehanded", "itcf_slashright_onehanded", "itcf_slashleft_onehanded", 
             "itcf_thrust_twohanded", "itcf_overswing_twohanded", "itcf_slashright_twohanded", "itcf_slashleft_twohanded", "itcf_thrust_polearm", 
@@ -297,11 +293,10 @@ namespace Decomp.Core
             DWORD64 dwShoot = dwCapacity & dwCapsShootMask;
             for (int i = 0; i < dwCapsShoot.Length; i++)
             {
-                if (dwShoot == dwCapsShoot[i])
-                {
-                    strCapacity += strCapsShoot[i] + "|";
-                    break;
-                }
+                if (dwShoot != dwCapsShoot[i]) continue;
+                sbCapacity.Append(strCapsShoot[i]);
+                sbCapacity.Append('|');
+                break;
             }
 
             string[] strCapsCarry = { "itcf_carry_sword_left_hip", "itcf_carry_axe_left_hip", "itcf_carry_dagger_front_left", "itcf_carry_dagger_front_right",
@@ -317,11 +312,10 @@ namespace Decomp.Core
             DWORD64 dwCarry = dwCapacity & dwCapsCarryMask;
             for (int i = 0; i < dwCapsCarry.Length; i++)
             {
-                if (dwCarry == dwCapsCarry[i])
-                {
-                    strCapacity += strCapsCarry[i] + "|";
-                    break;
-                }
+                if (dwCarry != dwCapsCarry[i]) continue;
+                sbCapacity.Append(strCapsCarry[i]);
+                sbCapacity.Append('|');
+                break;
             }
 
             const DWORD64 dwCapsReloadMask = 0x000000f000000000;
@@ -329,10 +323,10 @@ namespace Decomp.Core
             switch (dwReload)
             {
                 case 0x0000007000000000:
-                    strCapacity += "itcf_reload_pistol|";
+                    sbCapacity.Append("itcf_reload_pistol|");
                     break;
                 case 0x0000008000000000:
-                    strCapacity += "itcf_reload_musket|";
+                    sbCapacity.Append("itcf_reload_musket|");
                     break;
             }
 
@@ -342,14 +336,13 @@ namespace Decomp.Core
             DWORD64[] dwItemCapsConstant = { 9223388529554358287, 9223388529554358286, 9223388529529192448, 9223635919737716976, 9223635919670608127, 
             9223635919670608096, 9223635919670608110, 9223635919645442048, 9223372036879941856, 4222124650663680, 4222124851990272, 4222124851987200, 
             4222124851986688, 201326848, 8725724303200000, 4222124650659840, 201326848, 9223372036879941647, 9223372036879941646, 58265320179105984 };
-            for (int i = 0; i < (dwItemCapsConstant.Length); i++)
+            for (int i = 0; i < dwItemCapsConstant.Length; i++)
             {
                 ulong temp = dwCapacity & dwItemCapsConstant[i];
-                if ((temp - dwItemCapsConstant[i]) == 0)
-                {
-                    strCapacity += strItemCapsConstant[i] + "|";
-                    dwCapacity ^= dwItemCapsConstant[i];
-                }
+                if (temp - dwItemCapsConstant[i] != 0) continue;
+                sbCapacity.Append(strItemCapsConstant[i]);
+                sbCapacity.Append('|');
+                dwCapacity ^= dwItemCapsConstant[i];
             }
 
             string[] strItemCapsFlags = { "itcf_thrust_onehanded", "itcf_overswing_onehanded", "itcf_slashright_onehanded", "itcf_slashleft_onehanded", 
@@ -369,62 +362,59 @@ namespace Decomp.Core
             0x0020000000000000, 0x0040000000000000, 0x0080000000000000, 0x8000000000000000 };
             for (int i = 0; i < dwItemCapsFlags.Length; i++)
             {
-                if ((dwCapacity & dwItemCapsFlags[i]) != 0)
-                {
-                    strCapacity += strItemCapsFlags[i] + "|";
-                }
+                if ((dwCapacity & dwItemCapsFlags[i]) == 0) continue;
+                sbCapacity.Append(strItemCapsFlags[i]);
+                sbCapacity.Append('|');
             }
 
-            strCapacity = strCapacity == "" ? "0" : strCapacity.Remove(strCapacity.Length - 1, 1);
+            if (sbCapacity.Length == 0)
+                sbCapacity.Append('0');
+            else
+                sbCapacity.Length--;
 
-            return strCapacity;
+            return sbCapacity.ToString();
         }
 
         public static void Decompile()
         {
-            var fItems = new Text(Common.InputPath + @"\item_kinds1.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_items.py");
+            var fItems = new Text(Path.Combine(Common.InputPath, "item_kinds1.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_items.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Items);
             fItems.GetString();
             int iItems = fItems.GetInt();
             for (int i = 0; i < iItems; i++)
             {
-                string strItemID = fItems.GetWord().Remove(0, 4);
-                fSource.Write("  [\"{0}\"", strItemID);
+                string strItemId = fItems.GetWord().Remove(0, 4);
+                fSource.Write("  [\"{0}\"", strItemId);
                 fItems.GetWord(); // skip second name
 
                 string strItemName = fItems.GetWord();
                 fSource.Write(",\"{0}\", [", strItemName);
 
                 int iMeshes = fItems.GetInt();
-                //if (iMeshes != 0)
-                //    source.Write(", [");
 
-                string strMeshes = "";
+                var sbMeshes = new StringBuilder(2048);
                 for (int m = 0; m < iMeshes; m++)
                 {
                     string strMeshName = fItems.GetWord();
                     DWORD64 dwMeshBits = fItems.GetUInt64();
-                    strMeshes = strMeshes + $"(\"{strMeshName}\", {DecompileMeshesImodBits(dwMeshBits)}),";
+                    sbMeshes.Append($"(\"{strMeshName}\", {DecompileMeshesImodBits(dwMeshBits)}),");
                 }
-                if(strMeshes.Length > 0)
-                    strMeshes = strMeshes.Remove(strMeshes.Length - 1, 1);
+                if(sbMeshes.Length > 0) sbMeshes.Length--;
 
-                fSource.Write("{0}]", strMeshes);
+                fSource.Write("{0}]", sbMeshes);
 
                 DWORD64 dwItemFlags = fItems.GetUInt64();
                 ulong lItemCaps = fItems.GetUInt64();
 
-                BYTE bType;
-
-                fSource.Write(", {0}, {1},", DecompileFlags(dwItemFlags, out bType), DecompileCapabilities(lItemCaps));
+                fSource.Write(", {0}, {1},", DecompileFlags(dwItemFlags, out byte bType), DecompileCapabilities(lItemCaps));
                 int iCost = fItems.GetInt();
 
                 //items.GetWord();
                 DWORD64 dwImodBits = fItems.GetUInt64();
 
-                string strItemStats = "weight(" + fItems.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")) + ")";
+                var sbItemStats = new StringBuilder("weight(" + fItems.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")) + ")", 1024);
                 string[] strStats = { "abundance", "head_armor", "body_armor", "leg_armor", "difficulty", "hit_points",
 			    "spd_rtng", "shoot_speed", "weapon_length", "max_ammo", "thrust_damage", "swing_damage" };
                 for (int v = 0; v < 12; v++)
@@ -466,25 +456,20 @@ namespace Decomp.Core
                                     break;
                             }
                             if (bType == HORSE_TYPE && strState == "thrust_damage" && iDamageType == 0)
-                                strItemStats = strItemStats + $"|horse_charge({iDamage})";
+                                sbItemStats.Append($"|horse_charge({iDamage})");
                             else
-                                strItemStats = strItemStats + $"|{strState}({iDamage}, {strDamageType})";
+                                sbItemStats.Append($"|{strState}({iDamage}, {strDamageType})");
                         }
                         else
-                            strItemStats = strItemStats + $"|{strState}({iValue})";
+                            sbItemStats.Append($"|{strState}({iValue})");
                     }
                 }
-                fSource.Write("{0}, {1}, {2}", iCost, strItemStats, DecompileImodBits(dwImodBits));
+                fSource.Write("{0}, {1}, {2}", iCost, sbItemStats, DecompileImodBits(dwImodBits));
 
                 int iFactions = fItems.GetInt();
-                string strFactionList = "";
-                for (int f = 0; f < iFactions; f++)
-                {
-                    int iFaction = fItems.GetInt();
-                    strFactionList += "fac_" + Common.Factions[iFaction] + ",";
-                }
-                if (strFactionList != "")
-                    strFactionList = strFactionList.Remove(strFactionList.Length - 1, 1);
+                var factionsList = new int[iFactions];
+                for (int f = 0; f < iFactions; f++) factionsList[f] = fItems.GetInt();
+                string strFactionList = String.Join(",", factionsList.Select(f => "fac_" + Common.Factions[f]));
 
                 int iTriggers = fItems.GetInt();
                 if (iTriggers != 0)

@@ -94,11 +94,10 @@ namespace Decomp.Core
             }
 
             _bufferLength = MultiByteToWideChar(CP_UTF8, 0, pNewBuffer, (int)dwBytesRead, null, 0);
-            _buffer = new char[_bufferLength + 1];
+            _buffer = new char[_bufferLength];
             fixed (char* pUnicodeBuffer = &_buffer[0])
             {
                 MultiByteToWideChar(CP_UTF8, 0, pNewBuffer, (int)dwBytesRead, pUnicodeBuffer, _bufferLength);
-                _buffer[_bufferLength] = '\0';
             }
             CloseHandle(pHandle);
             gchBuffer.Free();
@@ -136,10 +135,8 @@ namespace Decomp.Core
                 {
                     var s = new string(_buffer, _bufferPos, i - _bufferPos);
                     _bufferPos = i + 1;
-                    if (ch == '\r' && _bufferPos < _bufferLength)
-                    {
-                        if (_buffer[_bufferPos] == '\n') _bufferPos++;
-                    }
+                    if (ch != '\r' || _bufferPos >= _bufferLength) return s;
+                    if (_buffer[_bufferPos] == '\n') _bufferPos++;
                     return s;
                 }
                 i++;
@@ -148,7 +145,6 @@ namespace Decomp.Core
             var t = new string(_buffer, _bufferPos, _bufferLength - _bufferPos);
             _bufferPos = _bufferLength;
             return t;
-            //return null;
         }
 
         public void Close() //for compatibility with old code

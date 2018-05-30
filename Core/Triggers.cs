@@ -1,16 +1,15 @@
-﻿namespace Decomp.Core
+﻿using System.IO;
+
+namespace Decomp.Core
 {
     public static class Triggers
     {
-        public static string GetTriggerParam(double dblParam)
-        {
-            return Common.GetTriggerParam(dblParam);
-        }
+        public static string GetTriggerParam(double dblParam) => Common.GetTriggerParam(dblParam);
 
         public static void Decompile()
         {
-            var fTriggers = new Text(Common.InputPath + @"\triggers.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_triggers.py");
+            var fTriggers = new Text(Path.Combine(Common.InputPath, "triggers.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_triggers.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Triggers);
             fTriggers.GetString();

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.IO;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,15 +8,17 @@ namespace Decomp.Core
     {
         public static void Decompile()
         {
-            var fPostfx = new Text(Common.InputPath + @"\postfx.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_postfx.py");
+            var fPostfx = new Text(Path.Combine(Common.InputPath, "postfx.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_postfx.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Postfx);
             fPostfx.GetString();
             int iPostFXs = fPostfx.GetInt();
+            var postfxList = new string[iPostFXs];
             for (int i = 0; i < iPostFXs; i++)
             {
-                fSource.Write("  (\"{0}\"", fPostfx.GetWord().Remove(0, 4));
+                postfxList[i] = fPostfx.GetWord().Remove(0, 4);
+                fSource.Write("  (\"{0}\"", postfxList[i]);
 
                 DWORD dwFlag = fPostfx.GetDWord();
                 if (dwFlag == 1)
@@ -36,7 +39,8 @@ namespace Decomp.Core
             fSource.Write("]");
             fSource.Close();
             fPostfx.Close();
-            //Common.GenerateId("ID_postfx_params.py", Common.PostfxParams, "pfx");
+
+            Common.GenerateId("ID_postfx_params.py", postfxList, "pfx");
         }
     }
 }

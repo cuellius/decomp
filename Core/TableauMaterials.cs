@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Decomp.Core
 {
@@ -6,24 +7,25 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\tableau_materials.txt");
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "tableau_materials.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "tableau_materials.txt"));
+            int n = Convert.ToInt32(fId.ReadLine());
             var aTableauMateriales = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
-                if (str != null)
-                    aTableauMateriales[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 4);
+                var str = fId.ReadLine();
+                if (str != null) aTableauMateriales[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 4);
             }
-            fID.Close();
+            fId.Close();
 
             return aTableauMateriales;
         }
 
         public static void Decompile()
         {
-            var fTableaus = new Text(Common.InputPath + @"\tableau_materials.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_tableau_materials.py");
+            var fTableaus = new Text(Path.Combine(Common.InputPath, "tableau_materials.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_tableau_materials.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.TableauMaterials);
             int iCount = fTableaus.GetInt();
@@ -31,8 +33,7 @@ namespace Decomp.Core
             for (int i = 0; i < iCount; i++)
             {
                 fSource.Write("  (\"{0}\", {1}, \"{2}\", ", fTableaus.GetWord().Remove(0, 4), fTableaus.GetDWord(), fTableaus.GetWord());
-                for (int j = 0; j < 6; j++)
-                    fSource.Write(" {0},", fTableaus.GetInt());
+                for (int j = 0; j < 6; j++) fSource.Write(" {0},", fTableaus.GetInt());
                 fSource.WriteLine("\r\n  [");
                 Common.PrintStatement(ref fTableaus, ref fSource, fTableaus.GetInt(), "    ");
                 fSource.WriteLine("  ]),\r\n");

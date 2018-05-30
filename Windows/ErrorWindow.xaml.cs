@@ -34,10 +34,8 @@ namespace Decomp.Windows
             InformationTextBlock.Text = exception.ToString();
             SizeChanged += (s, e) =>
             {
-                if (e.WidthChanged)
-                {
-                    if (Math.Abs(ActualWidth - 433) > 1e-9) Width = 433;
-                }
+                if (!e.WidthChanged) return;
+                if (Math.Abs(ActualWidth - 433) > 1e-9) Width = 433;
             };
         }
 

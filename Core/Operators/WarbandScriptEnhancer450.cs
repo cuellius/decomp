@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Decomp.Core.Operators
 {
-    //real version: 4.5.6
+    //real version: 4.6.1
     public class WarbandScriptEnhancer450Version : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
@@ -119,6 +119,7 @@ namespace Decomp.Core.Operators
                 new Operator("agent_set_default_animations", 3321),
                 new Operator("agent_cancel_current_animation", 3322),
                 new Operator("agent_get_ranged_damage_modifier", 3323),
+                new Operator("agent_add_stun", 3324),
                 new Operator("multiplayer_send_chat_message_to_player", 3400),
                 new Operator("multiplayer_send_composite_message_to_player", 3401),
                 new Operator("multiplayer_send_composite_message_to_server", 3402),
@@ -347,7 +348,7 @@ namespace Decomp.Core.Operators
                 new Operator("lua_push_pos", 5110, Parameter.Position),
                 new Operator("lua_get_type", 5111),
                 new Operator("lua_call", 5112),
-                new Operator("lua_triggerCallback", 5113),
+                new Operator("lua_triggerCallback", 5113)
             };
         }
     }

@@ -1,11 +1,13 @@
-﻿namespace Decomp.Core
+﻿using System.IO;
+
+namespace Decomp.Core
 {
     public static class SimpleTriggers
     {
         public static void Decompile()
         {
-            var fTriggers = new Text(Common.InputPath + @"\simple_triggers.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_simple_triggers.py");
+            var fTriggers = new Text(Path.Combine(Common.InputPath, "simple_triggers.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_simple_triggers.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.SimpleTriggers);
             fTriggers.GetString();

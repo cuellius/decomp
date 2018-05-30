@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using DWORD64 = System.UInt64;
 using DWORD = System.UInt32;
@@ -10,17 +11,19 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\party_templates.txt");
-            fID.ReadLine();
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "party_templates.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "party_templates.txt"));
+            fId.ReadLine();
+            int n = Convert.ToInt32(fId.ReadLine());
             var aPartyTemplates = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
+                var str = fId.ReadLine();
                 if (str != null)
                     aPartyTemplates[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 3);
             }
-            fID.Close();
+            fId.Close();
 
             return aPartyTemplates;
         }
@@ -32,7 +35,7 @@ namespace Decomp.Core
             var wCarriesGoods = (WORD)((dwFlag & 0x00FF000000000000) >> 48);
             var wCarriesGold = (WORD)((dwFlag & 0xFF00000000000000) >> 56);
 
-            if (wIcon != 0) sbFlag.Append(wIcon < Common.MapIcons.Length ? "icon_" + Common.MapIcons[wIcon] + "|" : Convert.ToString(wIcon) + "|"); ;
+            if (wIcon != 0) sbFlag.Append(wIcon < Common.MapIcons.Length ? "icon_" + Common.MapIcons[wIcon] + "|" : Convert.ToString(wIcon) + "|"); 
             if (wCarriesGoods != 0) sbFlag.Append("carries_goods(" + wCarriesGoods + ")|");
             if (wCarriesGold != 0) sbFlag.Append("carries_gold(" + wCarriesGold + ")|");
 
@@ -43,11 +46,9 @@ namespace Decomp.Core
 			0x00020000, 0x00040000, 0x00080000, 0x00100000, 0x00200000, 0x00400000, 0x02000000, 0x04000000 };
             for (int i = 0; i < dwFlags.Length; i++)
             {
-                if (((DWORD)dwFlag & dwFlags[i]) != 0)
-                {
-                    sbFlag.Append(strFlags[i]);
-                    sbFlag.Append('|');
-                }
+                if (((DWORD) dwFlag & dwFlags[i]) == 0) continue;
+                sbFlag.Append(strFlags[i]);
+                sbFlag.Append('|');
             }
 
             if (sbFlag.Length == 0)
@@ -71,24 +72,27 @@ namespace Decomp.Core
                 case 0x138:
                     return "bandit_personality";
                 default:
-                    var strPersonality = (dwPersonality & 0x100) != 0 ? "banditness|" : "";
+                    var sbPersonality = new StringBuilder((dwPersonality & 0x100) != 0 ? "banditness|" : "", 64);
                     
                     var wCourage = (WORD)(dwPersonality & 0xF);
                     var wAggressiveness = (WORD)((dwPersonality & 0xF0) >> 4);
 
-                    if (wCourage >= 4 && wCourage <= 15) strPersonality += "courage_" + wCourage + "|"; 
-                    if (wAggressiveness > 0 && wAggressiveness <= 15) strPersonality += "aggressiveness_" + wAggressiveness + "|"; 
+                    if (wCourage >= 4 && wCourage <= 15) sbPersonality.Append($"courage_{wCourage}|"); 
+                    if (wAggressiveness > 0 && wAggressiveness <= 15) sbPersonality.Append($"aggressiveness_{wAggressiveness}|");
 
-                    strPersonality = strPersonality == "" ? "0" : strPersonality.Remove(strPersonality.Length - 1, 1);
-
-                    return strPersonality;
+                    if (sbPersonality.Length == 0)
+                        sbPersonality.Append('0');
+                    else
+                        sbPersonality.Length--;
+                    
+                    return sbPersonality.ToString();
             }
         }
 
         public static void Decompile()
         {
-            var fTemplates = new Text(Common.InputPath + @"\party_templates.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_party_templates.py");
+            var fTemplates = new Text(Path.Combine(Common.InputPath, "party_templates.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, @"module_party_templates.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.PartyTemplates);
             fTemplates.GetString();

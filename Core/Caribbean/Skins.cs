@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.IO;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core.Caribbean
@@ -7,8 +8,8 @@ namespace Decomp.Core.Caribbean
     {
         public static void Decompile()
         {
-            var fSkins = new Text(Common.InputPath + @"\skins.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_skins.py");
+            var fSkins = new Text(Path.Combine(Common.InputPath, "skins.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_skins.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Skins);
             fSkins.GetString();
@@ -34,17 +35,13 @@ namespace Decomp.Core.Caribbean
                 int iMeshesHair = fSkins.GetInt();
                 fSource.Write("    [");
                 for (int i = 0; i < iMeshesHair; i++)
-                {
                     fSource.Write("\"{0}\"{1}", fSkins.GetWord(), i != iMeshesHair - 1 ? ", " : "");
-                }
                 fSource.WriteLine("],");
 
                 int iMeshesBeard = fSkins.GetInt();
                 fSource.Write("    [");
                 for (int i = 0; i < iMeshesBeard; i++)
-                {
                     fSource.Write("\"{0}\"{1}", fSkins.GetWord(), i != iMeshesBeard - 1 ? ", " : "");
-                }
                 fSource.WriteLine("],");
 
                 for (int i = 0; i < 2; i++)
@@ -52,9 +49,7 @@ namespace Decomp.Core.Caribbean
                     int iTextures = fSkins.GetInt();
                     fSource.Write("    [");
                     for (int t = 0; t < iTextures; t++)
-                    {
                         fSource.Write("\"{0}\"{1}", fSkins.GetWord(), t != iTextures - 1 ? ", " : "");
-                    }
                     fSource.WriteLine("],");
                 }
 
@@ -62,8 +57,6 @@ namespace Decomp.Core.Caribbean
                 fSource.WriteLine("    [");
                 for (int i = 0; i < iTexturesFace; i++)
                 {
-                    //("manface_young_2", 0xFFCBE0E0, ["hair_blonde"], [0xffffffff, 0xffb04717, 0xff502a19]),
-
                     fSource.Write("      (\"{0}\", 0x{1:X}, ", fSkins.GetWord(), fSkins.GetDWord());
                     fSkins.GetWord();
                     int iHairColors = fSkins.GetInt();
@@ -72,10 +65,7 @@ namespace Decomp.Core.Caribbean
                     for (int m = 0; m < iHairColors; m++)
                     {
                         fSource.Write("{0:x8}", fSkins.GetInt64());
-                        if (m != iHairColors - 1)
-                        {
-                            fSource.Write(", ");
-                        }
+                        if (m != iHairColors - 1) fSource.Write(", ");
                     }
                     fSource.WriteLine("),");
                 }

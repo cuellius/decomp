@@ -157,8 +157,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			for (var i = 0; i < values.Length; i++)
 			{
-				double value;
-				if (double.TryParse(values[i], out value))
+			    if (double.TryParse(values[i], out var value))
 					values[i] = Math.Ceiling(value).ToString(CultureInfo.GetCultureInfo("en-US"));
 				else
 					values[i] = "1";

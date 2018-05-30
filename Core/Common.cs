@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using Decomp.Core.Operators;
 
 namespace Decomp.Core
@@ -9,7 +10,7 @@ namespace Decomp.Core
     public enum Mode
     {
         Caribbean = 3, //Caribbean
-        WarbandScriptEnhancer450 = 2, //Warband v1.171 + WSE
+        WarbandScriptEnhancer450 = 2, //Warband v1.173 + WSE
         WarbandScriptEnhancer320 = 1, //Warband v1.153 + WSE
         Vanilla = 0 //M&B v1.011/1.010
     }
@@ -110,12 +111,7 @@ from ID_troops import *";
 
         public static Dictionary<int, Operator> Operators;
 
-        public static Operator FindOperator(int operatorCode)
-        {
-            return Operators.ContainsKey(operatorCode) ? 
-                Operators[operatorCode] : 
-                new Operator(operatorCode.ToString(CultureInfo.GetCultureInfo("en-US")), operatorCode);
-        }
+        public static Operator FindOperator(int operatorCode) => Operators.ContainsKey(operatorCode) ?  Operators[operatorCode] : new Operator(operatorCode.ToString(CultureInfo.GetCultureInfo("en-US")), operatorCode);
 
         public static string InputPath;
         public static string OutputPath;
@@ -268,10 +264,7 @@ from ID_troops import *";
             }
         }
 
-        public static string GetIndentations(int indentation)
-        {
-            return new String(' ', Math.Max(indentation, 0) << 1);
-        }
+        public static string GetIndentations(int indentation) => new String(' ', Math.Max(indentation, 0) << 1);
         
         public static void PrintStatement(ref Text fInput, ref Win32FileWriter fOutput, int iRecords, string strDefaultIndentation)
         {
@@ -323,17 +316,6 @@ from ID_troops import *";
                 }
                 else
                 {
-                    /*try
-                    {
-                        strOpCode = Operations[iOpCode];
-                    }
-                    catch (Exception)
-                    {
-                        strOpCode = Convert.ToString(iOpCode);
-                    }*/
-
-                    //strOpCode = Operations.ContainsKey(iOpCode) ? Operations[iOpCode] :
-                    //    CustomOperations.HaveCommand((int)(iOpCode & 0x1FFF)) ? CustomOperations.GetCommandName((int)(iOpCode & 0x1FFF)) : Convert.ToString(iOpCode);
                     strOpCode = op.Value;
                     fOutput.Write("{0}{1}({2}{3}{4}", strIdentations, strDefaultIndentation, strPrefixNeg, strPrefixThisOrNext, strOpCode);
                 }
@@ -583,30 +565,29 @@ from ID_troops import *";
             return lTag == 0;
         }
 
-        public static string GetFaceKey(ulong lFaceKeyCode)
-        {
-            return Convert.ToString(lFaceKeyCode);
-        }
+        public static string GetFaceKey(ulong lFaceKeyCode) => Convert.ToString(lFaceKeyCode);
 
         public static string DecompileTextFlags(uint dwFlag)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(32);
 
             string[] strFlags = { "tf_left_align", "tf_right_align", "tf_center_justify", "tf_double_space", "tf_vertical_align_center", "tf_scrollable",
             "tf_single_line", "tf_with_outline", "tf_scrollable_style_2" };
             uint[] dwFlags = { 0x00000004, 0x00000008, 0x00000010, 0x00000800, 0x00001000, 0x00002000, 0x00008000, 0x00010000, 0x00020000 };
-            for (int i = 0; i < (dwFlags.Length); i++)
+            for (int i = 0; i < dwFlags.Length; i++)
             {
-                if ((dwFlag & dwFlags[i]) != 0)
-                {
-                    strFlag += strFlags[i] + "|";
-                    dwFlag ^= dwFlags[i];
-                }
+                if ((dwFlag & dwFlags[i]) == 0) continue;
+                sbFlag.Append(strFlags[i]);
+                sbFlag.Append('|');
+                dwFlag ^= dwFlags[i];
             }
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static string GetAgentClass(ulong lClass)
@@ -745,10 +726,7 @@ from ID_troops import *";
             return "0x" + color.ToString("X");
         }
 
-        public static string GetAlpha(ulong alpha)
-        {
-            return String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2") : alpha.ToString("X"));
-        }
+        public static string GetAlpha(ulong alpha) => String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2") : alpha.ToString("X"));
 
         public static bool NeedId = true;
         public static void GenerateId(string fileOut, string[] content, string prefix = "")

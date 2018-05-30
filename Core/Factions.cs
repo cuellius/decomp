@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -8,63 +10,57 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\factions.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            if (!File.Exists(Path.Combine(Common.InputPath, "factions.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "factions.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aFactions = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strFacID = fID.GetWord();
-                if (strFacID == "0")
-                    strFacID = fID.GetWord();
-                aFactions[i] = strFacID.Remove(0, 4);
+                string strFacId = fId.GetWord();
+                if (strFacId == "0") strFacId = fId.GetWord();
+                aFactions[i] = strFacId.Remove(0, 4);
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                for (int r = 0; r < n; r++)
-                {
-                    fID.GetDouble();
-                }
+                for (int r = 0; r < n; r++) fId.GetDouble();
             }
-            fID.Close();
+            fId.Close();
 
             return aFactions;
         }
 
         public static void Decompile()
         {
-            var fFactions = new Text(Common.InputPath + @"\factions.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_factions.py");
+            var fFactions = new Text(Path.Combine(Common.InputPath, "factions.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_factions.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Factions);
             fFactions.GetString();
             int iFactions = fFactions.GetInt();
             for (int f = 0; f < iFactions; f++)
             {
-                string strFacID = fFactions.GetWord();
-                if (strFacID == "0")
-                    strFacID = fFactions.GetWord();
+                string strFacId = fFactions.GetWord();
+                if (strFacId == "0") strFacId = fFactions.GetWord();
                 string strFacName = fFactions.GetWord();
-                fSource.Write("  (\"{0}\", \"{1}\",", strFacID.Remove(0, 4), strFacName);
+                fSource.Write("  (\"{0}\", \"{1}\",", strFacId.Remove(0, 4), strFacName);
 
-                string strFlags = "";
+                var sbFlags = new StringBuilder(64);
                 DWORD dwFlags = fFactions.GetUInt();
-                int iRating = ((int)(dwFlags & 0xFF00)) >> 8;
-                if (iRating != 0)
-                    strFlags = $"max_player_rating({100 - iRating})";
+                int iRating = (int)(dwFlags & 0xFF00) >> 8;
+                if (iRating != 0) sbFlags.Append($"max_player_rating({100 - iRating})");
 
                 if ((dwFlags & 1) != 0)
                 {
-                    if (strFlags != "")
-                        strFlags = strFlags + "|";
-                    strFlags += "ff_always_hide_label";
+                    if (sbFlags.Length > 0) sbFlags.Append('|');
+                    sbFlags.Append("ff_always_hide_label");
                 }
-                if (strFlags == "")
-                    strFlags = "0";
+                if (sbFlags.Length == 0) sbFlags.Append('0');
 
-                fSource.Write(" {0}, 0.0, [", strFlags);
+                fSource.Write(" {0}, 0.0, [", sbFlags);
 
                 DWORD dwColor = fFactions.GetUInt();
 

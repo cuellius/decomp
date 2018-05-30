@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
 namespace Decomp.Core.Vanilla
 {
@@ -6,8 +7,8 @@ namespace Decomp.Core.Vanilla
     {
         public static void Decompile()
         {
-            var fSounds = new Text(Common.InputPath + @"\sounds.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_sounds.py");
+            var fSounds = new Text(Path.Combine(Common.InputPath, "sounds.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_sounds.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Sounds);
             fSounds.GetString();

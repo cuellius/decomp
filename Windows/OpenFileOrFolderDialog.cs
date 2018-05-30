@@ -228,11 +228,8 @@ namespace Decomp.Windows
             GWL_ID = -12
         }
 
-        public static IntPtr SetClassLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
-        {
-            return IntPtr.Size > 4 ? SetClassLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetClassLongPtr32(hWnd, nIndex, unchecked((uint)dwNewLong.ToInt32())));
-        }
-
+        public static IntPtr SetClassLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong) => IntPtr.Size > 4 ? SetClassLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetClassLongPtr32(hWnd, nIndex, unchecked((uint)dwNewLong.ToInt32())));
+        
         [DllImport("User32.dll", EntryPoint = "SetClassLong")]
         public static extern uint SetClassLongPtr32(IntPtr hWnd, int nIndex, uint dwNewLong);
 
@@ -494,8 +491,7 @@ namespace Decomp.Windows
             }
             finally
             {
-                IMalloc malloc;
-                SHGetMalloc(out malloc);
+                SHGetMalloc(out var malloc);
                 if (pidlRoot != IntPtr.Zero) malloc.Free(pidlRoot);
                 if (pidlList != IntPtr.Zero) malloc.Free(pidlList);
             }

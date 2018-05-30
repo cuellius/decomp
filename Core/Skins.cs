@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.IO;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,104 +8,91 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\skins.txt");
-            fID.GetString();
-            int n = fID.GetInt();
+            if (!File.Exists(Path.Combine(Common.InputPath, "skins.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "skins.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
             var aSkins = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aSkins[i] = fID.GetWord();
+                aSkins[i] = fId.GetWord();
 
-                fID.GetInt();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetInt();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                int iFaceKeys = fID.GetInt();
+                int iFaceKeys = fId.GetInt();
                 for (int j = 0; j < iFaceKeys; j++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
                 }
 
-                int iMeshesHair = fID.GetInt();
-                for (int j = 0; j < iMeshesHair; j++)
-                {
-                    fID.GetWord();
-                }
+                int iMeshesHair = fId.GetInt();
+                for (int j = 0; j < iMeshesHair; j++) fId.GetWord();
 
-                int iMeshesBeard = fID.GetInt();
-                for (int j = 0; j < iMeshesBeard; j++)
-                {
-                    fID.GetWord();
-                }
+                int iMeshesBeard = fId.GetInt();
+                for (int j = 0; j < iMeshesBeard; j++) fId.GetWord();
 
                 for (int j = 0; j < 2; j++)
                 {
-                    int iTextures = fID.GetInt();
-                    for (int t = 0; t < iTextures; t++)
-                    {
-                        fID.GetWord();
-                    }
+                    int iTextures = fId.GetInt();
+                    for (int t = 0; t < iTextures; t++) fId.GetWord();
                 }
 
-                int iTexturesFace = fID.GetInt();
+                int iTexturesFace = fId.GetInt();
                 for (int j = 0; j < iTexturesFace; j++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
-                    int iHairMats = fID.GetInt();
-                    int iHairColors = fID.GetInt();
-                    for (int m = 0; m < iHairMats; m++)
-                    {
-                        fID.GetWord();
-                    }
-                    for (int c = 0; c < iHairColors; c++)
-                    {
-                        fID.GetWord();
-                    }
+                    fId.GetWord();
+                    fId.GetWord();
+                    int iHairMats = fId.GetInt();
+                    int iHairColors = fId.GetInt();
+                    for (int m = 0; m < iHairMats; m++) fId.GetWord();
+                    for (int c = 0; c < iHairColors; c++) fId.GetWord();
                 }
 
-                int iVoices = fID.GetInt();
+                int iVoices = fId.GetInt();
                 for (int v = 0; v < iVoices; v++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
                 }
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                int iConstraints = fID.GetInt();
+                int iConstraints = fId.GetInt();
                 for (int j = 0; j < iConstraints; j++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
 
-                    int count = fID.GetInt();
+                    int count = fId.GetInt();
                     for (int c = 0; c < count; c++)
                     {
-                        fID.GetWord();
-                        fID.GetWord();
+                        fId.GetWord();
+                        fId.GetWord();
                     }
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aSkins;
         }
 
         public static void Decompile()
         {
-            var fSkins = new Text(Common.InputPath + @"\skins.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_skins.py");
+            var fSkins = new Text(Path.Combine(Common.InputPath, "skins.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_skins.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Skins);
             fSkins.GetString();
@@ -130,17 +118,13 @@ namespace Decomp.Core
                 int iMeshesHair = fSkins.GetInt();
                 fSource.Write("    [");
                 for (int i = 0; i < iMeshesHair; i++)
-                {
                     fSource.Write("\"{0}\"{1}", fSkins.GetWord(), i != iMeshesHair - 1 ? ", " : "");
-                }
                 fSource.WriteLine("],");
 
                 int iMeshesBeard = fSkins.GetInt();
                 fSource.Write("    [");
                 for (int i = 0; i < iMeshesBeard; i++)
-                {
                     fSource.Write("\"{0}\"{1}", fSkins.GetWord(), i != iMeshesBeard - 1 ? ", " : "");
-                }
                 fSource.WriteLine("],");
 
                 for (int i = 0; i < 2; i++)
@@ -148,9 +132,7 @@ namespace Decomp.Core
                     int iTextures = fSkins.GetInt();
                     fSource.Write("    [");
                     for (int t = 0; t < iTextures; t++)
-                    {
                         fSource.Write("\"{0}\"{1}", fSkins.GetWord(), t != iTextures - 1 ? ", " : "");
-                    }
                     fSource.WriteLine("],");
                 }
 
@@ -161,16 +143,9 @@ namespace Decomp.Core
                     fSource.Write("      (\"{0}\", 0x{1:X}, ", fSkins.GetWord(), fSkins.GetDWord());
                     int iHairMats = fSkins.GetInt();
                     int iHairColors = fSkins.GetInt();
-                    for (int m = 0; m < iHairMats; m++)
-                    {
-                        fSource.Write("[\"{0}\"], ", fSkins.GetWord());
-                    }
+                    for (int m = 0; m < iHairMats; m++) fSource.Write("[\"{0}\"], ", fSkins.GetWord());
                     fSource.Write("[");
-                    for (int c = 0; c < iHairColors; c++)
-                    {
-                        //fprintf( g_fOutput, " 0x%X,", GetDWord() );
-                        fSource.Write("0x{0:x}{1}", fSkins.GetUInt64(), c != iHairColors - 1 ? ", " : "");
-                    }
+                    for (int c = 0; c < iHairColors; c++) fSource.Write("0x{0:x}{1}", fSkins.GetUInt64(), c != iHairColors - 1 ? ", " : "");
                     fSource.WriteLine("]),");
                 }
                 fSource.WriteLine("    ],");

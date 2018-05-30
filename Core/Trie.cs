@@ -110,8 +110,8 @@ namespace Decomp.Core
 
         public T this[string key]
         {
-            set { Add(new KeyValuePair<string, T>(key, value)); }
-            get { return GetValue(key); }
+            set => Add(new KeyValuePair<string, T>(key, value));
+            get => GetValue(key);
         }
 
         public void Clear()

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace Decomp.Core.Operators
 {
@@ -65,14 +67,12 @@ namespace Decomp.Core.Operators
         public Operator(string value, int code, params Parameter[] @params)
         {
             Initialize(value, code);
-            for (int i = 0; i < @params.Length; i++) 
-                Parameters[i] = @params[i]; 
+            for (int i = 0; i < @params.Length; i++) Parameters[i] = @params[i]; 
         }
 
         public string GetParameter(int index, string s)
         {
-            ulong t;
-            var b = ulong.TryParse(s, out t);
+            var b = ulong.TryParse(s, out var t);
             if (!b) return s;
 
             //maybe t is common param?
@@ -157,10 +157,7 @@ namespace Decomp.Core.Operators
             }
         }
 
-        public static IEnumerable<Operator> GetCollection(IEnumerable<IGameVersion> versions)
-        {
-            return versions.SelectMany(x => x.GetOperators());
-        }
+        public static IEnumerable<Operator> GetCollection(IEnumerable<IGameVersion> versions) => versions.SelectMany(x => x.GetOperators());
 
         public static IEnumerable<Operator> GetCollection(Mode m)
         {
@@ -176,6 +173,61 @@ namespace Decomp.Core.Operators
                     return GetCollection(new List<IGameVersion> { new Warband1153Version() });
                 default:
                     throw new ArgumentOutOfRangeException(nameof(m), m, null);
+            }
+        }
+    }
+
+    [Serializable]
+    public class ParameterWithIndex
+    {
+        public int Index;
+        public Parameter Parameter;
+
+        public ParameterWithIndex()
+        {
+        }
+
+        public ParameterWithIndex(int index, Parameter parameter)
+        {
+            Index = index;
+            Parameter = parameter;
+        }
+    }
+
+    [Serializable]
+    public class CustomOperator
+    {
+        public string Value;
+        public int Code;
+        public Mode TargetMode;
+        public List<ParameterWithIndex> Parameters;
+
+        public CustomOperator()
+        {
+            Parameters = new List<ParameterWithIndex>();
+        }
+
+        public Operator ToOperator()
+        {
+            var oper = new Operator(Value, Code);
+            foreach (var pair in Parameters) oper.Parameters[pair.Index] = pair.Parameter;
+            return oper;
+        }
+
+        public static IEnumerable<Operator> GetOperators(string fileName, Mode targetMode)
+        {
+            if (!File.Exists(fileName)) return new List<Operator>();
+            try
+            {
+                var serializer = new XmlSerializer(typeof(List<CustomOperator>));
+                var reader = new StreamReader(fileName);
+                var customOperations = (List<CustomOperator>)serializer.Deserialize(reader);
+                reader.Close();
+                return customOperations.Where(x => x.TargetMode == targetMode).Select(x => x.ToOperator());
+            }
+            catch
+            {
+                return new List<Operator>();
             }
         }
     }

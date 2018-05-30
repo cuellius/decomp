@@ -42,8 +42,7 @@ namespace Decomp.Windows
             var w = _dictionary[hwnd];
             if (iMsg == WM_SYSCOMMAND && wParam == (IntPtr)SC_KEYMENU)
             {
-                var menu = System.Windows.Application.Current.Resources["SystemMenu"] as ContextMenu;
-                if (menu == null) return IntPtr.Zero;
+                if (!(System.Windows.Application.Current.Resources["SystemMenu"] is ContextMenu menu)) return IntPtr.Zero;
                 ((MenuItem)menu.Items[0]).Click += (s, e) => w.WindowState = WindowState.Normal;
                 ((MenuItem)menu.Items[0]).IsEnabled = w.WindowState != WindowState.Normal;
                 ((Path)((Canvas)((MenuItem)menu.Items[0]).Icon).Children[0]).Stroke = ((MenuItem)menu.Items[0]).IsEnabled ? Brushes.Black : Brushes.Gray;

@@ -1,47 +1,45 @@
-﻿namespace Decomp.Core
+﻿using System.IO;
+
+namespace Decomp.Core
 {
     public static class Scripts
     {
-        public static string[] InitializeVariables()
-        {
-            return Win32FileReader.ReadAllLines(Common.InputPath + @"\variables.txt");
-        }
+        public static string[] InitializeVariables() => Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "variables.txt"));
 
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\scripts.txt");
-            fID.GetString();
-            int n = fID.GetInt();
+            if (!File.Exists(Path.Combine(Common.InputPath, "scripts.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "scripts.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
             var aScripts = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aScripts[i] = fID.GetWord();
+                aScripts[i] = fId.GetWord();
 
-                fID.GetWord();
+                fId.GetWord();
 
-                int iRecords = fID.GetInt();
+                int iRecords = fId.GetInt();
                 if (iRecords != 0)
                 {
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aScripts;
         }
 
         public static void Decompile()
         {
-            var fScripts = new Text(Common.InputPath + @"\scripts.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_scripts.py");
+            var fScripts = new Text(Path.Combine(Common.InputPath, "scripts.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_scripts.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Scripts);
             fScripts.GetString();
@@ -58,6 +56,8 @@
             fSource.Write("]");
             fSource.Close();
             fScripts.Close();
+
+            Common.GenerateId("ID_scripts.py", Common.Procedures, "script");
         }
     }
 }

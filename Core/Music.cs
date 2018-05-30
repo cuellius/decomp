@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -8,20 +9,20 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\music.txt");
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "music.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "music.txt"));
+            int n = Convert.ToInt32(fId.ReadLine());
             var aMusic = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
-                if (str == null)
-                    continue;
+                var str = fId.ReadLine();
+                if (str == null) continue;
 
                 aMusic[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
-                if (aMusic[i].Length >= 4)
-                    aMusic[i] = aMusic[i].Remove(aMusic[i].Length - 4, 4);
+                if (aMusic[i].Length >= 4) aMusic[i] = aMusic[i].Remove(aMusic[i].Length - 4, 4);
             }
-            fID.Close();
+            fId.Close();
 
             return aMusic;
         }
@@ -43,25 +44,20 @@ namespace Decomp.Core
             }
             else if (dwCulture != 0)
             {
-                for (uint t = 1, i = 1; t <= 0x20; t *= 2, i++)
+                for (uint t = 1, i = 1; t <= 0x20; t <<= 1, i++)
                 {
-                    if ((dwCulture & t) != 0)
-                    {
-                        sbFlag.Append($"{(sbFlag.Length != 0 ? "|" : "")}mtf_culture_{i}");
-                        dwFlag ^= t;
-                    }
+                    if ((dwCulture & t) == 0) continue;
+                    sbFlag.Append($"{(sbFlag.Length != 0 ? "|" : "")}mtf_culture_{i}");
+                    dwFlag ^= t;
                 }
             }
 
             for (int i = 0; i < dwMusicFlags.Length; i++)
             {
-                if ((dwFlag & dwMusicFlags[i]) != 0)
-                {
-                    if (sbFlag.Length != 0)
-                        sbFlag.Append('|');
-                    sbFlag.Append(strMusicFlags[i]);
-                    dwFlag ^= dwMusicFlags[i];
-                }
+                if ((dwFlag & dwMusicFlags[i]) == 0) continue;
+                if (sbFlag.Length != 0) sbFlag.Append('|');
+                sbFlag.Append(strMusicFlags[i]);
+                dwFlag ^= dwMusicFlags[i];
             }
 
             if (sbFlag.Length == 0) sbFlag.Append('0');
@@ -71,8 +67,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fMusic = new Text(Common.InputPath + @"\music.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_music.py");
+            var fMusic = new Text(Path.Combine(Common.InputPath, "music.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_music.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Music);
             int iTracks = fMusic.GetInt();
@@ -81,8 +77,8 @@ namespace Decomp.Core
                 string strTrack = fMusic.GetWord();
                 DWORD dwTrackFlags = fMusic.GetUInt();
                 DWORD dwContinueFlags = fMusic.GetUInt();
-                string strTrackID = strTrack.Length >= 4 ? strTrack.Remove(strTrack.Length - 4, 4) : strTrack;
-                fSource.WriteLine("  (\"{0}\", \"{1}\", {2}, {3}),", strTrackID, strTrack, DecompileFlags(dwTrackFlags), DecompileFlags(dwContinueFlags ^ dwTrackFlags));
+                string strTrackId = strTrack.Length >= 4 ? strTrack.Remove(strTrack.Length - 4, 4) : strTrack;
+                fSource.WriteLine("  (\"{0}\", \"{1}\", {2}, {3}),", strTrackId, strTrack, DecompileFlags(dwTrackFlags), DecompileFlags(dwContinueFlags ^ dwTrackFlags));
             }
             fSource.Write("]");
             fSource.Close();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Decomp.Core
 {
@@ -6,25 +7,27 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\strings.txt");
-            fID.ReadLine();
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "strings.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "strings.txt"));
+            fId.ReadLine();
+            int n = Convert.ToInt32(fId.ReadLine());
             var aStrings = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
+                var str = fId.ReadLine();
                 if (str != null)
                     aStrings[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 4);
             }
-            fID.Close();
+            fId.Close();
 
             return aStrings;
         }
         
         public static void Decompile()
         {
-            var fStrings = new Text(Common.InputPath + @"\strings.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_strings.py");
+            var fStrings = new Text(Path.Combine(Common.InputPath, "strings.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_strings.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Strings);
             fStrings.GetString();
@@ -34,13 +37,13 @@ namespace Decomp.Core
             {
                 var str = fStrings.GetString();
                 if(str == null) continue;
-                string[] strDataArray = str.Split(new []{ ' ' }, StringSplitOptions.RemoveEmptyEntries); //.st
+                var strDataArray = str.Split(new []{ ' ' }, StringSplitOptions.RemoveEmptyEntries); //.st
                 //string strID = fStrings.GetWord();
                 //string strText = fStrings.GetWord();
-                string strID = strDataArray[0];
-                string strText = strDataArray[1];
+                var strId = strDataArray[0];
+                var strText = strDataArray[1];
                 //Console.WriteLine($@"process {s} = ""{strID}""");
-                fSource.WriteLine("  (\"{0}\", \"{1}\"),", strID.Remove(0, 4), strText.Replace('_', ' '));
+                fSource.WriteLine("  (\"{0}\", \"{1}\"),", strId.Remove(0, 4), strText.Replace('_', ' '));
                 //fSource.Close();
             }
 

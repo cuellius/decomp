@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,41 +9,35 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\sounds.txt");
-            fID.GetString();
-            int n = fID.GetInt();
+            var fId = new Text(Path.Combine(Common.InputPath, "sounds.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
             var aSounds = new string[n];
 
             for (int i = 0; i < n; i++)
             {
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
             }
 
-            n = fID.GetInt();
+            n = fId.GetInt();
             for (int i = 0; i < n; i++)
             {
-                string strID = fID.GetWord();
-                aSounds[i] = strID.Remove(0, 4);
-                fID.GetString();
-                //int iListCount = fID.GetInt();
-                //for (int l = 0; l < iListCount; l++)
-                //{
-                //    fID.GetWord();
-                //    fID.GetWord();
-                //}
+                string strId = fId.GetWord();
+                aSounds[i] = strId.Remove(0, 4);
+                fId.GetString();
             }
-            fID.Close();
+            fId.Close();
 
             return aSounds;
         }
 
         public static string DecompileFlags(DWORD dwFlag)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(128);
             if ((dwFlag & 0x00100000) != 0)
             {
-                strFlag = "sf_always_send_via_network|";
+                sbFlag.Append("sf_always_send_via_network|");
                 dwFlag ^= 0x00100000;
             }
 
@@ -52,25 +48,27 @@ namespace Decomp.Core
 		    DWORD[] dwFlags = { 1, 2, 4, 8 };
 		    for (int i = 0; i < dwFlags.Length; i++)
 		    {
-			    if((dwFlag & dwFlags[i]) != 0)
-			    {
-                    strFlag += strFlags[i] + "|";
-			    }
+		        if ((dwFlag & dwFlags[i]) == 0) continue;
+		        sbFlag.Append(strFlags[i]);
+		        sbFlag.Append('|');
 		    }
 
             //priority:
-            if (dwPriority != 0) strFlag = strFlag + "sf_priority_" + dwPriority + "|";
-            if (dwVol != 0) strFlag = strFlag + "sf_vol_" + dwVol + "|";
+            if (dwPriority != 0) sbFlag.Append("sf_priority_" + dwPriority + "|");
+            if (dwVol != 0) sbFlag.Append("sf_vol_" + dwVol + "|");
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static void Decompile()
         {
-            var fSounds = new Text(Common.InputPath + @"\sounds.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_sounds.py");
+            var fSounds = new Text(Path.Combine(Common.InputPath, "sounds.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_sounds.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Sounds);
             fSounds.GetString();

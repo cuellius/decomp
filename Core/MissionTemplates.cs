@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -8,67 +10,57 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\mission_templates.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            var fId = new Text(Path.Combine(Common.InputPath, "mission_templates.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aMissionTemplates = new string[n];
             for (int i = 0; i < n; i++)
             {
-                fID.GetWord();
-                aMissionTemplates[i] = fID.GetWord();
+                fId.GetWord();
+                aMissionTemplates[i] = fId.GetWord();
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                int iSpawnRecords = fID.GetInt();
+                int iSpawnRecords = fId.GetInt();
                 for (int j = 0; j < iSpawnRecords; j++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
 
-                    int iItems = fID.GetInt();
+                    int iItems = fId.GetInt();
 
-                    for (int k = 0; k < iItems; k++)
-                    {
-                        //source.Write("{0},", Common.Items[mt.GetInt()]);
-                        fID.GetWord();
-                    }
+                    for (int k = 0; k < iItems; k++) fId.GetWord();
                 }
-                int iTriggers = fID.GetInt();
+                int iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
 
-                    int iRecords = fID.GetInt();
+                    int iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
 
-                    iRecords = fID.GetInt();
+                    iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aMissionTemplates;
         }
@@ -90,15 +82,11 @@ namespace Decomp.Core
 
             for (int i = 0; i < dwSpawnFlags.Length; i++)
             {
-                if ((dwSpawnFlag & dwSpawnFlags[i]) != 0)
-                {
-                    //strSpawnFlag = strSpawnFlag + strSpawnFlags[i] + "|";
-                    sbSpawnFlag.Append(strSpawnFlags[i]);
-                    sbSpawnFlag.Append('|');
-                }
+                if ((dwSpawnFlag & dwSpawnFlags[i]) == 0) continue;
+                sbSpawnFlag.Append(strSpawnFlags[i]);
+                sbSpawnFlag.Append('|');
             }
-
-            //strSpawnFlag = strSpawnFlag == "" ? "0" : strSpawnFlag.Remove(strSpawnFlag.Length - 1, 1);
+            
             if (sbSpawnFlag.Length == 0)
                 sbSpawnFlag.Append('0');
             else
@@ -115,13 +103,11 @@ namespace Decomp.Core
 			for (int i = 0; i < 4; i++ )
 			{
 				DWORD temp = dwAlterFlag & dwAlterFlagsConst[i];
-				if(temp - dwAlterFlagsConst[i] == 0)
-                {
-                    sbAlterFlag.Append(strAlterFlagsConst[i]);
-                    sbAlterFlag.Append('|');
-					dwAlterFlag ^= dwAlterFlagsConst[i];
-                    break;
-				}
+			    if (temp - dwAlterFlagsConst[i] != 0) continue;
+			    sbAlterFlag.Append(strAlterFlagsConst[i]);
+			    sbAlterFlag.Append('|');
+			    dwAlterFlag ^= dwAlterFlagsConst[i];
+			    break;
 			}
 
             string[] strAlterFlags = { "af_require_civilian", "af_override_fullhelm", "af_override_horse", "af_override_gloves", "af_override_foot", "af_override_body",
@@ -131,24 +117,12 @@ namespace Decomp.Core
 			for (int i = 0; i < dwAlterFlags.Length; i++ )
 			{
 				DWORD temp  = dwAlterFlag & dwAlterFlags[i];
-				if(temp - dwAlterFlags[i] == 0)
-                {
-                    sbAlterFlag.Append(strAlterFlags[i]);
-                    sbAlterFlag.Append('|');
-					dwAlterFlag ^= dwAlterFlags[i];
-				}
-            }
-
-            //for (int i = 0; i < dwAlterFlags.Length; i++)
-            //{
-            //    if (dwAlterFlag >= dwAlterFlags[i])
-            //    {
-            //        strAlterFlag = strAlterFlag + strAlterFlags[i] + "|";
-            //        dwAlterFlag -= dwAlterFlags[i];
-            //    }
-            //}
-
-            //strAlterFlag = strAlterFlag == "" ? "0" : strAlterFlag.Remove(strAlterFlag.Length - 1, 1);
+			    if (temp - dwAlterFlags[i] != 0) continue;
+			    sbAlterFlag.Append(strAlterFlags[i]);
+			    sbAlterFlag.Append('|');
+			    dwAlterFlag ^= dwAlterFlags[i];
+			}
+            
             if (sbAlterFlag.Length == 0)
                 sbAlterFlag.Append('0');
             else
@@ -159,8 +133,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fMissionTemplates = new Text(Common.InputPath + @"\mission_templates.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_mission_templates.py");
+            var fMissionTemplates = new Text(Path.Combine(Common.InputPath, "mission_templates.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_mission_templates.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.MissionTemplates);
             fMissionTemplates.GetString();
@@ -176,40 +150,13 @@ namespace Decomp.Core
                 DWORD[] dwFlags = { 0x00000001, 0x00000002, 0x00000010, 0x00000100, 0x00010000 };
                 for (int i = 0; i < dwFlags.Length; i++)
                 {
-                    if ((dwFlag & dwFlags[i]) != 0)
-                    {
-                        dwFlag ^= dwFlags[i];
-                        strFlag += strFlags[i] + "|";
-                    }
+                    if ((dwFlag & dwFlags[i]) == 0) continue;
+                    dwFlag ^= dwFlags[i];
+                    strFlag += strFlags[i] + "|";
                 }
-
-                /*for (int i = dwFlags.Length - 1; i >= 0; i--)
-                {
-                    if (dwFlag >= dwFlags[i])
-                    {
-                        strFlag = strFlag + strFlags[i] + "|";
-                    }
-                }*/
-
+                
                 strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
-
-                /*var sbFlag = new StringBuilder(256);
-                string[] strFlags = { "mtf_arena_fight", "mtf_battle_mode", "mtf_commit_casualties", "mtf_no_blood", "mtf_synch_inventory" };
-                DWORD[] dwFlags = { 0x00000001, 0x00000002, 0x00000010, 0x00000100, 0x00010000 };
-                for (int i = 0; i < dwFlags.Length; i++)
-                {
-                    if ((dwFlag & dwFlags[i]) != 0)
-                    {
-                        dwFlag ^= dwFlags[i];
-                        sbFlag.Append(strFlags[i]);
-                        sbFlag.Append('|');
-                    }
-                }
-                if (sbFlag.Length == 0)
-                    sbFlag.Append('0');
-                else
-                    sbFlag.Length--;*/
-
+                
                 fSource.Write(" {0},", strFlag);
 
                 int iType = fMissionTemplates.GetInt();
@@ -241,16 +188,10 @@ namespace Decomp.Core
                         fSource.Write(", {0}", dwAIFlag);
 
                     fSource.Write(", {0}, [", iTroops);
-
-                    string strItemList = "";
-                    for (int j = 0; j < iItems; j++)
-                    {
-                        //fSource.Write("{0},", Common.Items[fMissionTemplates.GetInt()]);
-                        strItemList = strItemList + $"itm_{Common.Items[fMissionTemplates.GetInt()]},";
-                    }
-                    if (strItemList.Length > 0)
-                        strItemList = strItemList.Remove(strItemList.Length - 1, 1);
-                    fSource.WriteLine("{0}]),", strItemList);
+                    
+                    var itemsList = new int[iItems];
+                    for (int j = 0; j < iItems; j++) itemsList[j] = fMissionTemplates.GetInt();
+                    fSource.WriteLine("{0}]),", String.Join(",", itemsList.Select(t => t < Common.Items.Length && t > -1 ? $"itm_{Common.Items[t]}" : t.ToString())));
                 }
                 fSource.WriteLine("  ],\r\n  [");
 

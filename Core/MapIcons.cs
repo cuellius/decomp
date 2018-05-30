@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -8,52 +9,50 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\map_icons.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            if (!File.Exists(Path.Combine(Common.InputPath, "map_icons.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "map_icons.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aMapIcons = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aMapIcons[i] = fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                aMapIcons[i] = fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                int iTriggers = fID.GetInt();
+                int iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    //idFile.GetString();
-                    fID.GetWord();
+                    fId.GetWord();
 
-                    int iRecords = fID.GetInt();
+                    int iRecords = fId.GetInt();
                     if (iRecords != 0)
                     {
                         for (int r = 0; r < iRecords; r++)
                         {
-                            fID.GetWord();
-                            int iParams = fID.GetInt();
-                            for (int p = 0; p < iParams; p++)
-                            {
-                                fID.GetWord();
-                            }
+                            fId.GetWord();
+                            int iParams = fId.GetInt();
+                            for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aMapIcons;
         }
 
         public static void Decompile()
         {
-            var fIcons = new Text(Common.InputPath + @"\map_icons.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_map_icons.py");
+            var fIcons = new Text(Path.Combine(Common.InputPath, "map_icons.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_map_icons.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Icons);
             fIcons.GetString();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -17,33 +18,35 @@ namespace Decomp.Core
 
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\parties.txt");
-            fID.GetString();
-            int n = fID.GetInt();
-            fID.GetInt();
+            if (!File.Exists(Path.Combine(Common.InputPath, "parties.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "parties.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
+            fId.GetInt();
 
             var idParties = new string[n];
             for (int i = 0; i < n; i++)
             {
-                fID.GetWord(); fID.GetWord(); fID.GetWord();
-                idParties[i] = fID.GetWord().Remove(0, 2);
+                fId.GetWord(); fId.GetWord(); fId.GetWord();
+                idParties[i] = fId.GetWord().Remove(0, 2);
 
                 for (int j = 0; j < 17; j++)
-                    fID.GetWord();
+                    fId.GetWord();
 
-                int iRecords = fID.GetInt();
+                int iRecords = fId.GetInt();
 
                 for (int j = 0; j < iRecords; j++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
                 }
 
-                fID.GetWord();
+                fId.GetWord();
             }
-            fID.Close();
+            fId.Close();
 
             return idParties;
         }
@@ -82,8 +85,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fParties = new Text(Common.InputPath + @"\parties.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_parties.py");
+            var fParties = new Text(Path.Combine(Common.InputPath, "parties.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_parties.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Parties);
             fParties.GetString();
@@ -131,7 +134,7 @@ namespace Decomp.Core
                 double dAngle = fParties.GetDouble();
                 if (Math.Abs(dAngle) > 0.0000001)
                 {
-                    fSource.Write(", {0}", (Math.Round(dAngle * (180 / Math.PI))).ToString(CultureInfo.GetCultureInfo("en-US")));
+                    fSource.Write(", {0}", Math.Round(dAngle * (180 / Math.PI)).ToString(CultureInfo.GetCultureInfo("en-US")));
                 }
 
                 fSource.WriteLine("),");

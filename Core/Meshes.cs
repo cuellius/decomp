@@ -8,24 +8,25 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\meshes.txt");
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "meshes.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "meshes.txt"));
+            int n = Convert.ToInt32(fId.ReadLine());
             var aMeshes = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
-                if (str != null)
-                    aMeshes[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 5);
+                var str = fId.ReadLine();
+                if (str != null) aMeshes[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 5);
             }
-            fID.Close();
+            fId.Close();
 
             return aMeshes;
         }
 
         public static void Decompile()
         {
-            var fMeshes = new Text(Common.InputPath + @"\meshes.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_meshes.py");
+            var fMeshes = new Text(Path.Combine(Common.InputPath, "meshes.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_meshes.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Meshes);
             int iMeshes = fMeshes.GetInt();

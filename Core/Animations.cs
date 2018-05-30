@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -9,25 +11,26 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\actions.txt");
-            var n = Convert.ToInt32(fID.ReadLine());
+            if(!File.Exists(Path.Combine(Common.InputPath, "actions.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "actions.txt"));
+            var n = Convert.ToInt32(fId.ReadLine());
             var aAnimations = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var animation = fID.ReadLine();
-                if (animation == null)
-                    continue;
+                var animation = fId.ReadLine();
+                if (animation == null) continue;
 
                 aAnimations[i] = animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
                 int j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[3]);
                 while (j != 0)
                 {
-                    fID.ReadLine();
+                    fId.ReadLine();
                     j--;
                 }
             }
-            fID.Close();
+            fId.Close();
 
             return aAnimations;
         }
@@ -50,13 +53,10 @@ namespace Decomp.Core
 
             for (int f = 0; f < dwAnimFlags.Length; f++)
 		    {
-                if ((dwFlag & dwAnimFlags[f]) != 0)
-			    {
-                    if (sbFlag.Length != 0)
-                        sbFlag.Append("|");
-                    sbFlag.Append(strAnimFlags[f]);
-			    }
-            }
+		        if ((dwFlag & dwAnimFlags[f]) == 0) continue;
+		        if (sbFlag.Length != 0) sbFlag.Append('|');
+		        sbFlag.Append(strAnimFlags[f]);
+		    }
 
             if (sbFlag.Length == 0) sbFlag.Append("0");
 
@@ -75,12 +75,10 @@ namespace Decomp.Core
 
             for(int p = 0; p < dwPriorityMasterFlags.Length; p++)
 		    {
-                if (dwPriority == dwPriorityMasterFlags[p])
-			    {
-                    sbMasterAnimFlags.Append(strPriorityMasterFlags[p]);
-                    dwMasterAnimFlags ^= dwPriorityMasterFlags[p];
-				    break;
-			    }
+		        if (dwPriority != dwPriorityMasterFlags[p]) continue;
+		        sbMasterAnimFlags.Append(strPriorityMasterFlags[p]);
+		        dwMasterAnimFlags ^= dwPriorityMasterFlags[p];
+		        break;
 		    }
 
             string[] strRiderMasterFlags = { "amf_rider_rot_bow", "amf_rider_rot_throw", "amf_rider_rot_crossbow", "amf_rider_rot_pistol", "amf_rider_rot_overswing",
@@ -91,14 +89,11 @@ namespace Decomp.Core
 
             for (int r = 0; r < dwRiderMasterFlags.Length; r++)
 		    {
-                if (dwRider == dwRiderMasterFlags[r])
-			    {
-				    if(sbMasterAnimFlags.Length != 0)
-				    	sbMasterAnimFlags.Append("|");
-			        sbMasterAnimFlags.Append(strRiderMasterFlags[r]);
-                    dwMasterAnimFlags ^= dwRiderMasterFlags[r];
-				    break;
-			    }
+		        if (dwRider != dwRiderMasterFlags[r]) continue;
+		        if(sbMasterAnimFlags.Length != 0) sbMasterAnimFlags.Append('|');
+		        sbMasterAnimFlags.Append(strRiderMasterFlags[r]);
+		        dwMasterAnimFlags ^= dwRiderMasterFlags[r];
+		        break;
 		    }  
 
             string[] strActionsMasterFlags = { "amf_start_instantly", "amf_use_cycle_period", "amf_use_weapon_speed", "amf_use_defend_speed", "amf_accurate_body",
@@ -107,17 +102,13 @@ namespace Decomp.Core
 
             for (int f = 0; f < dwActionsMasterFlags.Length; f++)
 		    {
-                if ((dwMasterAnimFlags & dwActionsMasterFlags[f]) != 0)
-                {
-                    if (sbMasterAnimFlags.Length != 0)
-                        sbMasterAnimFlags.Append("|");
-                    sbMasterAnimFlags.Append(strActionsMasterFlags[f]);
-                    dwMasterAnimFlags ^= dwActionsMasterFlags[f];
-			    }
+		        if ((dwMasterAnimFlags & dwActionsMasterFlags[f]) == 0) continue;
+		        if (sbMasterAnimFlags.Length != 0) sbMasterAnimFlags.Append('|');
+		        sbMasterAnimFlags.Append(strActionsMasterFlags[f]);
+		        dwMasterAnimFlags ^= dwActionsMasterFlags[f];
 		    }
             
-            if (sbMasterAnimFlags.Length == 0)
-            	sbMasterAnimFlags.Append("0");
+            if (sbMasterAnimFlags.Length == 0) sbMasterAnimFlags.Append('0');
 
             return sbMasterAnimFlags.ToString();
         }
@@ -126,8 +117,7 @@ namespace Decomp.Core
         {
             var sbFlag = new StringBuilder(2048);
             DWORD dwSequenceBlend = dwFlag & 0xFF;
-            if (dwSequenceBlend != 0)
-                sbFlag.AppendFormat("arf_blend_in_{0}", dwSequenceBlend - 1);
+            if (dwSequenceBlend != 0) sbFlag.AppendFormat("arf_blend_in_{0}", dwSequenceBlend - 1);
 
             string[] strAnimSequenceFlags = { "arf_make_walk_sound", "arf_make_custom_sound", "arf_two_handed_blade", "arf_lancer", "arf_stick_item_to_left_hand",
 				"arf_cyclic", "arf_use_walk_progress", "arf_use_stand_progress", "arf_use_inv_walk_progress" };
@@ -135,23 +125,17 @@ namespace Decomp.Core
 
             for (int f = 0; f < dwAnimSequenceFlags.Length; f++)
             {
-                if ((dwFlag & dwAnimSequenceFlags[f]) != 0)
-                {
-                    if (sbFlag.Length != 0)
-                        sbFlag.Append("|");
-                    sbFlag.Append(strAnimSequenceFlags[f]);
-                }
+                if ((dwFlag & dwAnimSequenceFlags[f]) == 0) continue;
+                if (sbFlag.Length != 0) sbFlag.Append('|');
+                sbFlag.Append(strAnimSequenceFlags[f]);
             }
 
-            if (sbFlag.Length == 0) sbFlag.Append("0");
+            if (sbFlag.Length == 0) sbFlag.Append('0');
 
             return sbFlag.ToString();
         }
 
-        public static float DecompileByte(byte bParam)
-        {
-            return (float)Math.Round(bParam / 255.0, 2);
-        }
+        public static float DecompileByte(byte bParam) => (float)Math.Round(bParam / 255.0, 2);
 
         public static string UnPack2f(DWORD dwPack)
         {
@@ -173,24 +157,23 @@ namespace Decomp.Core
 
         public static string DecompilePack(DWORD dwPack)
         {
-            if (dwPack == 0)
-                return "0";
+            if (dwPack == 0) return "0";
             return dwPack <= 0xFFFF ? UnPack2f(dwPack) : UnPack4f(dwPack);
         }
 
         public static void Decompile()
         {
-            var fActions = new Text(Common.InputPath + @"\actions.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_animations.py");
+            var fActions = new Text(Path.Combine(Common.InputPath, "actions.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_animations.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Animations);
             int iActions = fActions.GetInt();
             for (int a = 0; a < iActions; a++)
             {
-                string strAnimID = fActions.GetWord();
+                string strAnimId = fActions.GetWord();
                 DWORD dwAnimFlags = fActions.GetDWord();
                 DWORD dwMasterAnimFlags = fActions.GetDWord();
-                fSource.WriteLine("  [\"{0}\", {1}, {2},", strAnimID, DecompileFlags(dwAnimFlags), DecompileMasterFlags(dwMasterAnimFlags));
+                fSource.WriteLine("  [\"{0}\", {1}, {2},", strAnimId, DecompileFlags(dwAnimFlags), DecompileMasterFlags(dwMasterAnimFlags));
                 int iAnimSequences = fActions.GetInt();
                 for (int s = 0; s < iAnimSequences; s++)
                 {

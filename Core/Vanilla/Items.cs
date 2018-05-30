@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using BYTE = System.Byte;
 using WORD = System.UInt16;
 using DWORD64 = System.UInt64;
@@ -17,60 +19,50 @@ namespace Decomp.Core.Vanilla
 
         public static string[] GetIdFromFile(string strFileName)
         {
-            var fID = new Text(strFileName);
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            var fId = new Text(strFileName);
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strID = fID.GetWord();
-                aItems[i] = strID.Remove(0, 4);
-                fID.GetWord();
-                fID.GetWord();
+                string strId = fId.GetWord();
+                aItems[i] = strId.Remove(0, 4);
+                fId.GetWord();
+                fId.GetWord();
 
-                int iMeshes = fID.GetInt();
+                int iMeshes = fId.GetInt();
 
                 for (int m = 0; m < iMeshes; m++)
                 {
-                    fID.GetWord();
-                    fID.GetWord();
+                    fId.GetWord();
+                    fId.GetWord();
                 }
 
-                for (int v = 0; v < 17; v++)
-                {
-                    fID.GetWord();
-                }
-
-                //int iFactions = fID.GetInt();
-                //for (int j = 0; j < iFactions; j++)
-                //    fID.GetInt();
-
-                int iTriggers = fID.GetInt();
+                for (int v = 0; v < 17; v++) fId.GetWord();
+                
+                int iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    fID.GetWord();
-                    int iRecords = fID.GetInt();
+                    fId.GetWord();
+                    int iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
 
 
             }
-            fID.Close();
+            fId.Close();
 
             return aItems;
         }
 
-        public static string DecompileFlags(DWORD64 dwFlag, ref BYTE bType)
+        public static string DecompileFlags(DWORD64 dwFlag, out BYTE bType)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(256);
             DWORD64 dwType = dwFlag & 0xFF;
 
             bType = (BYTE)dwType;
@@ -88,44 +80,49 @@ namespace Decomp.Core.Vanilla
             0x00200000, 0x00400000, 0x00800000, 0x01000000, 0x01000000, 0x02000000, 0x04000000, 0x08000000, 0x10000000, 0x20000000, 0x40000000, 0x80000000 };
 
             //uint dwItemType = uItemFlags & 0xFF;
-            if ((dwType > 0) && (dwType < 0x15))
-                strFlag = strItemTypes[dwType] + "|";
+            if (dwType > 0 && dwType < 0x15)
+            {
+                sbFlag.Append(strItemTypes[dwType]);
+                sbFlag.Append('|');
+            }
 
             var wAttach = (WORD)(dwFlag & 0xF00);
 
             switch (wAttach)
             {
                 case 0x0100:
-                    strFlag += "itp_force_attach_left_hand|";
+                    sbFlag.Append("itp_force_attach_left_hand|");
                     break;
                 case 0x0200:
-                    strFlag += "itp_force_attach_right_hand|";
+                    sbFlag.Append("itp_force_attach_right_hand|");
                     break;
                 case 0x0300:
-                    strFlag += "itp_force_attach_left_forearm|";
+                    sbFlag.Append("itp_force_attach_left_forearm|");
                     break;
                 case 0x0F00:
-                    strFlag += "itp_attach_armature|";
+                    sbFlag.Append("itp_attach_armature|");
                     break;
             }
 
             for (int i = 0; i < dwItemFlags.Length; i++)
             {
-                if ((dwFlag & dwItemFlags[i]) != 0)
-                {
-                    strFlag += strItemTypeFlags[i] + "|";
-                }
+                if ((dwFlag & dwItemFlags[i]) == 0) continue;
+                sbFlag.Append(strItemTypeFlags[i]);
+                sbFlag.Append('|');
             }
 
-            strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            if (sbFlag.Length == 0)
+                sbFlag.Append('0');
+            else
+                sbFlag.Length--;
 
-            return strFlag;
+            return sbFlag.ToString();
         }
 
         public static void Decompile()
         {
-            var fItems = new Text(Common.InputPath + @"\item_kinds1.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_items.py");
+            var fItems = new Text(Path.Combine(Common.InputPath, "item_kinds1.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_items.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Items);
             fItems.GetString();
@@ -133,8 +130,8 @@ namespace Decomp.Core.Vanilla
 
             for (int i = 0; i < iItems; i++)
             {
-                string strItemID = fItems.GetWord().Remove(0, 4);
-                fSource.Write("  [\"{0}\"", strItemID);
+                string strItemId = fItems.GetWord().Remove(0, 4);
+                fSource.Write("  [\"{0}\"", strItemId);
                 string strItemName = fItems.GetWord();
 
                 fItems.GetWord(); // skip second name
@@ -157,9 +154,7 @@ namespace Decomp.Core.Vanilla
                 DWORD64 dwItemFlags = fItems.GetUInt64();
                 ulong lItemCaps = fItems.GetUInt64();
 
-                BYTE bType = 0;
-
-                fSource.Write(", {0}, {1},", DecompileFlags(dwItemFlags, ref bType), Core.Items.DecompileCapabilities(lItemCaps));
+                fSource.Write(", {0}, {1},", DecompileFlags(dwItemFlags, out byte bType), Core.Items.DecompileCapabilities(lItemCaps));
 
                 int iCost = fItems.GetInt();
                 DWORD64 dwImodBits = fItems.GetUInt64();
@@ -202,12 +197,12 @@ namespace Decomp.Core.Vanilla
                                     break;
                             }
                             if (bType == HORSE_TYPE && strState == "thrust_damage" && iDamageType == 0)
-                                strItemStats = strItemStats + $"|horse_charge({iDamage})";
+                                strItemStats += $"|horse_charge({iDamage})";
                             else
-                                strItemStats = strItemStats + $"|{strState}({iDamage}, {strDamageType})";
+                                strItemStats += $"|{strState}({iDamage}, {strDamageType})";
                         }
                         else
-                            strItemStats = strItemStats + $"|{strState}({iValue})";
+                            strItemStats += $"|{strState}({iValue})";
                     }
                 }
                 fSource.Write("{0}, {1}, {2}", iCost, strItemStats, Core.Items.DecompileImodBits(dwImodBits));

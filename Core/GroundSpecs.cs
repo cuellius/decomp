@@ -10,23 +10,22 @@ namespace Decomp.Core
     {
         public static int GetLexemsInFile(string strFileName)
         {
-            string[] strLines = File.ReadAllLines(strFileName);
-
+            var strLines = File.ReadAllLines(strFileName);
             return strLines.Sum(strLine => strLine.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).Length);
         }
 
         public static void Decompile()
         {
-            var fGroundSpecs = new Text(Common.InputPath + @"\ground_specs.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_ground_specs.py");
+            var fGroundSpecs = new Text(Path.Combine(Common.InputPath, "ground_specs.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_ground_specs.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.GroundSpecs);
 
-            int n = GetLexemsInFile(Common.InputPath + @"\ground_specs.txt") / 8;
+            int n = GetLexemsInFile(Path.Combine(Common.InputPath, "ground_specs.txt")) >> 3;  // / 8;
 
             for (int i = 0; i < n; i++)
             {
-                string strID = fGroundSpecs.GetWord();
+                string strId = fGroundSpecs.GetWord();
                 DWORD dwFlag = fGroundSpecs.GetUInt();
                 string strMaterial = fGroundSpecs.GetWord();
                 double dblUVScale = fGroundSpecs.GetDouble();
@@ -41,16 +40,14 @@ namespace Decomp.Core
 
                 for (int j = 0; j < dwFlags.Length; j++)
                 {
-                    if ((dwFlag & dwFlags[j]) != 0)
-                    {
-                        dwFlag ^= dwFlags[j];
-                        strFlag += strFlags[j] + "|";
-                    }
+                    if ((dwFlag & dwFlags[j]) == 0) continue;
+                    dwFlag ^= dwFlags[j];
+                    strFlag += strFlags[j] + "|";
                 }
 
                 strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
 
-                fSource.WriteLine("  (\"{0}\", {1}, \"{2}\", {3}, \"{4}\", ({5}, {6}, {7})),", strID, strFlag, strMaterial,
+                fSource.WriteLine("  (\"{0}\", {1}, \"{2}\", {3}, \"{4}\", ({5}, {6}, {7})),", strId, strFlag, strMaterial,
                     dblUVScale.ToString(CultureInfo.GetCultureInfo("en-US")), strMultitexMaterialName,
                     dColor1.ToString(CultureInfo.GetCultureInfo("en-US")), dColor2.ToString(CultureInfo.GetCultureInfo("en-US")),
                     dColor3.ToString(CultureInfo.GetCultureInfo("en-US")));

@@ -45,64 +45,26 @@ namespace Decomp.Core
 
         public long GetInt64()
         {
-            long x;
-            try
-            {
-                x = Convert.ToInt64(GetWord());
-            }
-            catch (Exception)
-            {
-                x = 0;
-            }
+            long.TryParse(GetWord(), out var x);
             return x;
         }
 
         public ulong GetUInt64()
         {
-            ulong x;
-            try
-            {
-                x = Convert.ToUInt64(GetWord());
-            }
-            catch (Exception)
-            {
-                x = 0;
-            }
+            ulong.TryParse(GetWord(), out var x);
             return x;
         }
 
-        public int GetInt()
-        {
-            return (int)GetInt64();
-        }
-        
-        public uint GetUInt()
-        {
-            return (uint)GetUInt64();
-        }
-
-        public uint GetDWord()
-        {
-            return (uint)GetUInt64();
-        }
+        public int GetInt() => (int)GetInt64();
+        public uint GetUInt() => (uint)GetUInt64();
+        public uint GetDWord() => (uint)GetUInt64();
   
         public double GetDouble()
         {
-            double x;
-            try
-            {
-                x = Convert.ToDouble(GetWord(), new CultureInfo("en-US"));
-            }
-            catch (Exception)
-            {
-                x = 0.0;
-            }
+            Double.TryParse(GetWord(), NumberStyles.Any, CultureInfo.GetCultureInfo(1033), out var x);
             return x;
         }
 
-        public string GetString()
-        {
-            return ReadLine();
-        }
+        public string GetString() => ReadLine();
     }
 }

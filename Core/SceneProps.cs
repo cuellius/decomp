@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,48 +8,41 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\scene_props.txt");
-            fID.GetString();
-            int n = fID.GetInt();
+            if (!File.Exists(Path.Combine(Common.InputPath, "scene_props.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "scene_props.txt"));
+            fId.GetString();
+            int n = fId.GetInt();
             var aSceneProps = new string[n];
             for (int i = 0; i < n; i++)
             {
-                aSceneProps[i] = fID.GetWord().Remove(0, 4);
+                aSceneProps[i] = fId.GetWord().Remove(0, 4);
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                var iTriggers = fID.GetInt();
-
-                //idSceneProps[i - 1] = sceneprop.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 4);
-                //var numTriggers = Convert.ToInt32(sceneprop.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[5]);
-
+                var iTriggers = fId.GetInt();
+                
                 while (iTriggers != 0)
                 {
-                    fID.GetWord();
+                    fId.GetWord();
 
-                    int iRecords = fID.GetInt();
+                    int iRecords = fId.GetInt();
                     if (iRecords != 0)
                     {
                         for (int r = 0; r < iRecords; r++)
                         {
-                            fID.GetWord();
-                            int iParams = fID.GetInt();
-                            for (int p = 0; p < iParams; p++)
-                            {
-                                fID.GetWord();
-                            }
+                            fId.GetWord();
+                            int iParams = fId.GetInt();
+                            for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
                     iTriggers--;
                 }
-
-                //idFile.ReadLine();
-                //idFile.ReadLine();
             }
-            fID.Close();
+            fId.Close();
 
             return aSceneProps;
         }
@@ -58,11 +52,9 @@ namespace Decomp.Core
             var sbFlag = new StringBuilder(2048);
 
             DWORD iHitPoints = (dwFlag >> 20) & 0xFF;
-            if (iHitPoints != 0)
-                sbFlag.Append("spr_hit_points(" + iHitPoints + ")|");
+            if (iHitPoints != 0) sbFlag.Append($"spr_hit_points({iHitPoints})|");
             DWORD iUseTime = (dwFlag >> 28) & 0xFF;
-            if (iUseTime != 0)
-                sbFlag.Append("spr_use_time(" + iUseTime + ")|");
+            if (iUseTime != 0) sbFlag.Append($"spr_use_time({iUseTime})|");
 
             //dwFlag = dwFlag - iHitPoints - iUseTime;
 
@@ -79,12 +71,10 @@ namespace Decomp.Core
             for (int i = 0; i < dwFlags.Length; i++)
             {
                 DWORD temp = dwFlag & dwFlags[i];
-                if (temp - dwFlags[i] == 0)
-                {
-                    dwFlag ^= dwFlags[i];
-                    sbFlag.Append(strFlags[i]);
-                    sbFlag.Append('|');
-                }
+                if (temp - dwFlags[i] != 0) continue;
+                dwFlag ^= dwFlags[i];
+                sbFlag.Append(strFlags[i]);
+                sbFlag.Append('|');
             }
 
             //strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
@@ -98,8 +88,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fSceneProps = new Text(Common.InputPath + @"\scene_props.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_scene_props.py");
+            var fSceneProps = new Text(Path.Combine(Common.InputPath, "scene_props.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_scene_props.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.SceneProps);
             fSceneProps.GetString();
@@ -107,10 +97,10 @@ namespace Decomp.Core
 
             for (int i = 0; i < iSceneProps; i++)
             {
-                string strID = fSceneProps.GetWord();
+                string strId = fSceneProps.GetWord();
                 DWORD dwFlag = fSceneProps.GetUInt();
                 fSceneProps.GetInt();
-                fSource.Write("  (\"{0}\", {1}, \"{2}\", \"{3}\", [", strID.Remove(0, 4), DecompileFlags(dwFlag), fSceneProps.GetWord(), fSceneProps.GetWord());
+                fSource.Write("  (\"{0}\", {1}, \"{2}\", \"{3}\", [", strId.Remove(0, 4), DecompileFlags(dwFlag), fSceneProps.GetWord(), fSceneProps.GetWord());
                 
 		        int iTriggers = fSceneProps.GetInt();
 
@@ -120,10 +110,7 @@ namespace Decomp.Core
                     fSource.Write("\r\n    ({0},[\r\n", Common.GetTriggerParam(dInterval));
 
                     int iRecords = fSceneProps.GetInt();
-                    if (iRecords != 0)
-                    {
-                        Common.PrintStatement(ref fSceneProps, ref fSource, iRecords, "      ");
-                    }
+                    if (iRecords != 0) Common.PrintStatement(ref fSceneProps, ref fSource, iRecords, "      ");
                     fSource.WriteLine("    ]),");
                 }
                 fSource.WriteLine(iTriggers > 0 ? "  ]),\r\n" : "]),\r\n");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Decomp.Core
 {
@@ -6,17 +7,19 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Win32FileReader(Common.InputPath + @"\quests.txt");
-            fID.ReadLine();
-            int n = Convert.ToInt32(fID.ReadLine());
+            if (!File.Exists(Path.Combine(Common.InputPath, "quests.txt"))) return new string[0];
+
+            var fId = new Win32FileReader(Path.Combine(Common.InputPath, "quests.txt"));
+            fId.ReadLine();
+            int n = Convert.ToInt32(fId.ReadLine());
             var aQuests = new string[n];
             for (int i = 0; i < n; i++)
             {
-                var str = fID.ReadLine();
+                var str = fId.ReadLine();
                 if (str != null)
                     aQuests[i] = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0].Remove(0, 4);
             }
-            fID.Close();
+            fId.Close();
 
             return aQuests;
         }
@@ -38,8 +41,8 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fQuests = new Text(Common.InputPath + @"\quests.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_quests.py");
+            var fQuests = new Text(Path.Combine(Common.InputPath, "quests.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_quests.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Quests);
             fQuests.GetString();

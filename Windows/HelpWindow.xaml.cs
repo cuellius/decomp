@@ -4,9 +4,6 @@ using Decomp.Core;
 
 namespace Decomp.Windows
 {
-    /// <summary>
-    /// Interaction logic for HelpWindow.xaml
-    /// </summary>
     public partial class HelpWindow
     {
         private readonly SimpleTrie<string> _helpArticles;

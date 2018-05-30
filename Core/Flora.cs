@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 using DWORD64 = System.UInt64;
 
@@ -6,11 +7,7 @@ namespace Decomp.Core
 {
     public static class Flora
     {
-        public static bool IsTree(DWORD64 dwFlag)
-        {
-            //DWORD64 dwCode = (dwFlag & 0x00F00000) >> 20;
-            return (dwFlag & 0x00400000U) != 0;
-        }
+        public static bool IsTree(DWORD64 dwFlag) => (dwFlag & 0x00400000U) != 0;
 
         public static string DecompileFlags(DWORD64 dwFlag)
         {
@@ -19,8 +16,7 @@ namespace Decomp.Core
 
             var sbFlag = new StringBuilder(2048);
 
-            if (dwDensity != 0)
-                sbFlag.AppendFormat("density({0})|", dwDensity);
+            if (dwDensity != 0) sbFlag.AppendFormat("density({0})|", dwDensity);
 
             string[] strFlags = { "fkf_plain", "fkf_steppe", "fkf_snow", "fkf_desert", "fkf_plain_forest", 
             "fkf_steppe_forest", "fkf_snow_forest", "fkf_desert_forest", "fkf_realtime_ligting", "fkf_point_up", "fkf_align_with_ground", 
@@ -30,15 +26,12 @@ namespace Decomp.Core
 
             for (int i = 0; i < dwFlags.Length; i++)
             {
-                if ((dwFlag & dwFlags[i]) != 0)
-                {
-                    sbFlag.Append(strFlags[i]); 
-                    sbFlag.Append('|');
-                    dwFlag ^= dwFlags[i];
-                }
+                if ((dwFlag & dwFlags[i]) == 0) continue;
+                sbFlag.Append(strFlags[i]); 
+                sbFlag.Append('|');
+                dwFlag ^= dwFlags[i];
             }
-
-            //strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+            
             if (sbFlag.Length == 0)
                 sbFlag.Append('0');
             else
@@ -49,19 +42,19 @@ namespace Decomp.Core
 
         public static void Decompile()
         {
-            var fFloraKinds = new Text(Common.InputPath + @"\flora_kinds.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_flora_kinds.py");
+            var fFloraKinds = new Text(Path.Combine(Common.InputPath, "flora_kinds.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_flora_kinds.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Flora);
 
             int iFloraKinds = fFloraKinds.GetInt();
             for (int f = 0; f < iFloraKinds; f++)
             {
-                string strID = fFloraKinds.GetWord();
+                string strId = fFloraKinds.GetWord();
                 DWORD64 dwFlag = fFloraKinds.GetUInt64();
                 int iNumMeshes = fFloraKinds.GetInt();
 
-                fSource.Write("  (\"{0}\", {1}, [", strID, DecompileFlags(dwFlag));
+                fSource.Write("  (\"{0}\", {1}, [", strId, DecompileFlags(dwFlag));
 
                 //string strMeshesList = "";
                 if (IsTree(dwFlag))

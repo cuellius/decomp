@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -7,113 +9,102 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            var fID = new Text(Common.InputPath + @"\menus.txt");
-            fID.GetString();
-            int n = Convert.ToInt32(fID.GetString());
+            if (!File.Exists(Path.Combine(Common.InputPath, "menus.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "menus.txt"));
+            fId.GetString();
+            int n = Convert.ToInt32(fId.GetString());
             var aMenus = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strID = fID.GetWord();
-                aMenus[i] = strID.Remove(0, 5);
+                string strId = fId.GetWord();
+                aMenus[i] = strId.Remove(0, 5);
 
-                fID.GetWord();
-                fID.GetWord();
-                fID.GetWord();
+                fId.GetWord();
+                fId.GetWord();
+                fId.GetWord();
 
-                int iRecords = fID.GetInt();
+                int iRecords = fId.GetInt();
                 if (iRecords != 0)
                 {
                     for (int r = 0; r < iRecords; r++)
                     {
-                        fID.GetWord();
-                        int iParams = fID.GetInt();
-                        for (int p = 0; p < iParams; p++)
-                        {
-                            fID.GetWord();
-                        }
+                        fId.GetWord();
+                        int iParams = fId.GetInt();
+                        for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
 
-                int iMenuOptions = fID.GetInt();
+                int iMenuOptions = fId.GetInt();
                 for (int j = 0; j < iMenuOptions; j++)
                 {
-                    fID.GetWord();
-                    iRecords = fID.GetInt();
+                    fId.GetWord();
+                    iRecords = fId.GetInt();
                     if (iRecords != 0)
                     {
                         for (int r = 0; r < iRecords; r++)
                         {
-                            fID.GetWord();
-                            int iParams = fID.GetInt();
-                            for (int p = 0; p < iParams; p++)
-                            {
-                                fID.GetWord();
-                            }
+                            fId.GetWord();
+                            int iParams = fId.GetInt();
+                            for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
 
-                    fID.GetWord();
+                    fId.GetWord();
 
-                    iRecords = fID.GetInt();
+                    iRecords = fId.GetInt();
                     if (iRecords != 0)
                     {
                         for (int r = 0; r < iRecords; r++)
                         {
-                            fID.GetWord();
-                            int iParams = fID.GetInt();
-                            for (int p = 0; p < iParams; p++)
-                            {
-                                fID.GetWord();
-                            }
+                            fId.GetWord();
+                            int iParams = fId.GetInt();
+                            for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
 
-                    fID.GetWord();
+                    fId.GetWord();
                 }
 
 
                 //idFile.ReadLine();
             }
-            fID.Close();
+            fId.Close();
 
             return aMenus;
         }
 
         public static string DecompileFlags(ulong lFlag)
         {
-            string strFlag = "";
+            var sbFlag = new StringBuilder(64);
             var dwMenuFlag = (DWORD)(lFlag & 0x00000000FFFFFFFF);
             var dwMenuColor = (DWORD)(lFlag >> 32);
-            if (dwMenuColor != 0)
-                strFlag = $"menu_text_color(0x{dwMenuColor:X8})";
+            if (dwMenuColor != 0) sbFlag.Append($"menu_text_color(0x{dwMenuColor:X8})");
 
             string[] strMenuFlags = { "mnf_join_battle", "mnf_auto_enter", "mnf_enable_hot_keys", "mnf_disable_all_keys", "mnf_scale_picture" };
             DWORD[] dwMenuFlags = { 0x00000001, 0x00000010, 0x00000100, 0x00000200, 0x00001000 };
             for (int f = 0; f < 5; f++)
             {
-                if ((dwMenuFlag & dwMenuFlags[f]) != 0)
-                {
-                    if (strFlag != "")
-                        strFlag += "|";
-                    strFlag += strMenuFlags[f];
-                }
+                if ((dwMenuFlag & dwMenuFlags[f]) == 0) continue;
+                if (sbFlag.Length != 0) sbFlag.Append('|');
+                sbFlag.Append(strMenuFlags[f]);
             }
 
-            return strFlag == "" ? "0" : strFlag;
+            return sbFlag.Length == 0 ? "0" : sbFlag.ToString();
         }
 
         public static void Decompile()
         {
-            var fMenus = new Text(Common.InputPath + @"\menus.txt");
-            var fSource = new Win32FileWriter(Common.OutputPath + @"\module_game_menus.py");
+            var fMenus = new Text(Path.Combine(Common.InputPath, "menus.txt"));
+            var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_game_menus.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Menus);
             fMenus.GetString();
             int iMenus = fMenus.GetInt();
             for (int m = 0; m < iMenus; m++)
             {
-                string strMenuID = fMenus.GetWord();
-                fSource.Write("  (\"{0}\",", strMenuID.Remove(0, 5));
+                string strMenuId = fMenus.GetWord();
+                fSource.Write("  (\"{0}\",", strMenuId.Remove(0, 5));
 
                 ulong lMenuFlags = fMenus.GetUInt64();
                 fSource.WriteLine(" {0},", DecompileFlags(lMenuFlags));
@@ -165,19 +156,14 @@ namespace Decomp.Core
                         fSource.WriteLine("      []");
 
                     string strDoorName = fMenus.GetWord();
-                    if (strDoorName != ".")
-                    {
-                        fSource.WriteLine(",\r\n      \"{0}\"", strDoorName);
-                    }
+                    if (strDoorName != ".") fSource.WriteLine(",\r\n      \"{0}\"", strDoorName);
                     fSource.Write("      ),\r\n");
 
-                    if ((iMenuOptions - i - 1) != 0)
-                        fSource.WriteLine();
+                    if (iMenuOptions - i - 1 != 0) fSource.WriteLine();
                 }
                 fSource.WriteLine("    ],");
 
-                if (iMenuOptions == 0)
-                    fSource.WriteLine("    [],");
+                if (iMenuOptions == 0) fSource.WriteLine("    [],");
 
                 fSource.WriteLine("  ),\r\n");
             }
