@@ -10,7 +10,7 @@
         <Image HorizontalAlignment="Left" VerticalAlignment="Top" Height="390" Margin="12,12,0,0" Width="365" Source="/Windows/Images/knight.png" />
         <TextBlock Height="65" HorizontalAlignment="Left" Margin="14,408,0,0" Text="{DynamicResource LocalizationAboutDecompilerLong}" VerticalAlignment="Top" Width="363" TextWrapping="Wrap" />
         <!--<TextBlock Text="Supported versions: Warband v1.171 + WSE 4.5.0, Warband v1.153 + WSE 3.2.0, M&amp;B v1.011/1.010, Caribbean (expremenal)" Height="36" HorizontalAlignment="Left" Margin="12,459,0,0" VerticalAlignment="Top" Width="365" TextWrapping="Wrap"/>-->
-        <TextBlock Height="23" HorizontalAlignment="Left" Margin="14,478,0,0" VerticalAlignment="Top" Width="175" Text="{DynamicResource LocalizationVersion}" />
+        <TextBlock Name="VersionTextBlock" Height="23" HorizontalAlignment="Left" Margin="14,478,0,0" VerticalAlignment="Top" Width="175" Text="{DynamicResource LocalizationVersion}" />
         <Button IsDefault="True" Content="OK" Height="24" HorizontalAlignment="Left" Margin="303,478,0,0" VerticalAlignment="Top" Width="74" Click="OkButtonClick" />
     </Grid>
 </Window>

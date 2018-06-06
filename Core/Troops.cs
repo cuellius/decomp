@@ -105,6 +105,28 @@ namespace Decomp.Core
             return sbFlag.ToString();
         }
 
+        public static List<string> ReadItemModifiers()
+        {
+            if (!File.Exists(Path.Combine(Common.InputPath, "Data", "item_modifiers.txt")))
+            {
+                return new List<string>
+                {
+                    "imod_plain", "imod_cracked", "imod_rusty", "imod_bent", "imod_chipped",
+                    "imod_battered", "imod_poor", "imod_crude", "imod_old", "imod_cheap",
+                    "imod_fine", "imod_well_made", "imod_sharp", "imod_balanced", "imod_tempered",
+                    "imod_deadly", "imod_exquisite", "imod_masterwork", "imod_heavy", "imod_strong",
+                    "imod_powerful", "imod_tattered", "imod_ragged", "imod_rough", "imod_sturdy",
+                    "imod_thick", "imod_hardened", "imod_reinforced", "imod_superb", "imod_lordly",
+                    "imod_lame", "imod_swaybacked", "imod_stubborn", "imod_timid", "imod_meek",
+                    "imod_spirited", "imod_champion", "imod_fresh", "imod_day_old", "imod_two_day_old",
+                    "imod_smelling", "imod_rotten", "imod_large_bag"
+                };
+            }
+            
+            var lines = Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "Data", "item_modifiers.txt"));
+            return lines.Select(x => x.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()).ToList();
+        }
+
         public static void Decompile()
         {
             var fTroops = new Text(Path.Combine(Common.InputPath, "troops.txt"));
@@ -120,6 +142,7 @@ namespace Decomp.Core
             int iTroops = fTroops.GetInt();
 
             var aUpList = new List<object>();
+            var aImods = ReadItemModifiers();
 
             for (int t = 0; t < iTroops; t++)
             {
@@ -154,15 +177,19 @@ namespace Decomp.Core
                 else if (iUp1 != 0 && iUp2 == 0)
                     aUpList.Add(new Upgrade(t, iUp1));
                 
-                var itemList = new List<int>();
+                var itemList = new List<KeyValuePair<int, int>>();
                 for (int i = 0; i < 64; i++)
                 {
                     int iItem = fTroops.GetInt();
-                    fTroops.GetInt(); //skip 0
+                    int imod = (int)((fTroops.GetInt64() >> 24) & 0xFF); //skip 0
                     if (-1 == iItem) continue;
-                    itemList.Add(iItem);
+                    itemList.Add(new KeyValuePair<int, int>(iItem, imod));
                 }
-                fSource.WriteLine("  [{0}],", String.Join(",", itemList.Select(item => item < Common.Items.Length ? $"itm_{Common.Items[item]}" : $"{item}")));
+                fSource.WriteLine("  [{0}],", String.Join(",", itemList.Select(item =>
+                {
+                    var u = item.Key < Common.Items.Length ? $"itm_{Common.Items[item.Key]}" : $"{item.Key}";
+                    return item.Value <= 0 || item.Value >= aImods.Count ? u : $"({u}, {aImods[item.Value]})";
+                })));
 
                 int iStregth = fTroops.GetInt(),
                     iAgility = fTroops.GetInt(),
@@ -186,8 +213,7 @@ namespace Decomp.Core
                 for (int x = 0; x < 6; x++)
                 {
                     DWORD dword = fTroops.GetDWord();
-                    if (dword == 0)
-                        continue;
+                    if (dword == 0) continue;
                     for (int q = 0; q < 8; q++)
                     {
                         DWORD dwKnow = 0xF & (dword >> (q << 2));

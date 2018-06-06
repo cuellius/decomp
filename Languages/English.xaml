@@ -30,7 +30,7 @@
     <system:String x:Key="LocalizationAboutError">Information about error</system:String>
 
     <system:String x:Key="LocalizationAboutDecompiler">About Warband Module Decompiler</system:String>
-    <system:String x:Key="LocalizationVersion">Version: 2.1.4</system:String>
+    <system:String x:Key="LocalizationVersion">Version: {0}</system:String>
     <system:String x:Key="LocalizationAboutDecompilerLong">Warband Module Decompiler converts text files into module system python files, ready for editing and compilation. By using this software you agree not to violate developers author's rights.</system:String>
 
     <system:String x:Key="LocalizationCut">Cut</system:String>

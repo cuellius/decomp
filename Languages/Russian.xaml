@@ -30,7 +30,7 @@
     <system:String x:Key="LocalizationAboutError">Информация об ошибке</system:String>
 
     <system:String x:Key="LocalizationAboutDecompiler">О Warband Module Decompiler...</system:String>
-    <system:String x:Key="LocalizationVersion">Версия: 2.1.4</system:String>
+    <system:String x:Key="LocalizationVersion">Версия: {0}</system:String>
     <system:String x:Key="LocalizationAboutDecompilerLong">Warband Module Decompiler преобразовывает текстовые файлы мода в питоновские файлы модульной системы, готовые для редактирования и компиляции. Используя эту программу, вы соглашаетесь не нарушать авторские права разработчиков.</system:String>
 
     <system:String x:Key="LocalizationCut">Вырезать</system:String>

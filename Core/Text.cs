@@ -9,6 +9,8 @@ namespace Decomp.Core
     {
         public static string GetFirstStringFromFile(string sFileName)
         {
+            if (!File.Exists(sFileName)) return "";
+
             var f = new StreamReader(sFileName);
             var s = f.ReadLine();
             f.Close();

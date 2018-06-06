@@ -491,6 +491,7 @@ namespace Decomp.Core
                 Common.Factions = Factions.Initialize();
                 Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} map_icons.txt";
                 Common.MapIcons = MapIcons.Initialize();
+                Status = Application.GetResource("LocalizationDecompilation");
             },
             ["party_templates.txt"] = () => {
                 Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} troops.txt";
@@ -500,6 +501,7 @@ namespace Decomp.Core
                 Common.Factions = Factions.Initialize();
                 Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} map_icons.txt";
                 Common.MapIcons = MapIcons.Initialize();
+                Status = Application.GetResource("LocalizationDecompilation");
             },
             ["postfx.txt"] = () => { },
             ["presentations.txt"] = () => { InitializeOpCodes(); InitializeModuleData(); },
@@ -520,6 +522,16 @@ namespace Decomp.Core
                     ? Vanilla.Items.GetIdFromFile(Common.InputPath + @"\item_kinds1.txt") : Items.Initialize();
                 Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} scenes.txt";
                 Common.Scenes = Scenes.Initialize();
+                Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} skins.txt";
+                Common.Skins = Skins.Initialize();
+                Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} factions.txt";
+                Common.Factions = Factions.Initialize();
+                Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} skills.txt";
+                Common.Skills = Skills.Initialize();
+                Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} troops.txt";
+                Common.Troops = Text.GetFirstStringFromFile(Common.InputPath + @"\troops.txt") == "troopsfile version 1"
+                    ? Vanilla.Troops.GetIdFromFile(Common.InputPath + @"\troops.txt") : Troops.Initialize();
+                Status = Application.GetResource("LocalizationDecompilation");
             }
         };
     }
