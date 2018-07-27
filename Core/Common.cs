@@ -92,6 +92,7 @@ from ID_troops import *";
         public static string[] Animations;
         public static string[] Music;
         public static string[] Skins;
+        public static string[] InfoPages;
 
         public static string GetCommonIdentifier(string prefix, string[] array, int index, bool useQuotes = false)
         {

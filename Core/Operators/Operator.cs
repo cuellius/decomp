@@ -17,6 +17,7 @@ namespace Decomp.Core.Operators
         String,
         InventorySlot,
         Tooltip,
+        ToolTip = Tooltip,
         Color,
         Alpha,
         TextFlags,
@@ -43,7 +44,20 @@ namespace Decomp.Core.Operators
         SkillIdentifier,
         MapIconIdentifier,
         MeshIdentifier,
-        ItemType
+        ItemType,
+        SoundIdentifier,
+        SoundFlags,
+        ScriptIdentifier,
+        ParticleSystemIdentifier,
+        AttributeIdentifier,
+        ItemModifier,
+        MenuIdentifier,
+        PresentationIdentifier,
+        TrackIdentifier,
+        MusicFlags,
+        EquipmentOverrideFlags,
+        MissionTemplateIdentifier,
+        SceneFlags
     }
 
     public class Operator
@@ -151,7 +165,33 @@ namespace Decomp.Core.Operators
                 case Parameter.MeshIdentifier:
                     return Common.GetCommonIdentifier("mesh", Common.Meshes, t);
                 case Parameter.ItemType:
-                    return Items.DecompileType(t); 
+                    return Items.DecompileType(t);
+                case Parameter.SoundIdentifier:
+                    return Common.GetCommonIdentifier("snd", Common.Sounds, t);
+                case Parameter.SoundFlags:
+                    return Sounds.DecompileFlags((uint)t);
+                case Parameter.ScriptIdentifier:
+                    return Common.GetCommonIdentifier("script", Common.Procedures, t);
+                case Parameter.ParticleSystemIdentifier:
+                    return Common.GetCommonIdentifier("psys", Common.ParticleSystems, t);
+                case Parameter.AttributeIdentifier:
+                    return Troops.DecompileCharacterAttribute((uint)t);
+                case Parameter.ItemModifier:
+                    return Items.DecompileModifier((uint)t);
+                case Parameter.MenuIdentifier:
+                    return Common.GetCommonIdentifier("mnu", Common.Menus, t);
+                case Parameter.PresentationIdentifier:
+                    return Common.GetCommonIdentifier("prsnt", Common.Presentations, t);
+                case Parameter.TrackIdentifier:
+                    return Common.GetCommonIdentifier("track", Common.Music, t);
+                case Parameter.MusicFlags:
+                    return Music.DecompileFlags((uint)t);
+                case Parameter.EquipmentOverrideFlags:
+                    return MissionTemplates.DecompileAlterFlags((uint)t);
+                case Parameter.MissionTemplateIdentifier:
+                    return Common.GetCommonIdentifier("mt", Common.MissionTemplates, t);
+                case Parameter.SceneFlags:
+                    return Scenes.DecompileFlags((uint)t);
                 default:
                     return s;
             }

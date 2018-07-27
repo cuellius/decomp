@@ -57,15 +57,28 @@ namespace Decomp.Core
             return aItems;
         }
 
+        public static string DecompileModifier(uint t)
+        {
+            if (t == 0xFFFFFFFF) return "-1";
+
+            string[] strImods = { "imod_plain", "imod_cracked", "imod_rusty", "imod_bent", "imod_chipped", "imod_battered", "imod_poor", "imod_crude", "imod_old",
+                "imod_cheap", "imod_fine", "imod_well_made", "imod_sharp", "imod_balanced", "imod_tempered", "imod_deadly", "imod_exquisite", "imod_masterwork",
+                "imod_heavy", "imod_strong", "imod_powerful", "imod_tattered", "imod_ragged", "imod_rough", "imod_sturdy", "imod_thick", "imod_hardened",
+                "imod_reinforced", "imod_superb", "imod_lordly", "imod_lame", "imod_swaybacked", "imod_stubborn", "imod_timid", "imod_meek", "imod_spirited",
+                "imod_champion", "imod_fresh", "imod_day_old", "imod_two_day_old", "imod_smelling", "imod_rotten", "imod_large_bag" };
+
+            return t >= strImods.Length ? t.ToString(CultureInfo.GetCultureInfo(1033)) : strImods[t];
+        }
+
         public static string DecompileType(ulong t)
         {
             string[] strItemTypes = { "itp_type_zero", "itp_type_horse", "itp_type_one_handed_wpn", "itp_type_two_handed_wpn", "itp_type_polearm",
                 "itp_type_arrows", "itp_type_bolts", "itp_type_shield", "itp_type_bow", "itp_type_crossbow", "itp_type_thrown", "itp_type_goods",
                 "itp_type_head_armor", "itp_type_body_armor", "itp_type_foot_armor", "itp_type_hand_armor", "itp_type_pistol", "itp_type_musket",
                 "itp_type_bullets", "itp_type_animal", "itp_type_book" };
-            return t >= (ulong)strItemTypes.Length ? t.ToString(CultureInfo.GetCultureInfo("en_US")) : strItemTypes[t];
+            return t >= (ulong)strItemTypes.Length ? t.ToString(CultureInfo.GetCultureInfo(1033)) : strItemTypes[t];
         }
-        
+
         // ReSharper disable InconsistentNaming
         private const BYTE HORSE_TYPE = 0x01;
         private const BYTE GOODS_TYPE = 0x0B;

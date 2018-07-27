@@ -60,6 +60,18 @@ namespace Decomp.Core
             return aTroops;
         }
 
+        public static string DecompileCharacterAttribute(DWORD dwAttribute)
+        {
+            switch (dwAttribute)
+            {
+                case 0: return "ca_strength";
+                case 1: return "ca_agility";
+                case 2: return "ca_intelligence";
+                case 3: return "ca_charisma";
+                default: return dwAttribute.ToString();
+            }
+        }
+
         public static string GetScene(DWORD dwScene)
         {
             DWORD dwEntry = (dwScene & 0xFFFF0000) >> 16;

@@ -4,6 +4,25 @@ namespace Decomp.Core
 {
     public static class InfoPages
     {
+        public static string[] Initialize()
+        {
+            if (!File.Exists(Path.Combine(Common.InputPath, "info_pages.txt"))) return new string[0];
+
+            var fId = new Text(Path.Combine(Common.InputPath, "info_pages.txt"));
+            fId.GetString();
+            int iInfoPages = fId.GetInt();
+
+            var infoPages = new string[iInfoPages];
+            for (int i = 0; i < iInfoPages; i++)
+            {
+                infoPages[i] = fId.GetWord().Remove(0, 3);
+                fId.GetWord();
+                fId.GetWord();
+            }
+
+            return infoPages;
+        }
+
         public static void Decompile()
         {
             var fInfoPages = new Text(Path.Combine(Common.InputPath, "info_pages.txt"));

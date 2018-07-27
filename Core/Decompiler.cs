@@ -1,4 +1,4 @@
-﻿//#define RELEASE
+﻿#define RELEASE
 
 using System;
 using System.Collections.Generic;
@@ -265,6 +265,8 @@ namespace Decomp.Core
             Common.Music = Music.Initialize();
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} skins.txt";
             Common.Skins = Skins.Initialize();
+            Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} info_pages.txt";
+            Common.InfoPages = InfoPages.Initialize();
             Status = Application.GetResource("LocalizationDecompilation");
         }
 
