@@ -8,7 +8,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Mount & Blade: Warband Decompiler")]
 [assembly: AssemblyDescription("Mount & Blade: Warband Decompiler")]
 [assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("Jan Rudźko aka Janycz (or Cuellius), thanks Aeldarian and K700")]
+[assembly: AssemblyCompany("Jan Rudźko aka Janycz (or Cuellius), thanks Aeldarian, K700, Leonion and Polajrnik")]
 [assembly: AssemblyProduct("Mount & Blade: Warband Decompiler v.2.2.3")]
 [assembly: AssemblyCopyright("Copyright (C) Jan Rudźko aka Janycz 2013-2018")]
 [assembly: AssemblyTrademark("")]
