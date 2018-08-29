@@ -157,7 +157,7 @@ namespace Decomp.Core.Operators
                 case Parameter.PartyTemplateIdentifier:
                     return Common.GetCommonIdentifier("pt", Common.Factions, t);
                 case Parameter.InfoPageIdentifier:
-                    return s;
+                    return Common.GetCommonIdentifier("ip", Common.InfoPages, t);
                 case Parameter.SkillIdentifier:
                     return Common.GetCommonIdentifier("skl", Common.Skills, t);
                 case Parameter.MapIconIdentifier:
@@ -210,7 +210,7 @@ namespace Decomp.Core.Operators
                 case Mode.WarbandScriptEnhancer320:
                     return GetCollection(new List<IGameVersion> { new Warband1153Version(), new WarbandScriptEnhancer320Version() });
                 case Mode.Vanilla:
-                    return GetCollection(new List<IGameVersion> { new Warband1153Version() });
+                    return GetCollection(new List<IGameVersion> { new VanillaVersion() });
                 default:
                     throw new ArgumentOutOfRangeException(nameof(m), m, null);
             }

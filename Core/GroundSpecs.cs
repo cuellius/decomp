@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using DWORD = System.UInt32;
 
 namespace Decomp.Core
@@ -34,7 +35,7 @@ namespace Decomp.Core
                        dColor2 = fGroundSpecs.GetDouble(),
                        dColor3 = fGroundSpecs.GetDouble();
 
-                string strFlag = "";
+                var sbFlag = new StringBuilder(64);
                 string[] strFlags = { "gtf_overlay", "gtf_dusty", "gtf_has_color" };
                 DWORD[] dwFlags = { 1, 2, 4 };
 
@@ -42,12 +43,16 @@ namespace Decomp.Core
                 {
                     if ((dwFlag & dwFlags[j]) == 0) continue;
                     dwFlag ^= dwFlags[j];
-                    strFlag += strFlags[j] + "|";
+                    sbFlag.Append(strFlags[j]);
+                    sbFlag.Append('|');
                 }
 
-                strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
+                if (sbFlag.Length == 0)
+                    sbFlag.Append('0');
+                else
+                    sbFlag.Length--;
 
-                fSource.WriteLine("  (\"{0}\", {1}, \"{2}\", {3}, \"{4}\", ({5}, {6}, {7})),", strId, strFlag, strMaterial,
+                fSource.WriteLine("  (\"{0}\", {1}, \"{2}\", {3}, \"{4}\", ({5}, {6}, {7})),", strId, sbFlag, strMaterial,
                     dblUVScale.ToString(CultureInfo.GetCultureInfo("en-US")), strMultitexMaterialName,
                     dColor1.ToString(CultureInfo.GetCultureInfo("en-US")), dColor2.ToString(CultureInfo.GetCultureInfo("en-US")),
                     dColor3.ToString(CultureInfo.GetCultureInfo("en-US")));

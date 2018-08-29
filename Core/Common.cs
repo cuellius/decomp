@@ -292,7 +292,7 @@ from ID_troops import *";
                 if (iOpCode == 4 || iOpCode == 6 || iOpCode == 7 || iOpCode == 11 || iOpCode == 12 || iOpCode == 15 || iOpCode == 16 || iOpCode == 17 ||
                     iOpCode == 18)
                     indentations++;
-                if (iOpCode == 3)
+                else if (iOpCode == 3)
                     indentations--;
 
                 var strIdentations = iOpCode == 4 || iOpCode == 5 || iOpCode == 6 || iOpCode == 7 || iOpCode == 11 || iOpCode == 12 || iOpCode == 15 || iOpCode == 16 || iOpCode == 17 ||

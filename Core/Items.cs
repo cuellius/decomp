@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.Win32.SafeHandles;
 using BYTE = System.Byte;
 using WORD = System.UInt16;
 using DWORD64 = System.UInt64;
@@ -482,7 +483,7 @@ namespace Decomp.Core
                 int iFactions = fItems.GetInt();
                 var factionsList = new int[iFactions];
                 for (int f = 0; f < iFactions; f++) factionsList[f] = fItems.GetInt();
-                string strFactionList = String.Join(",", factionsList.Select(f => "fac_" + Common.Factions[f]));
+                string strFactionList = String.Join(",", factionsList.Select(f => f >= 0 && f < Common.Factions.Length ? "fac_" + Common.Factions[f] : Convert.ToString(f)));
 
                 int iTriggers = fItems.GetInt();
                 if (iTriggers != 0)

@@ -50,6 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>knight.ico</ApplicationIcon>
@@ -103,6 +104,7 @@
     <Compile Include="Core\Decompiler.cs" />
     <Compile Include="Core\Dialogs.cs" />
     <Compile Include="Core\Factions.cs" />
+    <Compile Include="Core\Operators\Vanilla.cs" />
     <Compile Include="Core\Win32FileReader.cs" />
     <Compile Include="Core\Flora.cs" />
     <Compile Include="Core\GroundSpecs.cs" />

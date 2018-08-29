@@ -323,19 +323,23 @@ int main(int argc, char* argv[])
 		{
 			size_t l = b.find('(');
 			size_t r = b.rfind(')');
-			if (r == std::string::npos || l == std::string::npos) continue;
-			l++; r--;
-			auto c = trim(b.substr(l, r - l + 1));
+			std::vector<std::string> params;
+			if (r == std::string::npos || l == std::string::npos) goto noparams;
+			
+			{
+				l++; r--;
+				auto c = trim(b.substr(l, r - l + 1));
 
-			auto params = split(c, ',');
-			params.erase(params.begin());
-			map_vector(params, pre_process_param);
-			map_vector(params, [&](const std::string &s) { return process_param_using_repl_table(s, repl_table); });
+				params = split(c, ',');
+				params.erase(params.begin());
+				map_vector(params, pre_process_param);
+				map_vector(params, [&](const std::string &s) { return process_param_using_repl_table(s, repl_table); });
 
-			while (params.size() > 0 && params.back() == "Parameter.None") params.pop_back();
-
+				while (params.size() > 0 && params.back() == "Parameter.None") params.pop_back();
+			}
+			
+		noparams:
 			out.push_back(Operator(operand, opcode, params));
-			//fout << "                " << "new Operator(\"" << operand << "\", " << opcode << params_vector_to_str(params) << ")," << std::endl;
 		}
 		else
 		{
