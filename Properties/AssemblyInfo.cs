@@ -9,8 +9,8 @@ using System.Windows;
 [assembly: AssemblyDescription("Mount & Blade: Warband Decompiler")]
 [assembly: AssemblyConfiguration("Release")]
 [assembly: AssemblyCompany("Jan Rudźko aka Janycz (or Cuellius), thanks Aeldarian, K700, Leonion and Polajrnik")]
-[assembly: AssemblyProduct("Mount & Blade: Warband Decompiler v.2.2.3")]
-[assembly: AssemblyCopyright("Copyright (C) Jan Rudźko aka Janycz 2013-2018")]
+[assembly: AssemblyProduct("Mount & Blade: Warband Decompiler v.2.2.4")]
+[assembly: AssemblyCopyright("Copyright (C) Jan Rudźko aka Janycz 2013-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -50,5 +50,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2.3.0")]
-[assembly: AssemblyFileVersion("2.2.3.0")]
+[assembly: AssemblyVersion("2.2.4.0")]
+[assembly: AssemblyFileVersion("2.2.4.0")]

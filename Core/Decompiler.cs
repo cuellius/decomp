@@ -78,6 +78,8 @@ namespace Decomp.Core
                     return;
                 }
             }
+            
+            //InitializeModuleData(); //just for debug
 
             try
             {
@@ -124,7 +126,7 @@ namespace Decomp.Core
                 Status = "";
                 return;
             }
-
+            
             Window.Print(Application.GetResource("LocalizationTime") + "\n", sw.ElapsedTicks * 1000.0 / Stopwatch.Frequency);
 
             var success = false;
@@ -224,7 +226,8 @@ namespace Decomp.Core
                 ? Vanilla.Items.GetIdFromFile(Common.InputPath + @"\item_kinds1.txt") : Items.Initialize();
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} troops.txt";
             Common.Troops = Text.GetFirstStringFromFile(Common.InputPath + @"\troops.txt") == "troopsfile version 1"
-                ? Vanilla.Troops.GetIdFromFile(Common.InputPath + @"\troops.txt") : Troops.Initialize();
+                ? Vanilla.Troops.GetIdFromFile(Common.InputPath + @"\troops.txt") : (Common.SelectedMode == Mode.Caribbean ?
+                    Caribbean.Troops.Initialize() : Troops.Initialize());
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} factions.txt";
             Common.Factions = Factions.Initialize();
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} quests.txt";
@@ -264,7 +267,8 @@ namespace Decomp.Core
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} music.txt";
             Common.Music = Music.Initialize();
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} skins.txt";
-            Common.Skins = Skins.Initialize();
+            Common.Skins = Common.SelectedMode == Mode.Caribbean ? 
+                Caribbean.Skins.Initialize() : Skins.Initialize();
             Status = $"{Application.GetResource("LocalizationDecompilation")} -- {Application.GetResource("LocalizationInitialization")} info_pages.txt";
             Common.InfoPages = InfoPages.Initialize();
             Status = Application.GetResource("LocalizationDecompilation");
@@ -341,6 +345,8 @@ namespace Decomp.Core
                 Vanilla.Sounds.Decompile();
             else if (strFirstString == "stringsfile version 1")
                 Strings.Decompile();
+            else if (strFirstString == "troopsfile version 2" && Common.SelectedMode == Mode.Caribbean) //Caribbean troops file
+                Caribbean.Troops.Decompile();
             else if (strFirstString == "troopsfile version 2") //Warband troops file
                 Troops.Decompile();
             else if (strFirstString == "troopsfile version 1") //M&B v1.011/v1.010 troops file

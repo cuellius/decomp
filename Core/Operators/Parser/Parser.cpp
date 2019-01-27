@@ -75,6 +75,7 @@ bool is_command(const std::string &cmd, std::string &operand, int &opcode)
 	if (i == std::string::npos) return false;
 	operand = trim(cmd.substr(0, i));
 	auto opcodestr = trim(cmd.substr(i + 1));
+	//std::cerr << "Process: operand = \'" << operand << "\', opcode \'" << opcodestr << "\'"  << std::endl;
 	if (!is_number(opcodestr)) return false;
 	opcode = atoi(opcodestr.data());
 	return true;
@@ -193,17 +194,16 @@ int main(int argc, char* argv[])
 	repl_table.insert({ "material_name", "Parameter.String" });
 	repl_table.insert({ "new_material_name", "Parameter.String" });
 	repl_table.insert({ "mesh_name", "Parameter.String" });
-	repl_table.insert({ "mesh_name", "Parameter.String" });
-	repl_table.insert({ "mesh_name", "Parameter.String" });
-	repl_table.insert({ "mesh_name", "Parameter.String" });
 	repl_table.insert({ "string_id", "Parameter.String" });
 	repl_table.insert({ "string_no", "Parameter.String" });
 	repl_table.insert({ "position", "Parameter.Position" });
 	repl_table.insert({ "dest_position", "Parameter.Position" });
 	repl_table.insert({ "key_code", "Parameter.KeyCode" });
+	repl_table.insert({ "key_no", "Parameter.KeyCode" });
 	repl_table.insert({ "game_key_code", "Parameter.GameKeyCode" });
 	repl_table.insert({ "game_key_no", "Parameter.GameKeyCode" });
 	repl_table.insert({ "key", "Parameter.KeyCode" });
+	repl_table.insert({ "key_id", "Parameter.KeyCode" });
 	repl_table.insert({ "game_key", "Parameter.GameKeyCode" });
 	repl_table.insert({ "troop_id", "Parameter.TroopIdentifier" });
 	repl_table.insert({ "faction_no", "Parameter.FactionIdentifier" });
@@ -212,6 +212,7 @@ int main(int argc, char* argv[])
 	repl_table.insert({ "faction_id", "Parameter.FactionIdentifier" });
 	repl_table.insert({ "color_code", "Parameter.Color" });
 	repl_table.insert({ "party_id", "Parameter.PartyIdentifier" });
+	repl_table.insert({ "destinationparty_id", "Parameter.PartyIdentifier" });
 	repl_table.insert({ "host_party_id", "Parameter.PartyIdentifier" });
 	repl_table.insert({ "town_party_id", "Parameter.PartyIdentifier" });
 	repl_table.insert({ "party_template_id", "Parameter.PartyTemplateIdentifier" });
@@ -258,6 +259,7 @@ int main(int argc, char* argv[])
 	repl_table.insert({ "tableau_material_id", "Parameter.TableauMaterialIdentifier" });
 	repl_table.insert({ "info_page_id", "Parameter.InfoPageIdentifier" });
 	repl_table.insert({ "mesh_id", "Parameter.MeshIdentifier" });
+	repl_table.insert({ "mesh_no", "Parameter.MeshIdentifier" });
 	repl_table.insert({ "animation_id", "Parameter.AnimationIdentifier" });
 	repl_table.insert({ "item_kind_id", "Parameter.ItemIdentifier" });
 	repl_table.insert({ "string_register", "Parameter.String" });
@@ -296,6 +298,7 @@ int main(int argc, char* argv[])
 	repl_table.insert({ "script_id", "Parameter.ScriptIdentifier" });
 	repl_table.insert({ "script_no", "Parameter.ScriptIdentifier" });
 	repl_table.insert({ "item_no", "Parameter.ItemIdentifier" });
+	repl_table.insert({ "itm_id", "Parameter.ItemIdentifier" });
 	repl_table.insert({ "anim_id", "Parameter.AnimationIdentifier" });
 	repl_table.insert({ "anim_no", "Parameter.AnimationIdentifier" });
 	repl_table.insert({ "quest_no", "Parameter.QuestIdentifier" });
@@ -340,6 +343,7 @@ int main(int argc, char* argv[])
 			
 		noparams:
 			out.push_back(Operator(operand, opcode, params));
+			//fout << "                " << "new Operator(\"" << operand << "\", " << opcode << params_vector_to_str(params) << ")," << std::endl;
 		}
 		else
 		{

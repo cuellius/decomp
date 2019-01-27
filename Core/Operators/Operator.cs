@@ -204,7 +204,7 @@ namespace Decomp.Core.Operators
             switch (m)
             {
                 case Mode.Caribbean:
-                    return GetCollection(new List<IGameVersion> { new Warband1153Version() });
+                    return GetCollection(new List<IGameVersion> { new CaribbeanVersion() });
                 case Mode.WarbandScriptEnhancer450:
                     return GetCollection(new List<IGameVersion> { new Warband1171Version(), new WarbandScriptEnhancer450Version() });
                 case Mode.WarbandScriptEnhancer320:

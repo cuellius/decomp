@@ -100,10 +100,12 @@
     </ApplicationDefinition>
     <Compile Include="Core\Animations.cs" />
     <Compile Include="Core\Caribbean\Skins.cs" />
+    <Compile Include="Core\Caribbean\Troops.cs" />
     <Compile Include="Core\Common.cs" />
     <Compile Include="Core\Decompiler.cs" />
     <Compile Include="Core\Dialogs.cs" />
     <Compile Include="Core\Factions.cs" />
+    <Compile Include="Core\Operators\Caribbean.cs" />
     <Compile Include="Core\Operators\Vanilla.cs" />
     <Compile Include="Core\Win32FileReader.cs" />
     <Compile Include="Core\Flora.cs" />
