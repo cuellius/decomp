@@ -274,7 +274,7 @@ namespace Decomp.Core.Operators
                 new Operator("troop_raise_attribute", 1520, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
                 new Operator("store_skill_level", 2170, Parameter.None, Parameter.SkillIdentifier, Parameter.TroopIdentifier),
                 new Operator("troop_raise_skill", 1521, Parameter.TroopIdentifier, Parameter.SkillIdentifier),
-                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
+                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.WeaponProficiency),
                 new Operator("troop_raise_proficiency", 1522, Parameter.TroopIdentifier, Parameter.WeaponProficiency),
                 new Operator("troop_raise_proficiency_linear", 1523, Parameter.TroopIdentifier, Parameter.WeaponProficiency),
                 new Operator("troop_add_proficiency_points", 1525, Parameter.TroopIdentifier),

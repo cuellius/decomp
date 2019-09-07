@@ -310,6 +310,10 @@ namespace Decomp.Core.Shaders
                 Directory.CreateDirectory(Path.Combine(Common.OutputPath, "Shaders"));
             Win32FileWriter.WriteAllText(sOutFile, Header.Shaders + sShaderSource);
 
+            if (pDisassembler != null) Marshal.Release((IntPtr)pDisassembler);
+            if (pD3DError != null) Marshal.Release((IntPtr)pD3DError);
+            if (pD3DEffect != null) Marshal.Release((IntPtr)pD3DEffect);
+
             Release();
         }
 

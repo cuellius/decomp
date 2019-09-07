@@ -17,6 +17,9 @@ namespace Decomp.Core
             
             switch (dwTime)
             {
+                case 3:
+                    sbFlag.Append("sf_mask|");
+                    break;
                 case 2:
                     sbFlag.Append("sf_night|");
                     break;

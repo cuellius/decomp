@@ -4,7 +4,7 @@ namespace Decomp.Core
 {
     public static class Scripts
     {
-        public static string[] InitializeVariables() => Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "variables.txt"));
+        public static string[] InitializeVariables() => File.Exists(Path.Combine(Common.InputPath, "variables.txt")) ? Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "variables.txt")) : new string[0];
 
         public static string[] Initialize()
         {

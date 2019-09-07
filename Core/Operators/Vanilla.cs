@@ -543,7 +543,7 @@ namespace Decomp.Core.Operators
                 new Operator("store_attribute_level", 2172, Parameter.None, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
                 new Operator("store_troop_faction", 2173, Parameter.None, Parameter.TroopIdentifier),
                 new Operator("store_troop_health", 2175, Parameter.None, Parameter.TroopIdentifier),
-                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
+                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.WeaponProficiency),
                 new Operator("store_relation", 2190, Parameter.None, Parameter.FactionIdentifier, Parameter.FactionIdentifier),
                 new Operator("store_conversation_agent", 2199),
                 new Operator("store_conversation_troop", 2200),

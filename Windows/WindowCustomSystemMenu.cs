@@ -63,7 +63,7 @@ namespace Decomp.Windows
                 new Thread(() =>
                 {
                     Thread.Sleep(10);
-                    menu.Dispatcher.Invoke(() => menu.IsOpen = true);
+                    menu.Dispatcher?.Invoke(() => menu.IsOpen = true);
                 }).Start();
                 //menu.
 

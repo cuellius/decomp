@@ -104,7 +104,7 @@ namespace Decomp.Core
                 fSource.Write(", {0}", iParty == 0 ? "pt_none" : "pt_" + Common.PTemps[iParty]);
 
                 int iFaction = fParties.GetInt();
-                fSource.Write(", {0}", "fac_" + Common.Factions[iFaction]);
+                fSource.Write(", {0}", iFaction < Common.Factions.Length ? "fac_" + Common.Factions[iFaction] : iFaction.ToString(CultureInfo.GetCultureInfo("en-US")));
 
                 int iPersonality = fParties.GetInt(); fParties.GetInt(); 
                 fSource.Write(", {0}", iPersonality);
@@ -128,7 +128,7 @@ namespace Decomp.Core
                     int iTroop = fParties.GetInt();
                     int iNumTroops = fParties.GetInt(); fParties.GetInt();
                     int iFlag = fParties.GetInt();
-                    fSource.Write("(trp_{0}, {1}, {2}){3}", Common.Troops[iTroop], iNumTroops, iFlag == 1 ? "pmf_is_prisoner" : "0", j == (iRecords - 1) ? "" : ",");
+                    fSource.Write("(trp_{0}, {1}, {2}){3}", iTroop < Common.Troops.Length ? "trp_" + Common.Troops[iTroop] : iTroop.ToString(CultureInfo.GetCultureInfo("en-US")), iNumTroops, iFlag == 1 ? "pmf_is_prisoner" : "0", j == (iRecords - 1) ? "" : ",");
                 }
                 fSource.Write("]");
                 double dAngle = fParties.GetDouble();

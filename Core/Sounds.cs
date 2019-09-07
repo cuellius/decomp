@@ -9,6 +9,8 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
+            if (!File.Exists(Path.Combine(Common.InputPath, "sounds.txt"))) return new string[0];
+
             var fId = new Text(Path.Combine(Common.InputPath, "sounds.txt"));
             fId.GetString();
             int n = fId.GetInt();

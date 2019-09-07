@@ -9,6 +9,10 @@
 #include <map>
 #include <sstream>
 
+//TODO:
+//new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
+//Must be Parameter.WeaponProficiency
+
 template<typename T>
 void split(const std::string &s, char delim, T result)
 {

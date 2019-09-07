@@ -181,7 +181,7 @@ namespace Decomp.Core
         private static void InitializePath(out bool isSingleFile)
         {
             var x = false;
-            Window.Dispatcher.Invoke(() =>
+            Window.Dispatcher?.Invoke(() =>
             {
                 if (!File.Exists(Window.SourcePathTextBox.Text))
                 {
@@ -208,7 +208,7 @@ namespace Decomp.Core
             //Common.Operations = new Dictionary<long, string>();
             Common.Operators = new Dictionary<int, Operator>();
 
-            Window.ModeComboBox.Dispatcher.Invoke(() => Common.SelectedMode = (Mode)Window.ModeComboBox.SelectedIndex);
+            Window.ModeComboBox.Dispatcher?.Invoke(() => Common.SelectedMode = (Mode)Window.ModeComboBox.SelectedIndex);
             var operators = Operator.GetCollection(Common.SelectedMode);
             foreach (var op in operators) Common.Operators[op.Code] = op;
         }
@@ -381,7 +381,7 @@ namespace Decomp.Core
         private static string GetSingleFileName()
         {
             string result = null;
-            Window.SourcePathTextBox.Dispatcher.Invoke(() => result = Path.GetFileName(Window.SourcePathTextBox.Text));
+            Window.SourcePathTextBox.Dispatcher?.Invoke(() => result = Path.GetFileName(Window.SourcePathTextBox.Text));
             return result;
         }
 

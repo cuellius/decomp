@@ -36,7 +36,7 @@ namespace Decomp.Windows
 
         public void Print(string message)
         {
-            LogTextBox.Dispatcher.Invoke(() => LogTextBox.Text += message);
+            LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += message);
         }
 
         public void Print(string message, params object[] objects)
@@ -44,7 +44,7 @@ namespace Decomp.Windows
             if (objects == null)
                 Print(message);
             else
-                LogTextBox.Dispatcher.Invoke(() => LogTextBox.Text += String.Format(message, objects));
+                LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += String.Format(message, objects));
         }
 
         private void DecompileButtonClick(object sender, RoutedEventArgs e)

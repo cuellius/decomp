@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using System.Xaml;
 
 namespace Decomp.Windows
 {
@@ -14,7 +13,7 @@ namespace Decomp.Windows
         public static void CloseCurrentErrorWindow()
         {
             if(_window == null) return;
-            try { _window.Dispatcher.Invoke(_window.Close); } catch { }
+            try { _window.Dispatcher?.Invoke(_window.Close); } catch { }
         }
 
         public ErrorWindow(Exception exception)

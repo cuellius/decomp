@@ -122,7 +122,7 @@ namespace Decomp.Core
                     int iMinTroops = fTemplates.GetInt();
                     int iMaxTroops = fTemplates.GetInt();
                     DWORD dwMemberFlag = fTemplates.GetDWord();
-                    sbTroopList.Append($"(trp_{Common.Troops[iTroop]}, {iMinTroops}, {iMaxTroops}{(dwMemberFlag == 1 ? ", pmf_is_prisoner" : "")}),");
+                    sbTroopList.Append($"({(iTroop < Common.Troops.Length ? "trp_" + Common.Troops[iTroop] : iTroop.ToString())}, {iMinTroops}, {iMaxTroops}{(dwMemberFlag == 1 ? ", pmf_is_prisoner" : "")}),");
                 }
                 if (sbTroopList.Length != 0) sbTroopList.Length--;
                 fSource.WriteLine("{0}]),", sbTroopList);

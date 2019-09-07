@@ -6,7 +6,7 @@ namespace Decomp.Core
 {
     public static class Dialogs
     {
-        public static string[] Initialize() => Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "dialog_states.txt"));
+        public static string[] Initialize() => File.Exists(Path.Combine(Common.InputPath, "dialog_states.txt")) ? Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "dialog_states.txt")) : new string[0];
 
         public static void Decompile()
         {

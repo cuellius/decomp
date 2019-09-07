@@ -16,23 +16,23 @@ namespace Decomp.Windows
     {
         public static void Refresh(this UIElement uiElement)
         {
-            uiElement.Dispatcher.Invoke(DispatcherPriority.Render, new Action(delegate { }));
+            uiElement.Dispatcher?.Invoke(DispatcherPriority.Render, new Action(delegate { }));
         }
 
         public static void SetContent(this ContentControl button, object content)
         {
-            button.Dispatcher.Invoke(() => button.Content = content);
+            button.Dispatcher?.Invoke(() => button.Content = content);
         }
 
         public static void SetText(this TextBlock textBlock, string text)
         {
-            textBlock.Dispatcher.Invoke(() => textBlock.Text = text);
+            textBlock.Dispatcher?.Invoke(() => textBlock.Text = text);
         }
         
         public static bool IsChecked(this ToggleButton toogleButton)
         {
             var @checked = false;
-            toogleButton.Dispatcher.Invoke(() => @checked = toogleButton.IsChecked ?? false);
+            toogleButton.Dispatcher?.Invoke(() => @checked = toogleButton.IsChecked ?? false);
             return @checked;
         }
 

@@ -959,7 +959,7 @@ namespace Decomp.Core.Operators
                 new Operator("store_troop_faction", 2173, Parameter.None, Parameter.TroopIdentifier),
                 new Operator("store_faction_of_troop", 2173, Parameter.None, Parameter.TroopIdentifier),
                 new Operator("store_troop_health", 2175, Parameter.None, Parameter.TroopIdentifier),
-                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.AttributeIdentifier),
+                new Operator("store_proficiency_level", 2176, Parameter.None, Parameter.TroopIdentifier, Parameter.WeaponProficiency),
                 new Operator("store_relation", 2190, Parameter.None, Parameter.FactionIdentifier, Parameter.FactionIdentifier),
                 new Operator("set_conversation_speaker_troop", 2197, Parameter.TroopIdentifier),
                 new Operator("set_conversation_speaker_agent", 2198),

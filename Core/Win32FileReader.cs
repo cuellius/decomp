@@ -53,6 +53,7 @@ namespace Decomp.Core
         private const int ERROR_FILE_NOT_FOUND = 2;
         private const int ERROR_PATH_NOT_FOUND = 3;
         private const int ERROR_ACCESS_DENIED = 5;
+        private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
         // ReSharper restore InconsistentNaming
 
         private char[] _buffer;
@@ -63,7 +64,7 @@ namespace Decomp.Core
         {
             var pHandle = CreateFile(@"\\?\" + fileName, GENERIC_READ, 0, IntPtr.Zero, OPEN_EXISTING, 0, IntPtr.Zero);
 
-            if (pHandle == IntPtr.Zero)
+            if (/*pHandle == IntPtr.Zero || */ pHandle == INVALID_HANDLE_VALUE)
             {
                 var errorCode = Marshal.GetLastWin32Error();
                 switch (errorCode)

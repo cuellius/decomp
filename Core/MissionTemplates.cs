@@ -10,6 +10,8 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
+            if (!File.Exists(Path.Combine(Common.InputPath, "mission_templates.txt"))) return new string[0];
+
             var fId = new Text(Path.Combine(Common.InputPath, "mission_templates.txt"));
             fId.GetString();
             int n = Convert.ToInt32(fId.GetString());
