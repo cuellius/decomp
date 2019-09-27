@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
-using DWORD = System.UInt32;
 
 namespace Decomp.Core
 {
@@ -14,7 +13,7 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "factions.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString());
             var aFactions = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -40,17 +39,17 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Factions);
             fFactions.GetString();
-            int iFactions = fFactions.GetInt();
+            var iFactions = fFactions.GetInt();
             for (int f = 0; f < iFactions; f++)
             {
-                string strFacId = fFactions.GetWord();
+                var strFacId = fFactions.GetWord();
                 if (strFacId == "0") strFacId = fFactions.GetWord();
-                string strFacName = fFactions.GetWord();
+                var strFacName = fFactions.GetWord();
                 fSource.Write("  (\"{0}\", \"{1}\",", strFacId.Remove(0, 4), strFacName);
 
                 var sbFlags = new StringBuilder(64);
-                DWORD dwFlags = fFactions.GetUInt();
-                int iRating = (int)(dwFlags & 0xFF00) >> 8;
+                var dwFlags = fFactions.GetUInt();
+                var iRating = (int)(dwFlags & 0xFF00) >> 8;
                 if (iRating != 0) sbFlags.Append($"max_player_rating({100 - iRating})");
 
                 if ((dwFlags & 1) != 0)
@@ -62,19 +61,18 @@ namespace Decomp.Core
 
                 fSource.Write(" {0}, 0.0, [", sbFlags);
 
-                DWORD dwColor = fFactions.GetUInt();
+                var dwColor = fFactions.GetUInt();
 
-                string strRelations = "";
+                var sbRelations = new StringBuilder(1024);
                 for (int r = 0; r < iFactions; r++)
                 {
-                    double rRelation = fFactions.GetDouble();
+                    var rRelation = fFactions.GetDouble();
                     if (Math.Abs(rRelation) > 0.000001)
-                        strRelations +=
-                            $"(\"{Common.Factions[r]}\", {rRelation.ToString(CultureInfo.GetCultureInfo("en-US"))}),";
+                        sbRelations.Append($"(\"{Common.Factions[r]}\", {rRelation.ToString(CultureInfo.GetCultureInfo("en-US"))}),");
                 }
-                if (strRelations != "") strRelations = strRelations.Remove(strRelations.Length - 1, 1);
+                if (sbRelations.Length != 0) sbRelations.Length--;
 
-                fSource.Write("{0}], []", strRelations);
+                fSource.Write("{0}], []", sbRelations);
 
                 if (dwColor != 0xAAAAAA)
                     fSource.Write(", 0x{0:X}", dwColor);

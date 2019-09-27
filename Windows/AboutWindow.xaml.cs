@@ -15,9 +15,6 @@ namespace Decomp.Windows
             VersionTextBlock.Text = String.Format(Application.GetResource("LocalizationVersion"), v);
         }
 
-        private void OkButtonClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void OkButtonClick(object sender, RoutedEventArgs e) => Close();
     }
 }

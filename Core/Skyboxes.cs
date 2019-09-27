@@ -58,11 +58,11 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Skyboxes);
 
-            int iSkyboxes = fSkyboxes.GetInt();
+            var iSkyboxes = fSkyboxes.GetInt();
             for (int i = 0; i < iSkyboxes; i++)
             {
-                string strId = fSkyboxes.GetWord();
-                DWORD dwFlags = fSkyboxes.GetDWord();
+                var strId = fSkyboxes.GetWord();
+                var dwFlags = fSkyboxes.GetDWord();
                 fSource.Write("  (\"{0}\", {1},", strId, DecompileFlags(dwFlags));
 
                 for(int j = 0; j < 3; j++)

@@ -102,9 +102,9 @@ namespace Decomp.Core
             var sbAlterFlag = new StringBuilder(2048);
             string[] strAlterFlagsConst = { "af_override_everything", "af_override_all", "af_override_all_but_horse", "af_override_weapons" };
 			DWORD[] dwAlterFlagsConst = { 0x000001FF, 0x000001BF, 0x000000BF, 0x0000000f };
-			for (int i = 0; i < 4; i++ )
+			for (int i = 0; i < 4; i++)
 			{
-				DWORD temp = dwAlterFlag & dwAlterFlagsConst[i];
+			    var temp = dwAlterFlag & dwAlterFlagsConst[i];
 			    if (temp - dwAlterFlagsConst[i] != 0) continue;
 			    sbAlterFlag.Append(strAlterFlagsConst[i]);
 			    sbAlterFlag.Append('|');
@@ -118,7 +118,7 @@ namespace Decomp.Core
 				0x00000010, 0x00000008, 0x00000004, 0x00000002, 0x00000001 };
 			for (int i = 0; i < dwAlterFlags.Length; i++ )
 			{
-				DWORD temp  = dwAlterFlag & dwAlterFlags[i];
+			    var temp  = dwAlterFlag & dwAlterFlags[i];
 			    if (temp - dwAlterFlags[i] != 0) continue;
 			    sbAlterFlag.Append(strAlterFlags[i]);
 			    sbAlterFlag.Append('|');
@@ -146,42 +146,47 @@ namespace Decomp.Core
                 fMissionTemplates.GetWord();
                 fSource.Write("  (\"{0}\",", fMissionTemplates.GetWord());
 
-                DWORD dwFlag = fMissionTemplates.GetDWord();
-                string strFlag = "";
+                var dwFlag = fMissionTemplates.GetDWord();
+                var sbFlag = new StringBuilder(256);
                 string[] strFlags = { "mtf_arena_fight", "mtf_battle_mode", "mtf_commit_casualties", "mtf_no_blood", "mtf_synch_inventory" };
                 DWORD[] dwFlags = { 0x00000001, 0x00000002, 0x00000010, 0x00000100, 0x00010000 };
                 for (int i = 0; i < dwFlags.Length; i++)
                 {
                     if ((dwFlag & dwFlags[i]) == 0) continue;
                     dwFlag ^= dwFlags[i];
-                    strFlag += strFlags[i] + "|";
+                    sbFlag.Append(strFlags[i]);
+                    sbFlag.Append('|');
                 }
-                
-                strFlag = strFlag == "" ? "0" : strFlag.Remove(strFlag.Length - 1, 1);
-                
-                fSource.Write(" {0},", strFlag);
 
-                int iType = fMissionTemplates.GetInt();
-                string strType = "";
+                if (sbFlag.Length == 0)
+                    sbFlag.Append('0');
+                else
+                    sbFlag.Length--;
+                
+                fSource.Write(" {0},", sbFlag.ToString());
+
+                var iType = fMissionTemplates.GetInt();
+                var strType = "";
                 if (iType == 8)
                     strType = "charge";
                 else if (iType == 10)
                     strType = "charge_with_ally";
+
                 if (strType != "")
                     fSource.WriteLine(" {0},", strType);
                 else
                     fSource.WriteLine(" {0},", iType);
 
                 fSource.WriteLine("  \"{0}\",\r\n  [", fMissionTemplates.GetWord().Replace('_', ' '));
-                int iSpawnRecords = fMissionTemplates.GetInt();
+                var iSpawnRecords = fMissionTemplates.GetInt();
                 for (int i = 0; i < iSpawnRecords; i++)
                 {
-                    int iNum = fMissionTemplates.GetInt();
-                    DWORD dwSpawnFlag = fMissionTemplates.GetDWord();
-                    DWORD dwAlterFlag = fMissionTemplates.GetDWord();
-                    DWORD dwAIFlag = fMissionTemplates.GetDWord();
-                    int iTroops = fMissionTemplates.GetInt();
-                    int iItems = fMissionTemplates.GetInt();
+                    var iNum = fMissionTemplates.GetInt();
+                    var dwSpawnFlag = fMissionTemplates.GetDWord();
+                    var dwAlterFlag = fMissionTemplates.GetDWord();
+                    var dwAIFlag = fMissionTemplates.GetDWord();
+                    var iTroops = fMissionTemplates.GetInt();
+                    var iItems = fMissionTemplates.GetInt();
                     fSource.Write("    ({0}, {1}, {2}", iNum, DecompileSpawnFlags(dwSpawnFlag), DecompileAlterFlags(dwAlterFlag));
 
                     if (dwAIFlag == 0x00000010)

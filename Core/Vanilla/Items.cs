@@ -25,12 +25,12 @@ namespace Decomp.Core.Vanilla
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strId = fId.GetWord();
+                var strId = fId.GetWord();
                 aItems[i] = strId.Remove(0, 4);
                 fId.GetWord();
                 fId.GetWord();
 
-                int iMeshes = fId.GetInt();
+                var iMeshes = fId.GetInt();
 
                 for (int m = 0; m < iMeshes; m++)
                 {
@@ -39,16 +39,16 @@ namespace Decomp.Core.Vanilla
                 }
 
                 for (int v = 0; v < 17; v++) fId.GetWord();
-                
-                int iTriggers = fId.GetInt();
+
+                var iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
                     fId.GetWord();
-                    int iRecords = fId.GetInt();
+                    var iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
                         fId.GetWord();
-                        int iParams = fId.GetInt();
+                        var iParams = fId.GetInt();
                         for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
@@ -130,20 +130,20 @@ namespace Decomp.Core.Vanilla
 
             for (int i = 0; i < iItems; i++)
             {
-                string strItemId = fItems.GetWord().Remove(0, 4);
+                var strItemId = fItems.GetWord().Remove(0, 4);
                 fSource.Write("  [\"{0}\"", strItemId);
-                string strItemName = fItems.GetWord();
+                var strItemName = fItems.GetWord();
 
                 fItems.GetWord(); // skip second name
                 fSource.Write(",\"{0}\", [", strItemName);
 
                 int iMeshes = fItems.GetInt();
 
-                string strMeshes = "";
+                var strMeshes = "";
                 for (int m = 0; m < iMeshes; m++)
                 {
-                    string strMeshName = fItems.GetWord();
-                    DWORD64 dwMeshBits = fItems.GetUInt64();
+                    var strMeshName = fItems.GetWord();
+                    var dwMeshBits = fItems.GetUInt64();
                     strMeshes = strMeshes + $"(\"{strMeshName}\", {Core.Items.DecompileMeshesImodBits(dwMeshBits)}),";
                 }
                 if (strMeshes.Length > 0)
@@ -151,22 +151,22 @@ namespace Decomp.Core.Vanilla
 
                 fSource.Write("{0}]", strMeshes);
 
-                DWORD64 dwItemFlags = fItems.GetUInt64();
-                ulong lItemCaps = fItems.GetUInt64();
+                var dwItemFlags = fItems.GetUInt64();
+                var lItemCaps = fItems.GetUInt64();
 
                 fSource.Write(", {0}, {1},", DecompileFlags(dwItemFlags, out byte bType), Core.Items.DecompileCapabilities(lItemCaps));
 
-                int iCost = fItems.GetInt();
-                DWORD64 dwImodBits = fItems.GetUInt64();
+                var iCost = fItems.GetInt();
+                var dwImodBits = fItems.GetUInt64();
 
-                string strItemStats = "weight(" + fItems.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")) + ")";
+                var strItemStats = "weight(" + fItems.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US")) + ")";
                 string[] strStats = { "abundance", "head_armor", "body_armor", "leg_armor", "difficulty", "hit_points",
 			    "spd_rtng", "shoot_speed", "weapon_length", "max_ammo", "thrust_damage", "swing_damage" };
                 for (int v = 0; v < 12; v++)
                 {
-                    int iValue = fItems.GetInt();
+                    var iValue = fItems.GetInt();
 
-                    string strState = strStats[v];
+                    var strState = strStats[v];
 
                     if (bType == HORSE_TYPE && strState == "shoot_speed")
                         strState = "horse_speed";
@@ -177,46 +177,45 @@ namespace Decomp.Core.Vanilla
                     else if ((bType == BOW_TYPE || bType == CROSSBOW_TYPE || bType == MUSKET_TYPE || bType == PISTOL_TYPE) && strState == "leg_armor")
                         strState = "accuracy";
 
-                    if (iValue != 0)
+                    if (iValue == 0) continue;
+
+                    if (v >= 10)
                     {
-                        if (v >= 10)
+                        int iDamage = iValue & 0xFF;
+                        int iDamageType = (iValue - iDamage) >> 8;
+                        var strDamageType = "";
+                        switch (iDamageType)
                         {
-                            int iDamage = iValue & 0xFF;
-                            int iDamageType = (iValue - iDamage) >> 8;
-                            string strDamageType = "";
-                            switch (iDamageType)
-                            {
-                                case 0:
-                                    strDamageType = "cut";
-                                    break;
-                                case 1:
-                                    strDamageType = "pierce";
-                                    break;
-                                case 2:
-                                    strDamageType = "blunt";
-                                    break;
-                            }
-                            if (bType == HORSE_TYPE && strState == "thrust_damage" && iDamageType == 0)
-                                strItemStats += $"|horse_charge({iDamage})";
-                            else
-                                strItemStats += $"|{strState}({iDamage}, {strDamageType})";
+                            case 0:
+                                strDamageType = "cut";
+                                break;
+                            case 1:
+                                strDamageType = "pierce";
+                                break;
+                            case 2:
+                                strDamageType = "blunt";
+                                break;
                         }
+                        if (bType == HORSE_TYPE && strState == "thrust_damage" && iDamageType == 0)
+                            strItemStats += $"|horse_charge({iDamage})";
                         else
-                            strItemStats += $"|{strState}({iValue})";
+                            strItemStats += $"|{strState}({iDamage}, {strDamageType})";
                     }
+                    else
+                        strItemStats += $"|{strState}({iValue})";
                 }
                 fSource.Write("{0}, {1}, {2}", iCost, strItemStats, Core.Items.DecompileImodBits(dwImodBits));
 
-                int iTriggers = fItems.GetInt();
+                var iTriggers = fItems.GetInt();
                 if (iTriggers != 0)
                 {
                     fSource.Write(", [\r\n    ");
                     for (int t = 0; t < iTriggers; t++)
                     {
-                        double dInterval = fItems.GetDouble();
+                        var dInterval = fItems.GetDouble();
                         fSource.WriteLine("({0}, [", Common.GetTriggerParam(dInterval));
 
-                        int iRecords = fItems.GetInt();
+                        var iRecords = fItems.GetInt();
                         //memcpy(indention, "      ", 7);
                         Common.PrintStatement(ref fItems, ref fSource, iRecords, "      ");
 

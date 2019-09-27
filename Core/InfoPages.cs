@@ -10,7 +10,7 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "info_pages.txt"));
             fId.GetString();
-            int iInfoPages = fId.GetInt();
+            var iInfoPages = fId.GetInt();
 
             var infoPages = new string[iInfoPages];
             for (int i = 0; i < iInfoPages; i++)

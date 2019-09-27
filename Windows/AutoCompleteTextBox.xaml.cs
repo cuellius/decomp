@@ -37,7 +37,7 @@ namespace Decomp.Windows
         private static extern bool FindNextFile(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
         [DllImport("kernel32.dll")]
         private static extern bool FindClose(IntPtr hFindFile);
-        private const short INVALID_HANDLE_VALUE = -1;
+        private readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
         private const int WM_NCLBUTTONDOWN = 0x00A1;
         private const int WM_NCRBUTTONDOWN = 0x00A4;
@@ -57,7 +57,7 @@ namespace Decomp.Windows
                 case WM_RBUTTONUP:
                 case WM_LBUTTONUP:
                     Popup.IsOpen = false;
-                    if (ItemsListBox.ItemsSource != null && ItemsListBox.SelectedIndex != -1) SetText(ItemsListBox.SelectedItem.ToString());
+                    if (ItemsListBox.ItemsSource != null && ItemsListBox.SelectedIndex != -1) Text = ItemsListBox.SelectedItem.ToString();
                     break;
             }
             return IntPtr.Zero;
@@ -66,12 +66,12 @@ namespace Decomp.Windows
         public IEnumerable<string> GetItems(string textPattern)
         {
             if (textPattern.Length < 2 || textPattern[1] != ':') yield break;
-            int lastSlashPos = textPattern.LastIndexOf('\\');
+            var lastSlashPos = textPattern.LastIndexOf('\\');
             if (lastSlashPos == -1) yield break;
-            int fileNamePatternLength = textPattern.Length - lastSlashPos - 1;
-            string baseFolder = textPattern.Substring(0, lastSlashPos + 1);
+            var fileNamePatternLength = textPattern.Length - lastSlashPos - 1;
+            var baseFolder = textPattern.Substring(0, lastSlashPos + 1);
             var hFind = FindFirstFile(textPattern + "*", out var fd);
-            if (hFind.ToInt32() == INVALID_HANDLE_VALUE) yield break;
+            if (hFind == INVALID_HANDLE_VALUE) yield break;
             do
             {
                 if (fd.cFileName[0] == '.') continue;
@@ -88,10 +88,7 @@ namespace Decomp.Windows
         private Popup Popup => Template.FindName("PART_Popup", this) as Popup;
         private Grid Root => Template.FindName("root", this) as Grid;
 
-        public AutoCompleteTextBox()
-        {
-            InitializeComponent();
-        }
+        public AutoCompleteTextBox() => InitializeComponent();
 
         private Window GetParentWindow()
         {
@@ -121,30 +118,22 @@ namespace Decomp.Windows
             source?.AddHook(WndProc);
         }
 
-        private CustomPopupPlacement[] Repositioning(Size popupSize, Size targetSize, Point offset)
-        {
-            return new[] { new CustomPopupPlacement(new Point(0.01 - offset.X, Root.ActualHeight - offset.Y), PopupPrimaryAxis.None) };
-        }
+        private CustomPopupPlacement[] Repositioning(Size popupSize, Size targetSize, Point offset) => new[] { new CustomPopupPlacement(new Point(0.01 - offset.X, Root.ActualHeight - offset.Y), PopupPrimaryAxis.None) };
 
-        private bool _setText;
-        public void SetText(string text)
+        protected override void OnTextInput(TextCompositionEventArgs e)
         {
-            _setText = true;
-            base.Text = text;
-            _setText = false;
-        }
-
-        protected override void OnTextChanged(TextChangedEventArgs e)
-        {
-            if (!_loaded || _setText) return;
-            base.OnTextChanged(e);
+            base.OnTextInput(e);
+            if (!_loaded) return;
             try
             {
                 var aVariants = GetItems(Text).ToList();
                 ItemsListBox.ItemsSource = aVariants;
                 Popup.IsOpen = ItemsListBox.Items.Count > 0;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void AutoCompleteTextBoxKeyDown(object sender, KeyEventArgs e)
@@ -227,7 +216,7 @@ namespace Decomp.Windows
             base.OnDrop(e);
             var text = e.Data.GetData(DataFormats.FileDrop);
             var strings = (string[])text;
-            if (strings != null) SetText($"{strings[0]}");
+            if (strings != null) Text = $"{strings[0]}";
         }
 
         protected override void OnDragOver(DragEventArgs e)
@@ -243,14 +232,5 @@ namespace Decomp.Windows
             e.Effects = DragDropEffects.All;
             e.Handled = true;
         }
-
-        public new void Paste()
-        {
-            _setText = true;
-            base.Paste();
-            _setText = false;
-        }
-        
-        public new string Text { get => base.Text; set => SetText(value); }
     }
 }

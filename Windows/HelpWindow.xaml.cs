@@ -36,10 +36,7 @@ namespace Decomp.Windows
             GeneralButtonClick(GeneralButton, null);
         }
 
-        private void OkButtonClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void OkButtonClick(object sender, RoutedEventArgs e) => Close();
 
         private void UseButtonClick(object sender, RoutedEventArgs e)
         {

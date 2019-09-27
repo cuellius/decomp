@@ -11,7 +11,7 @@ namespace Decomp.Core
             if (!File.Exists(Path.Combine(Common.InputPath, "meshes.txt"))) return new string[0];
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "meshes.txt"));
-            int n = Convert.ToInt32(fId.ReadLine());
+            var n = Convert.ToInt32(fId.ReadLine());
             var aMeshes = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -29,7 +29,7 @@ namespace Decomp.Core
             var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_meshes.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Meshes);
-            int iMeshes = fMeshes.GetInt();
+            var iMeshes = fMeshes.GetInt();
             for (int m = 0; m < iMeshes; m++)
             {
                 fSource.Write("  (\"{0}\", ", fMeshes.GetWord().Remove(0, 5));

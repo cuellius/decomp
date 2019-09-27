@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 
 namespace Decomp.Core.Vanilla
 {
@@ -12,24 +11,24 @@ namespace Decomp.Core.Vanilla
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Sounds);
             fSounds.GetString();
-            int iSamples = fSounds.GetInt();
-            var aSamples = new List<string>();
+            var iSamples = fSounds.GetInt();
+            var aSamples = new string[iSamples];
             for (int s = 0; s < iSamples; s++)
             {
-                aSamples.Add(fSounds.GetWord());
+                aSamples[s] = fSounds.GetWord();
                 fSounds.GetString();
             }
 
-            int iSounds = fSounds.GetInt();
+            var iSounds = fSounds.GetInt();
             for (int s = 0; s < iSounds; s++)
             {
                 fSource.Write("  (\"{0}\", {1},", fSounds.GetWord().Remove(0, 4), Core.Sounds.DecompileFlags(fSounds.GetDWord()));
-                int iListCount = fSounds.GetInt();
+                var iListCount = fSounds.GetInt();
                 fSource.Write(" [");
                 for (int l = 0; l < iListCount; l++)
                 {
-                    int iSample = fSounds.GetInt();
-                    fSource.Write("\"{0}\"{1}", aSamples[iSample], l == iListCount - 1 ? "" : ", ");
+                    var iSample = fSounds.GetInt();
+                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(), l == iListCount - 1 ? "" : ", ");
                 }
                 fSource.WriteLine("]),");
             }

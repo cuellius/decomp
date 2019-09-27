@@ -151,7 +151,7 @@ namespace Decomp.Core
             fSource.WriteLine("\r\ntroops = [");
             
             fTroops.GetString();
-            int iTroops = fTroops.GetInt();
+            var iTroops = fTroops.GetInt();
 
             var aUpList = new List<object>();
             var aImods = ReadItemModifiers();
@@ -161,22 +161,22 @@ namespace Decomp.Core
                 fSource.Write("  [\"{0}\", \"{1}\", \"{2}\",", fTroops.GetWord().Remove(0, 4), fTroops.GetWord().Replace('_', ' '), fTroops.GetWord().Replace('_', ' '));
                 fTroops.GetWord();
 
-                DWORD dwFlag = fTroops.GetDWord();
+                var dwFlag = fTroops.GetDWord();
                 fSource.Write(" {0},", DecompileFlags(dwFlag));
 
-                DWORD dwScene = fTroops.GetDWord();
+                var dwScene = fTroops.GetDWord();
                 fSource.Write(" {0},", dwScene == 0 ? "0" : GetScene(dwScene));
 
                 fSource.Write(" {0},", fTroops.GetWord()); // reserved "0"
 
-                int iFaction = fTroops.GetInt();
+                var iFaction = fTroops.GetInt();
                 if (iFaction > 0 && iFaction < Common.Factions.Length)
                     fSource.WriteLine(" fac_{0},", Common.Factions[iFaction]);
                 else
                     fSource.WriteLine(" {0},", iFaction);
 
-                int iUp1 = fTroops.GetInt();
-                int iUp2 = fTroops.GetInt();
+                var iUp1 = fTroops.GetInt();
+                var iUp2 = fTroops.GetInt();
 
                 /*if (iUp1 != 0 && iUp2 != 0)
                     strUpList.Add(
@@ -189,11 +189,11 @@ namespace Decomp.Core
                 else if (iUp1 != 0 && iUp2 == 0)
                     aUpList.Add(new Upgrade(t, iUp1));
                 
-                var itemList = new List<KeyValuePair<int, int>>();
+                var itemList = new List<KeyValuePair<int, int>>(64);
                 for (int i = 0; i < 64; i++)
                 {
-                    int iItem = fTroops.GetInt();
-                    int imod = (int)((fTroops.GetInt64() >> 24) & 0xFF); //skip 0
+                    var iItem = fTroops.GetInt();
+                    var imod = (int)((fTroops.GetInt64() >> 24) & 0xFF); //skip 0
                     if (-1 == iItem) continue;
                     itemList.Add(new KeyValuePair<int, int>(iItem, imod));
                 }
@@ -224,7 +224,7 @@ namespace Decomp.Core
                 var strKnow = new StringBuilder(512);
                 for (int x = 0; x < 6; x++)
                 {
-                    DWORD dword = fTroops.GetDWord();
+                    var dword = fTroops.GetDWord();
                     if (dword == 0) continue;
                     for (int q = 0; q < 8; q++)
                     {
@@ -235,7 +235,7 @@ namespace Decomp.Core
                 if (strKnow.Length == 0) strKnow.Append('0'); else strKnow.Length--;
                 fSource.Write(" {0},", strKnow);
 
-                string strFace =
+                var strFace =
                     $"0x{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}, 0x{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}";
                 if (Common.SelectedMode == Mode.Caribbean) fTroops.GetWord();
                 fSource.WriteLine("{0}],", strFace);

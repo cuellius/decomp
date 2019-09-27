@@ -34,10 +34,7 @@ namespace Decomp.Windows
             Decompiler.Window = this;
         }
 
-        public void Print(string message)
-        {
-            LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += message);
-        }
+        public void Print(string message) => LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += message);
 
         public void Print(string message, params object[] objects)
         {
@@ -67,10 +64,7 @@ namespace Decomp.Windows
             }
         }
 
-        private void CloseButtonClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
+        private void CloseButtonClick(object sender, RoutedEventArgs e) => Close();
 
         private void BrowseSoursePathButtonClick(object sender, RoutedEventArgs e)
         {
@@ -82,10 +76,7 @@ namespace Decomp.Windows
                 AcceptFiles = true
             };
 
-            if (folderBrowseDialog.ShowDialog() == true)
-            {
-                SourcePathTextBox.SetText(folderBrowseDialog.Path);
-            }
+            if (folderBrowseDialog.ShowDialog() == true) SourcePathTextBox.Text = folderBrowseDialog.Path;
         }
 
         private void BrowseOutputPathButtonClick(object sender, RoutedEventArgs e)
@@ -98,10 +89,7 @@ namespace Decomp.Windows
                 Path = OutputPathTextBox.Text
             };
 
-            if (folderBrowseDialog.ShowDialog() == true)
-            {
-                OutputPathTextBox.Text = folderBrowseDialog.Path;
-            }
+            if (folderBrowseDialog.ShowDialog() == true) OutputPathTextBox.Text = folderBrowseDialog.Path;
         }
 
         private Window _aboutWindow;
@@ -190,10 +178,7 @@ namespace Decomp.Windows
             }
         }
 
-        private void HelpCommandCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
+        private void HelpCommandCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private static string GetCurrentLanguage()
         {

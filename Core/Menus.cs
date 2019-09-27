@@ -13,7 +13,7 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "menus.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString());
             var aMenus = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -24,18 +24,18 @@ namespace Decomp.Core
                 fId.GetWord();
                 fId.GetWord();
 
-                int iRecords = fId.GetInt();
+                var iRecords = fId.GetInt();
                 if (iRecords != 0)
                 {
                     for (int r = 0; r < iRecords; r++)
                     {
                         fId.GetWord();
-                        int iParams = fId.GetInt();
+                        var iParams = fId.GetInt();
                         for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }
 
-                int iMenuOptions = fId.GetInt();
+                var iMenuOptions = fId.GetInt();
                 for (int j = 0; j < iMenuOptions; j++)
                 {
                     fId.GetWord();
@@ -45,7 +45,7 @@ namespace Decomp.Core
                         for (int r = 0; r < iRecords; r++)
                         {
                             fId.GetWord();
-                            int iParams = fId.GetInt();
+                            var iParams = fId.GetInt();
                             for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
@@ -58,7 +58,7 @@ namespace Decomp.Core
                         for (int r = 0; r < iRecords; r++)
                         {
                             fId.GetWord();
-                            int iParams = fId.GetInt();
+                            var iParams = fId.GetInt();
                             for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
@@ -100,21 +100,21 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Menus);
             fMenus.GetString();
-            int iMenus = fMenus.GetInt();
+            var iMenus = fMenus.GetInt();
             for (int m = 0; m < iMenus; m++)
             {
-                string strMenuId = fMenus.GetWord();
+                var strMenuId = fMenus.GetWord();
                 fSource.Write("  (\"{0}\",", strMenuId.Remove(0, 5));
 
-                ulong lMenuFlags = fMenus.GetUInt64();
+                var lMenuFlags = fMenus.GetUInt64();
                 fSource.WriteLine(" {0},", DecompileFlags(lMenuFlags));
 
-                string strMenuText = fMenus.GetWord();
+                var strMenuText = fMenus.GetWord();
                 fSource.WriteLine("    \"{0}\",", strMenuText.Replace('_', ' '));
 
                 fSource.WriteLine("    \"{0}\",", fMenus.GetWord());
 
-                int iRecords = fMenus.GetInt();
+                var iRecords = fMenus.GetInt();
                 if (iRecords != 0)
                 {
                     fSource.WriteLine("    [");
@@ -124,12 +124,12 @@ namespace Decomp.Core
                 else
                     fSource.WriteLine("    [],");
 
-                int iMenuOptions = fMenus.GetInt();
+                var iMenuOptions = fMenus.GetInt();
 
                 fSource.WriteLine("    [");
                 for (int i = 0; i < iMenuOptions; i++)
                 {
-                    string szMenuOption = fMenus.GetWord();
+                    var szMenuOption = fMenus.GetWord();
                     fSource.WriteLine("      (\"{0}\",", szMenuOption.Remove(0, 4));
 
                     iRecords = fMenus.GetInt();
@@ -142,7 +142,7 @@ namespace Decomp.Core
                     else
                         fSource.WriteLine("      [],");
 
-                    string strMenuOptionText = fMenus.GetWord();
+                    var strMenuOptionText = fMenus.GetWord();
                     fSource.WriteLine("      \"{0}\",", strMenuOptionText);
 
                     iRecords = fMenus.GetInt();
@@ -155,7 +155,7 @@ namespace Decomp.Core
                     else
                         fSource.WriteLine("      []");
 
-                    string strDoorName = fMenus.GetWord();
+                    var strDoorName = fMenus.GetWord();
                     if (strDoorName != ".") fSource.WriteLine(",\r\n      \"{0}\"", strDoorName);
                     fSource.Write("      ),\r\n");
 

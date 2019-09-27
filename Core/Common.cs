@@ -260,6 +260,7 @@ from ID_troops import *";
                 case -104: return "ti_on_missile_dive";
                 case -105: return "ti_on_agent_start_reloading";
                 case -106: return "ti_on_agent_end_reloading";
+                case -107: return "ti_on_shield_penetrated";
                 case 100000000: return "ti_once";
                 default: return dblParam.ToString(CultureInfo.GetCultureInfo("en-US"));
             }
@@ -269,18 +270,18 @@ from ID_troops import *";
         
         public static void PrintStatement(ref Text fInput, ref Win32FileWriter fOutput, int iRecords, string strDefaultIndentation)
         {
-            int indentations = 0;
+            var indentations = 0;
             for (int r = 0; r < iRecords; r++)
             {
-                long iOpCode = fInput.GetInt64();
+                var iOpCode = fInput.GetInt64();
 
-                string strPrefixNeg = "";
+                var strPrefixNeg = "";
                 if ((iOpCode & 0x80000000) != 0)
                 {
                     strPrefixNeg = "neg|";
                     iOpCode ^= 0x80000000;
                 }
-                string strPrefixThisOrNext = "";
+                var strPrefixThisOrNext = "";
                 if ((iOpCode & 0x40000000) != 0)
                 {
                     strPrefixThisOrNext = "this_or_next|";
@@ -324,7 +325,7 @@ from ID_troops import *";
                 int iParams = fInput.GetInt();
                 for (int p = 0; p < iParams; p++)
                 {
-                    string strParam = fInput.GetWord();
+                    var strParam = fInput.GetWord();
                     fOutput.Write(", {0}", op.GetParameter(p, strParam));
                 }
                 fOutput.WriteLine("),");
@@ -728,6 +729,23 @@ from ID_troops import *";
         }
 
         public static string GetAlpha(ulong alpha) => String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2") : alpha.ToString("X"));
+
+        public static string DecompileSortMode(ulong sm)
+        {
+            switch (sm & 3)
+            {
+                case 0x0:
+                    return "0";
+                case 0x1:
+                    return "sort_f_desc";
+                case 0x10:
+                    return "sort_f_ci";
+                case 0x11:
+                    return "sort_f_ci | sort_f_desc";
+                default:
+                    return sm.ToString();
+            }
+        }
 
         public static bool NeedId = true;
         public static void GenerateId(string fileOut, string[] content, string prefix = "")

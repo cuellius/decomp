@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Decomp.Core.Operators
 {
-    //real version: 4.6.1
+    //real version: 4.7.3
     public class WarbandScriptEnhancer450Version : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
@@ -151,6 +151,9 @@ namespace Decomp.Core.Operators
                 new Operator("get_server_option_at_connect", 3512),
                 new Operator("server_set_password_rcon", 3513),
                 new Operator("execute_server_console_command", 3514, Parameter.String),
+                new Operator("add_anonymous_player", 3515),
+                new Operator("remove_anonymous_player", 3516),
+                new Operator("clear_anonymous_players", 3517),
                 new Operator("store_cur_mission_template_no", 3600),
                 new Operator("set_show_use_tooltip", 3601, Parameter.ToolTip),
                 new Operator("set_ally_collision_threshold", 3602),
@@ -166,6 +169,7 @@ namespace Decomp.Core.Operators
                 new Operator("missile_is_valid", 3612),
                 new Operator("missile_get_cur_position", 3613, Parameter.Position),
                 new Operator("set_prop_collision_threshold", 3614),
+                new Operator("get_camera_position", 3615, Parameter.Position),
                 new Operator("troop_get_skill_points", 3700, Parameter.None, Parameter.TroopIdentifier),
                 new Operator("troop_set_skill_points", 3701, Parameter.TroopIdentifier),
                 new Operator("troop_get_attribute_points", 3702, Parameter.None, Parameter.TroopIdentifier),
@@ -328,7 +332,7 @@ namespace Decomp.Core.Operators
                 new Operator("array_get_dim_size", 5012),
                 new Operator("array_get_dim_count", 5013),
                 new Operator("array_get_type_id", 5014),
-                new Operator("array_sort", 5015, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.String),
+                new Operator("array_sort", 5015, Parameter.None, Parameter.SortMode, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.None, Parameter.String),
                 new Operator("array_sort_custom", 5016),
                 new Operator("array_eq", 5017),
                 new Operator("array_neq", 5018),

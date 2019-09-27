@@ -13,7 +13,7 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "map_icons.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString());
             var aMapIcons = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -27,18 +27,18 @@ namespace Decomp.Core
                 fId.GetWord();
                 fId.GetWord();
 
-                int iTriggers = fId.GetInt();
+                var iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
                     fId.GetWord();
 
-                    int iRecords = fId.GetInt();
+                    var iRecords = fId.GetInt();
                     if (iRecords != 0)
                     {
                         for (int r = 0; r < iRecords; r++)
                         {
                             fId.GetWord();
-                            int iParams = fId.GetInt();
+                            var iParams = fId.GetInt();
                             for (int p = 0; p < iParams; p++) fId.GetWord();
                         }
                     }
@@ -59,20 +59,20 @@ namespace Decomp.Core
             int iMapIcons = fIcons.GetInt();
             for (int iMIcon = 0; iMIcon < iMapIcons; iMIcon++)
             {
-                string strName = fIcons.GetWord();
+                var strName = fIcons.GetWord();
                 fSource.Write("  (\"{0}\",", strName);
 
                 DWORD dwFlags = fIcons.GetDWord();
                 fSource.Write(" {0},", dwFlags == 1 ? "mcn_no_shadow" : "0");
 
-                string strMeshName = fIcons.GetWord();
+                var strMeshName = fIcons.GetWord();
                 fSource.Write(" \"{0}\",", strMeshName);
 
-                double dScale = fIcons.GetDouble();
+                var dScale = fIcons.GetDouble();
                 int iSound = fIcons.GetInt();
                 double dX = fIcons.GetDouble(), dY = fIcons.GetDouble(), dZ = fIcons.GetDouble();
 
-                fSource.Write(" {0}, {1}, {2}, {3}, {4}", dScale.ToString(CultureInfo.GetCultureInfo("en-US")), iSound != 0 ? "snd_" + Common.Sounds[iSound] : "0", 
+                fSource.Write(" {0}, {1}, {2}, {3}, {4}", dScale.ToString(CultureInfo.GetCultureInfo("en-US")), iSound != 0 ? (iSound < Common.Sounds.Length ? "snd_" + Common.Sounds[iSound] : iSound.ToString()) : "0", 
                     dX.ToString(CultureInfo.GetCultureInfo("en-US")), dY.ToString(CultureInfo.GetCultureInfo("en-US")), dZ.ToString(CultureInfo.GetCultureInfo("en-US")));
 
                 int iTriggers = fIcons.GetInt();

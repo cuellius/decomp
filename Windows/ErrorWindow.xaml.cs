@@ -12,7 +12,7 @@ namespace Decomp.Windows
         private static Window _window;
         public static void CloseCurrentErrorWindow()
         {
-            if(_window == null) return;
+            if (_window == null) return;
             try { _window.Dispatcher?.Invoke(_window.Close); } catch { }
         }
 
@@ -60,10 +60,7 @@ namespace Decomp.Windows
             BeginAnimation(HeightProperty, animation);
         }
 
-        private void BugRepostHyperlinkOnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(e.Uri.ToString());
-        }
+        private void BugRepostHyperlinkOnRequestNavigate(object sender, RequestNavigateEventArgs e) => Process.Start(e.Uri.ToString());
 
         protected override void OnClosed(EventArgs e)
         {

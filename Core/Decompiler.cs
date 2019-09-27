@@ -405,18 +405,35 @@ namespace Decomp.Core
             {
                 var sw = Stopwatch.StartNew();
                 var dblTime = sw.ElapsedTicks * 1000.0 / Stopwatch.Frequency;
-                Shaders.Shaders.Decompile(Common.InputPath + @"\" + strFileName);
+                Shaders.Shaders.Decompile(Path.Combine(Common.InputPath, strFileName));
                 Window.Print(Application.GetResource("LocalizationFileTime") + "\n", strFileName, sw.ElapsedTicks * 1000.0 / Stopwatch.Frequency - dblTime);
                 return;
             }
 
+            if (ext == ".brf")
+            {
+                var sw = Stopwatch.StartNew();
+                var dblTime = sw.ElapsedTicks * 1000.0 / Stopwatch.Frequency;
+                switch (strFileName)
+                {
+                    case "core_shaders.brf":
+                        WSE2.Shaders.Decompile();
+                        break;
+                    case "core_physics_materials.brf":
+                        WSE2.PhysicsMaterials.Decompile();
+                        break;
+                }
+                Window.Print(Application.GetResource("LocalizationFileTime") + "\n", strFileName, sw.ElapsedTicks * 1000.0 / Stopwatch.Frequency - dblTime);
+                return;
+            }
+            
             string[] strModFiles = { "actions.txt", "conversation.txt", "factions.txt", "info_pages.txt", "item_kinds1.txt", "map_icons.txt",
             "menus.txt", "meshes.txt", "mission_templates.txt", "music.txt", "particle_systems.txt", "parties.txt", "party_templates.txt",
             "postfx.txt", "presentations.txt", "quests.txt", "scene_props.txt", "scenes.txt", "scripts.txt", "simple_triggers.txt",
             "skills.txt", "skins.txt", "sounds.txt", "strings.txt", "tableau_materials.txt", "triggers.txt", "troops.txt",
             "flora_kinds.txt", "ground_specs.txt", "skyboxes.txt" };
 
-            string strFileToProcess = strModFiles.FirstOrDefault(t => t == strFileName);
+            var strFileToProcess = strModFiles.FirstOrDefault(t => t == strFileName);
             ProcessFile(strFileToProcess);
         }
 

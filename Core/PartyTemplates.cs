@@ -15,7 +15,7 @@ namespace Decomp.Core
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "party_templates.txt"));
             fId.ReadLine();
-            int n = Convert.ToInt32(fId.ReadLine());
+            var n = Convert.ToInt32(fId.ReadLine());
             var aPartyTemplates = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -96,32 +96,32 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.PartyTemplates);
             fTemplates.GetString();
-            int iTemplates = fTemplates.GetInt();
+            var iTemplates = fTemplates.GetInt();
             for (int i = 0; i < iTemplates; i++)
             {
                 fSource.Write("  (\"{0}\", \"{1}\"", fTemplates.GetWord().Remove(0, 3), fTemplates.GetWord());
 
-                DWORD64 dwFlag = fTemplates.GetUInt64();
+                var dwFlag = fTemplates.GetUInt64();
                 fSource.Write(", {0}, {1}", DecompileFlags(dwFlag), fTemplates.GetInt());
 
-                int iFaction = fTemplates.GetInt();
+                var iFaction = fTemplates.GetInt();
                 if (iFaction >= 0 && iFaction < Common.Factions.Length)
                     fSource.Write(", fac_{0}", Common.Factions[iFaction]);
                 else
                     fSource.Write(", {0}", iFaction);
 
-                DWORD dwPersonality = fTemplates.GetUInt();
+                var dwPersonality = fTemplates.GetUInt();
                 fSource.Write(", {0}, [", DecompilePersonality(dwPersonality));
 
                 
                 var sbTroopList = new StringBuilder(1024);
                 for (int iStack = 0; iStack < 6; iStack++)
                 {
-                    int iTroop = fTemplates.GetInt();
+                    var iTroop = fTemplates.GetInt();
                     if (-1 == iTroop) continue;
-                    int iMinTroops = fTemplates.GetInt();
-                    int iMaxTroops = fTemplates.GetInt();
-                    DWORD dwMemberFlag = fTemplates.GetDWord();
+                    var iMinTroops = fTemplates.GetInt();
+                    var iMaxTroops = fTemplates.GetInt();
+                    var dwMemberFlag = fTemplates.GetDWord();
                     sbTroopList.Append($"({(iTroop < Common.Troops.Length ? "trp_" + Common.Troops[iTroop] : iTroop.ToString())}, {iMinTroops}, {iMaxTroops}{(dwMemberFlag == 1 ? ", pmf_is_prisoner" : "")}),");
                 }
                 if (sbTroopList.Length != 0) sbTroopList.Length--;

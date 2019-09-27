@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Win32.SafeHandles;
 using BYTE = System.Byte;
 using WORD = System.UInt16;
 using DWORD64 = System.UInt64;
@@ -18,16 +17,16 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "item_kinds1.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString());
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strId = fId.GetWord();
+                var strId = fId.GetWord();
                 aItems[i] = strId.Remove(0, 4);
                 fId.GetWord();
                 fId.GetWord();
 
-                int iMeshes = fId.GetInt();
+                var iMeshes = fId.GetInt();
 
                 for (int m = 0; m < iMeshes; m++)
                 {
@@ -37,18 +36,18 @@ namespace Decomp.Core
 
                 for (int v = 0; v < 17; v++) fId.GetWord();
 
-                int iFactions = fId.GetInt();
+                var iFactions = fId.GetInt();
                 for (int j = 0; j < iFactions; j++) fId.GetInt();
 
-                int iTriggers = fId.GetInt();
+                var iTriggers = fId.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
                     fId.GetWord();
-                    int iRecords = fId.GetInt();
+                    var iRecords = fId.GetInt();
                     for (int r = 0; r < iRecords; r++)
                     {
                         fId.GetWord();
-                        int iParams = fId.GetInt();
+                        var iParams = fId.GetInt();
                         for (int p = 0; p < iParams; p++) fId.GetWord();
                     }
                 }

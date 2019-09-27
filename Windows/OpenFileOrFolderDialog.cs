@@ -190,10 +190,7 @@ namespace Decomp.Windows
         [DllImport("User32.dll", EntryPoint = "GetWindowLongPtr")]
         internal static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 
-        internal static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
-        {
-            return IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
-        }
+        internal static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) => IntPtr.Size == 8 ? GetWindowLongPtr64(hWnd, nIndex) : GetWindowLongPtr32(hWnd, nIndex);
 
         [DllImport("User32.dll", EntryPoint = "SetWindowLong")]
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
@@ -201,10 +198,7 @@ namespace Decomp.Windows
         [DllImport("User32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
 
-        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
-        {
-            return IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
-        }
+        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong) => IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
 
         [DllImport("User32.dll", EntryPoint = "SetWindowLong")]
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, WndProcDelegate dwNewLong);
@@ -212,10 +206,7 @@ namespace Decomp.Windows
         [DllImport("User32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, WndProcDelegate dwNewLong);
 
-        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, WndProcDelegate dwNewLong)
-        {
-            return IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong));
-        }
+        internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, WndProcDelegate dwNewLong) => IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong));
 
         public enum GWL
         {
@@ -272,10 +263,7 @@ namespace Decomp.Windows
             LineTo(hdc, x2, y2);
         }
 
-        private static uint RGB(byte r, byte g, byte b)
-        {
-            return r | ((uint)g << 8) | (uint)b << 16;
-        }
+        private static uint RGB(byte r, byte g, byte b) => r | ((uint)g << 8) | ((uint)b << 16);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct SHSTOCKICONINFO

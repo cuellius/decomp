@@ -13,12 +13,12 @@ namespace Decomp.Core.Vanilla
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Dialogs);
             fDialogs.GetString();
-            int iDialogs = fDialogs.GetInt();
+            var iDialogs = fDialogs.GetInt();
             for (int t = 0; t < iDialogs; t++)
             {
                 fDialogs.GetWord();
-                DWORD dwDialogPartner = fDialogs.GetUInt();
-                int iStartingDialogState = fDialogs.GetInt();
+                var dwDialogPartner = fDialogs.GetUInt();
+                var iStartingDialogState = fDialogs.GetInt();
                 var sbDialogPartner = new StringBuilder(256);
 
                 string[] strRepeatsPrefix = { "repeat_for_factions", "repeat_for_parties", "repeat_for_troops", "repeat_for_100", "repeat_for_1000" };
@@ -38,11 +38,18 @@ namespace Decomp.Core.Vanilla
                     sbDialogPartner.Append('|');
                 }
 
+                // ReSharper disable once InconsistentNaming
+                const DWORD PARTY_TPL = 0x00020000;
                 DWORD dwPartner = dwDialogPartner & 0x00000FFF;
                 if (dwPartner == 0x00000FFF)
                     sbDialogPartner.Append("anyone|");
                 else if (dwPartner != 0)
-                    sbDialogPartner.Append(dwPartner < Common.Troops.Length ? "trp_" + Common.Troops[dwPartner] + "|" : $"{dwPartner}|");
+                {
+                    if ((dwDialogPartner & PARTY_TPL) != 0)
+                        sbDialogPartner.Append(dwPartner < Common.PTemps.Length ? "pt_" + Common.PTemps[dwPartner] + "|" : $"{dwPartner}|");
+                    else
+                        sbDialogPartner.Append(dwPartner < Common.Troops.Length ? "trp_" + Common.Troops[dwPartner] + "|" : $"{dwPartner}|");
+                }
 
                 DWORD dwOther = (dwDialogPartner & 0xFFF00000) >> 20;
                 if (dwOther != 0)
@@ -52,8 +59,11 @@ namespace Decomp.Core.Vanilla
                     sbDialogPartner.Append('0');
                 else
                     sbDialogPartner.Length--;
-
-                fSource.Write("  [{0}, \"{1}\",\r\n    [", sbDialogPartner, Common.DialogStates[iStartingDialogState]);
+                
+                if (iStartingDialogState < Common.DialogStates.Length)
+                    fSource.Write("  [{0}, \"{1}\",\r\n    [", sbDialogPartner, Common.DialogStates[iStartingDialogState]);
+                else
+                    fSource.Write("  [{0}, {1},\r\n    [", sbDialogPartner, iStartingDialogState);
 
                 int iRecords = fDialogs.GetInt();
                 if (iRecords != 0)
@@ -65,11 +75,15 @@ namespace Decomp.Core.Vanilla
                 else
                     fSource.WriteLine("],");
 
-                string strDialogText = fDialogs.GetWord();
+                var strDialogText = fDialogs.GetWord();
                 fSource.WriteLine("    \"{0}\",", strDialogText.Replace('_', ' '));
 
                 int iEndingDialogState = fDialogs.GetInt();
-                fSource.Write("    \"{0}\",\r\n    [", Common.DialogStates[iEndingDialogState]);
+                
+                if (iEndingDialogState < Common.DialogStates.Length)
+                    fSource.Write("    \"{0}\",\r\n    [", Common.DialogStates[iEndingDialogState]);
+                else
+                    fSource.Write("    {0},\r\n    [", iEndingDialogState);
 
                 iRecords = fDialogs.GetInt();
                 if (iRecords != 0)

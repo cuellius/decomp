@@ -57,7 +57,8 @@ namespace Decomp.Core.Operators
         MusicFlags,
         EquipmentOverrideFlags,
         MissionTemplateIdentifier,
-        SceneFlags
+        SceneFlags,
+        SortMode
     }
 
     public class Operator
@@ -192,6 +193,8 @@ namespace Decomp.Core.Operators
                     return Common.GetCommonIdentifier("mt", Common.MissionTemplates, t);
                 case Parameter.SceneFlags:
                     return Scenes.DecompileFlags((uint)t);
+                case Parameter.SortMode:
+                    return Common.DecompileSortMode(t);
                 default:
                     return s;
             }

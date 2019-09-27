@@ -495,7 +495,7 @@ namespace Decomp.Core.Operators
                 new Operator("cur_agent_set_banner_tableau_material", 1986, Parameter.TableauMaterialIdentifier),
                 new Operator("cur_tableau_add_tableau_mesh", 1980, Parameter.TableauMaterialIdentifier, Parameter.None, Parameter.Position),
                 new Operator("cur_tableau_render_as_alpha_mask", 1984),
-                new Operator("cur_tableau_set_background_color", 1985),
+                new Operator("cur_tableau_set_background_color", 1985, Parameter.Color),
                 new Operator("cur_tableau_set_ambient_light", 1987),
                 new Operator("cur_tableau_set_camera_position", 1988, Parameter.Position),
                 new Operator("cur_tableau_set_camera_parameters", 1989),

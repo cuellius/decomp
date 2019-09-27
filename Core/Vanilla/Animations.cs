@@ -38,28 +38,27 @@ namespace Decomp.Core.Vanilla
             var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_animations.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Animations);
-            int iActions = fActions.GetInt();
+            var iActions = fActions.GetInt();
             for (int a = 0; a < iActions; a++)
             {
-                string strAnimId = fActions.GetWord();
-                DWORD dwAnimFlags = fActions.GetDWord();
+                var strAnimId = fActions.GetWord();
+                var dwAnimFlags = fActions.GetDWord();
                 fSource.WriteLine("  [\"{0}\", {1},", strAnimId, Core.Animations.DecompileFlags(dwAnimFlags));
-                int iAnimSequences = fActions.GetInt();
+                var iAnimSequences = fActions.GetInt();
                 for (int s = 0; s < iAnimSequences; s++)
                 {
-                    double dDuration = fActions.GetDouble();
-                    string strName = fActions.GetWord();
+                    var dDuration = fActions.GetDouble();
+                    var strName = fActions.GetWord();
                     fSource.Write("    [{0}, \"{1}\",", dDuration.ToString(CultureInfo.GetCultureInfo("en-US")), strName);
                     int iBeginFrame = fActions.GetInt(), iEndingFrame = fActions.GetInt();
-                    DWORD dwSequenceFlags = fActions.GetDWord();
+                    var dwSequenceFlags = fActions.GetDWord();
 
                     var dd = new string[5]; //NOTE: Type string for non-english version of windows
-                    bool bZeroes = true;
+                    var bZeroes = true;
                     for (int d = 0; d < 5; d++)
                     {
                         dd[d] = fActions.GetDouble().ToString(CultureInfo.GetCultureInfo("en-US"));
-                        if (dd[d] != "0")
-                            bZeroes = false;
+                        if (dd[d] != "0") bZeroes = false;
                     }
                     if (bZeroes)
                         fSource.Write(" {0}, {1}, {2}],\r\n", iBeginFrame, iEndingFrame, Core.Animations.DecompileSequenceFlags(dwSequenceFlags));

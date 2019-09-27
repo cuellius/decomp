@@ -47,12 +47,12 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Flora);
 
-            int iFloraKinds = fFloraKinds.GetInt();
+            var iFloraKinds = fFloraKinds.GetInt();
             for (int f = 0; f < iFloraKinds; f++)
             {
-                string strId = fFloraKinds.GetWord();
-                DWORD64 dwFlag = fFloraKinds.GetUInt64();
-                int iNumMeshes = fFloraKinds.GetInt();
+                var strId = fFloraKinds.GetWord();
+                var dwFlag = fFloraKinds.GetUInt64();
+                var iNumMeshes = fFloraKinds.GetInt();
 
                 fSource.Write("  (\"{0}\", {1}, [", strId, DecompileFlags(dwFlag));
 

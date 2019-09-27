@@ -69,7 +69,7 @@ namespace Decomp.Core
                 fScenes.GetWord();
                 fSource.Write(" (\"{0}\"", fScenes.GetWord());
 
-                DWORD dwFlag = fScenes.GetDWord();
+                var dwFlag = fScenes.GetDWord();
                 fSource.Write(", {0}, \"{1}\", \"{2}\"", DecompileFlags(dwFlag), fScenes.GetWord(), fScenes.GetWord());
 
                 double d1 = fScenes.GetDouble(), d2 = fScenes.GetDouble();
@@ -88,7 +88,7 @@ namespace Decomp.Core
                     //else if (iScene == 0)
                     //    fprintf(g_fOutput, "\"\"");
                     else
-                        fSource.Write("\"{0}\"", Common.Scenes[iScene]);
+                        fSource.Write("{0}", iScene < Common.Scenes.Length ? '"' + Common.Scenes[iScene] + '"' : iScene.ToString());
                     if (i < iPassages - 1)
                         fSource.Write(", ");
                 }
@@ -108,7 +108,7 @@ namespace Decomp.Core
                 }
                 fSource.Write("]");
 
-                string strTerrain = fScenes.GetWord();
+                var strTerrain = fScenes.GetWord();
                 if (strTerrain != "0") 
                     fSource.Write(", \"{0}\"", strTerrain);
 

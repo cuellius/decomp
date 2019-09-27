@@ -76,11 +76,11 @@ namespace Decomp.Core
                 else
                     fSource.WriteLine("],");
 
-                string strDialogText = fDialogs.GetWord();
+                var strDialogText = fDialogs.GetWord();
                 fSource.WriteLine("    \"{0}\",", strDialogText.Replace('_', ' '));
 
                 int iEndingDialogState = fDialogs.GetInt();
-                if(iEndingDialogState < Common.DialogStates.Length)
+                if (iEndingDialogState < Common.DialogStates.Length)
                     fSource.Write("    \"{0}\",\r\n    [", Common.DialogStates[iEndingDialogState]);
                 else
                     fSource.Write("    {0},\r\n    [", iEndingDialogState);
@@ -95,7 +95,7 @@ namespace Decomp.Core
                 else
                     fSource.Write("]");
 
-                string strVoiceOver = fDialogs.GetWord();
+                var strVoiceOver = fDialogs.GetWord();
                 if (strVoiceOver.Trim() != "NO_VOICEOVER") fSource.Write(",\r\n    [\"{0}\"]", strVoiceOver);
 
                 fSource.WriteLine("],\r\n");

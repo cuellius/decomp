@@ -109,7 +109,7 @@ namespace Decomp.Core
                 {
                     fSkins.GetWord();
                     double d1 = fSkins.GetDouble(), d2 = fSkins.GetDouble(), d3 = fSkins.GetDouble(), d4 = fSkins.GetDouble();
-                    string strText = fSkins.GetWord();
+                    var strText = fSkins.GetWord();
                     fSource.WriteLine("      ({0}, {1}, {2}, {3}, \"{4}\"),", d1.ToString(CultureInfo.GetCultureInfo("en-US")), d2.ToString(CultureInfo.GetCultureInfo("en-US")),
                         d3.ToString(CultureInfo.GetCultureInfo("en-US")), d4.ToString(CultureInfo.GetCultureInfo("en-US")), strText.Replace('_', ' '));
                 }
@@ -154,7 +154,7 @@ namespace Decomp.Core
                 fSource.Write("    [");
                 for (int v = 0; v < iVoices; v++)
                 {
-                    DWORD dwFlag = fSkins.GetDWord();
+                    var dwFlag = fSkins.GetDWord();
                     string[] strFlags = { "voice_die", "voice_hit", "voice_grunt", "voice_grunt_long", "voice_yell", "voice_warcry", "voice_victory", "voice_stun" };
                     if (dwFlag <= 7)
                         fSource.Write("({0},", strFlags[dwFlag]);
@@ -166,12 +166,14 @@ namespace Decomp.Core
                 }
                 fSource.WriteLine("],");
 
-                string strSkeleton = fSkins.GetWord();
+                var strSkeleton = fSkins.GetWord();
                 fSource.WriteLine("    \"{0}\", {1},", strSkeleton, fSkins.GetWord());
 
                 int ixParticleSystem1 = fSkins.GetInt(),
                     ixParticleSystem2 = fSkins.GetInt();
-                fSource.WriteLine("    psys_{0}, psys_{1},", Common.ParticleSystems[ixParticleSystem1], Common.ParticleSystems[ixParticleSystem2]);
+                fSource.WriteLine("    {0}, {1},", 
+                    ixParticleSystem1 < Common.ParticleSystems.Length ? "psys_" + Common.ParticleSystems[ixParticleSystem1] : ixParticleSystem1.ToString(),
+                    ixParticleSystem2 < Common.ParticleSystems.Length ? "psys_" + Common.ParticleSystems[ixParticleSystem2] : ixParticleSystem2.ToString());
 
                 int iConstraints = fSkins.GetInt();
                 fSource.Write("    [");
@@ -181,17 +183,17 @@ namespace Decomp.Core
                     fSource.Write("\r\n      [{0},", d1.ToString(CultureInfo.GetCultureInfo("en-US")));
                     
                     int i1 = fSkins.GetInt();
-                    string c1 = i1 == 1 ? "comp_greater_than" : i1 == -1 ? "comp_less_than" : "0";
+                    var c1 = i1 == 1 ? "comp_greater_than" : i1 == -1 ? "comp_less_than" : "0";
                     if (c1 != "0")
                         fSource.Write(" {0}, ", c1);
                     else
                         fSource.Write(" {0}, ", i1);
 
-                    int count = fSkins.GetInt();
+                    var count = fSkins.GetInt();
                     for (int c = 0; c < count; c++)
                     {
-                        double dc1 = fSkins.GetDouble();
-                        int ic1 = fSkins.GetInt();
+                        var dc1 = fSkins.GetDouble();
+                        var ic1 = fSkins.GetInt();
 
                         fSource.Write("({0}, {1}){2}", dc1.ToString(CultureInfo.GetCultureInfo("en-US")), ic1, c != count - 1 ? "," : "");
                     }

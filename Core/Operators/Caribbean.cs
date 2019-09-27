@@ -2,7 +2,7 @@
 
 namespace Decomp.Core.Operators
 {
-    class CaribbeanVersion : IGameVersion
+    public class CaribbeanVersion : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
         {

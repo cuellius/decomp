@@ -107,6 +107,7 @@
     <Compile Include="Core\Factions.cs" />
     <Compile Include="Core\Operators\Caribbean.cs" />
     <Compile Include="Core\Operators\Vanilla.cs" />
+    <Compile Include="Core\Win32BinaryFileReader.cs" />
     <Compile Include="Core\Win32FileReader.cs" />
     <Compile Include="Core\Flora.cs" />
     <Compile Include="Core\GroundSpecs.cs" />
@@ -151,6 +152,8 @@
     <Compile Include="Core\Vanilla\Troops.cs" />
     <Compile Include="Core\QuickStrings.cs" />
     <Compile Include="Core\Win32FileWriter.cs" />
+    <Compile Include="Core\WSE2\PhysicsMaterials.cs" />
+    <Compile Include="Core\WSE2\Shaders.cs" />
     <Compile Include="Windows\AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>

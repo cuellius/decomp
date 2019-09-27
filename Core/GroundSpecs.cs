@@ -26,11 +26,11 @@ namespace Decomp.Core
 
             for (int i = 0; i < n; i++)
             {
-                string strId = fGroundSpecs.GetWord();
-                DWORD dwFlag = fGroundSpecs.GetUInt();
-                string strMaterial = fGroundSpecs.GetWord();
-                double dblUVScale = fGroundSpecs.GetDouble();
-                string strMultitexMaterialName = fGroundSpecs.GetWord();
+                var strId = fGroundSpecs.GetWord();
+                var dwFlag = fGroundSpecs.GetUInt();
+                var strMaterial = fGroundSpecs.GetWord();
+                var dblUVScale = fGroundSpecs.GetDouble();
+                var strMultitexMaterialName = fGroundSpecs.GetWord();
                 double dColor1 = fGroundSpecs.GetDouble(),
                        dColor2 = fGroundSpecs.GetDouble(),
                        dColor3 = fGroundSpecs.GetDouble();

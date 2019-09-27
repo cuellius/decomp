@@ -21,10 +21,7 @@ namespace Decomp.Core
     {
         private SimpleTrieNode<T> _root;
 
-        public SimpleTrie()
-        {
-            _root = new SimpleTrieNode<T>();
-        }
+        public SimpleTrie() => _root = new SimpleTrieNode<T>();
 
         public SimpleTrie(IEnumerable<KeyValuePair<string, T>> enumerable)
         {
@@ -32,15 +29,8 @@ namespace Decomp.Core
             foreach (var pair in enumerable) Add(pair); 
         }
 
-        public void Add(KeyValuePair<string, T> pair)
-        {
-            Add(_root, pair.Key.ToLower(), pair.Value, 0);
-        }
-
-        public void Add(string key, T value)
-        {
-            Add(_root, key.ToLower(), value, 0);
-        }
+        public void Add(KeyValuePair<string, T> pair) => Add(_root, pair.Key.ToLower(), pair.Value, 0);
+        public void Add(string key, T value) => Add(_root, key.ToLower(), value, 0);
 
         private static void Add(SimpleTrieNode<T> node, string s, T value, int index)
         {
@@ -114,10 +104,7 @@ namespace Decomp.Core
             get => GetValue(key);
         }
 
-        public void Clear()
-        {
-            _root = new SimpleTrieNode<T>();
-        }
+        public void Clear() => _root = new SimpleTrieNode<T>();
 
         public bool Remove(string key)
         {

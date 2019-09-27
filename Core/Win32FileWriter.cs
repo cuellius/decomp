@@ -53,6 +53,7 @@ namespace Decomp.Core
         private const int ERROR_FILE_NOT_FOUND = 2;
         private const int ERROR_PATH_NOT_FOUND = 3;
         private const int ERROR_ACCESS_DENIED = 5;
+        private static readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
         // ReSharper restore InconsistentNaming
 
         private readonly StringBuilder _sb;
@@ -66,60 +67,17 @@ namespace Decomp.Core
             _sb = new StringBuilder(2048);
         }
 
-        public void Write(char value)
-        {
-            _sb.Append(value);
-        }
-
-        public void Write(char[] buffer)
-        {
-            _sb.Append(buffer);
-        }
-
-        public void Write(string value)
-        {
-            _sb.Append(value);
-        }
-
-        public void Write(bool value)
-        {
-            Write(value ? "True" : "False");
-        }
-
-        public void Write(int value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-
-        public void Write(uint value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-        
-        public void Write(long value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-        
-        public void Write(ulong value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-
-        public void Write(float value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-        
-        public void Write(double value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
-
-        public void Write(decimal value)
-        {
-            Write(value.ToString(FormatProvider));
-        }
+        public void Write(char value) => _sb.Append(value);
+        public void Write(char[] buffer) => _sb.Append(buffer);
+        public void Write(string value) => _sb.Append(value);
+        public void Write(bool value) => Write(value ? "True" : "False");
+        public void Write(int value) => Write(value.ToString(FormatProvider));
+        public void Write(uint value) => Write(value.ToString(FormatProvider));
+        public void Write(long value) => Write(value.ToString(FormatProvider));
+        public void Write(ulong value) => Write(value.ToString(FormatProvider));
+        public void Write(float value) => Write(value.ToString(FormatProvider));
+        public void Write(double value) => Write(value.ToString(FormatProvider));
+        public void Write(decimal value) => Write(value.ToString(FormatProvider));
 
         public void Write(object value)
         {
@@ -128,10 +86,7 @@ namespace Decomp.Core
             Write(f?.ToString(null, FormatProvider) ?? value.ToString());
         }
 
-        public void Write(string format, params object[] arg)
-        {
-            Write(arg == null ? format : String.Format(FormatProvider, format, arg));
-        }
+        public void Write(string format, params object[] arg) => Write(arg == null ? format : String.Format(FormatProvider, format, arg));
 
         public void WriteLine()
         {
@@ -211,20 +166,11 @@ namespace Decomp.Core
             WriteLine();
         }
 
-        public void WriteLine(string format, params object[] arg)
-        {
-            WriteLine(arg == null ? format : String.Format(FormatProvider, format, arg));
-        }
+        public void WriteLine(string format, params object[] arg) => WriteLine(arg == null ? format : String.Format(FormatProvider, format, arg));
 
-        public void Close()
-        {
-            WriteContentIntoFile();
-        }
+        public void Close() => WriteContentIntoFile();
         
-        private void WriteContentIntoFile()
-        {
-            WriteAllText(_fileName, _sb.ToString());
-        }
+        private void WriteContentIntoFile() => WriteAllText(_fileName, _sb.ToString());
 
         public static unsafe void WriteAllText(string fileName, string data)
         {
@@ -237,7 +183,7 @@ namespace Decomp.Core
 
                 var pHandle = CreateFile(@"\\?\" + fileName, GENERIC_WRITE, 0, IntPtr.Zero, CREATE_ALWAYS, 0, IntPtr.Zero);
 
-                if (pHandle == IntPtr.Zero)
+                if (/*pHandle == IntPtr.Zero || */ pHandle == INVALID_HANDLE_VALUE)
                 {
                     var errorCode = Marshal.GetLastWin32Error();
                     switch (errorCode)

@@ -14,7 +14,7 @@ namespace Decomp.Core
 
             var fId = new Text(Path.Combine(Common.InputPath, "particle_systems.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString());
             var aParticleSystems = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -30,9 +30,9 @@ namespace Decomp.Core
         {
             var sbFlag = new StringBuilder(256);
 
-            string[] strFlags = { "psf_always_emit", "psf_global_emit_dir", "psf_emit_at_water_level", "psf_billboard_2d", "psf_billboard_3d", 
+            string[] strFlags = { "psf_forced", "psf_always_emit", "psf_global_emit_dir", "psf_emit_at_water_level", "psf_billboard_2d", "psf_billboard_3d", 
             "psf_billboard_drop", "psf_turn_to_velocity", "psf_randomize_rotation", "psf_randomize_size", "psf_2d_turbulance", "psf_next_effect_is_lod" };
-            DWORD[] dwFlags = { 0x0000000002, 0x0000000010, 0x0000000020, 0x0000000100, 0x0000000200, 0x0000000300, 0x0000000400, 0x0000001000, 
+            DWORD[] dwFlags = { 0x0000000001, 0x0000000002, 0x0000000010, 0x0000000020, 0x0000000100, 0x0000000200, 0x0000000300, 0x0000000400, 0x0000001000, 
             0x0000002000, 0x0000010000, 0x0000020000 };
 
             for (int i = 0; i < dwFlags.Length; i++)

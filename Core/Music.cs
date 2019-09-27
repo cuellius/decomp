@@ -71,13 +71,13 @@ namespace Decomp.Core
             var fSource = new Win32FileWriter(Path.Combine(Common.OutputPath, "module_music.py"));
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Music);
-            int iTracks = fMusic.GetInt();
+            var iTracks = fMusic.GetInt();
             for (int t = 0; t < iTracks; t++)
             {
-                string strTrack = fMusic.GetWord();
-                DWORD dwTrackFlags = fMusic.GetUInt();
-                DWORD dwContinueFlags = fMusic.GetUInt();
-                string strTrackId = strTrack.Length >= 4 ? strTrack.Remove(strTrack.Length - 4, 4) : strTrack;
+                var strTrack = fMusic.GetWord();
+                var dwTrackFlags = fMusic.GetUInt();
+                var dwContinueFlags = fMusic.GetUInt();
+                var strTrackId = strTrack.Length >= 4 ? strTrack.Remove(strTrack.Length - 4, 4) : strTrack;
                 fSource.WriteLine("  (\"{0}\", \"{1}\", {2}, {3}),", strTrackId, strTrack, DecompileFlags(dwTrackFlags), DecompileFlags(dwContinueFlags ^ dwTrackFlags));
             }
             fSource.Write("]");

@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.IO;
-using DWORD = System.UInt32;
 
 namespace Decomp.Core
 {
@@ -20,13 +19,13 @@ namespace Decomp.Core
                 postfxList[i] = fPostfx.GetWord().Remove(0, 4);
                 fSource.Write("  (\"{0}\"", postfxList[i]);
 
-                DWORD dwFlag = fPostfx.GetDWord();
+                var dwFlag = fPostfx.GetDWord();
                 if (dwFlag == 1)
                     fSource.Write(", fxf_highhdr");
                 else
                     fSource.Write(", {0}", dwFlag);
 
-                int iOpType = fPostfx.GetInt();
+                var iOpType = fPostfx.GetInt();
                 fSource.Write(", {0},", iOpType);
                 for (int p = 0; p < 3; p++)
                 {

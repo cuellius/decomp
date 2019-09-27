@@ -106,10 +106,7 @@ namespace Decomp.Core
             _bufferPos = 0;
         }
 
-        public Win32FileReader(string s)
-        {
-            ReadContentIntoBuffer(s);
-        }
+        public Win32FileReader(string s) => ReadContentIntoBuffer(s);
         
         public int Read()
         {
@@ -119,10 +116,7 @@ namespace Decomp.Core
             return c;
         }
 
-        public int Peek()
-        {
-            return _bufferPos == _bufferLength ? -1 : _buffer[_bufferPos];
-        }
+        public int Peek() => _bufferPos == _bufferLength ? -1 : _buffer[_bufferPos];
 
         public string ReadLine()
         {

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -25,7 +24,7 @@ namespace Decomp.Core
             n = fId.GetInt();
             for (int i = 0; i < n; i++)
             {
-                string strId = fId.GetWord();
+                var strId = fId.GetWord();
                 aSounds[i] = strId.Remove(0, 4);
                 fId.GetString();
             }
@@ -75,10 +74,10 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Sounds);
             fSounds.GetString();
             int iSamples = fSounds.GetInt();
-            var aSamples = new List<string>();
+            var aSamples = new string[iSamples];
             for (int s = 0; s < iSamples; s++)
             {
-                aSamples.Add(fSounds.GetWord());
+                aSamples[s] = fSounds.GetWord();
                 fSounds.GetString();
             }
 
@@ -92,7 +91,7 @@ namespace Decomp.Core
                 {
                     int iSample = fSounds.GetInt();
                     fSounds.GetInt();
-                    fSource.Write("\"{0}\"{1}", aSamples[iSample], l == iListCount - 1 ? "" : ", ");
+                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(), l == iListCount - 1 ? "" : ", ");
                 }
                 fSource.WriteLine("]),");
             }

@@ -83,7 +83,7 @@ namespace Decomp.Core
                 int iTriggers = fPresentations.GetInt();
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    double dInterval = fPresentations.GetDouble();
+                    var dInterval = fPresentations.GetDouble();
                     fSource.Write("    ({0},\r\n    [\r\n", Common.GetTriggerParam(dInterval));
                     int iRecords = fPresentations.GetInt();
                     if (iRecords != 0) Common.PrintStatement(ref fPresentations, ref fSource, iRecords, "      ");

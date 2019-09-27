@@ -93,23 +93,23 @@ namespace Decomp.Core
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.SceneProps);
             fSceneProps.GetString();
-            int iSceneProps = fSceneProps.GetInt();
+            var iSceneProps = fSceneProps.GetInt();
 
             for (int i = 0; i < iSceneProps; i++)
             {
-                string strId = fSceneProps.GetWord();
-                DWORD dwFlag = fSceneProps.GetUInt();
+                var strId = fSceneProps.GetWord();
+                var dwFlag = fSceneProps.GetUInt();
                 fSceneProps.GetInt();
                 fSource.Write("  (\"{0}\", {1}, \"{2}\", \"{3}\", [", strId.Remove(0, 4), DecompileFlags(dwFlag), fSceneProps.GetWord(), fSceneProps.GetWord());
-                
-		        int iTriggers = fSceneProps.GetInt();
+
+                var iTriggers = fSceneProps.GetInt();
 
                 for (int t = 0; t < iTriggers; t++)
                 {
-                    double dInterval = fSceneProps.GetDouble();
+                    var dInterval = fSceneProps.GetDouble();
                     fSource.Write("\r\n    ({0},[\r\n", Common.GetTriggerParam(dInterval));
 
-                    int iRecords = fSceneProps.GetInt();
+                    var iRecords = fSceneProps.GetInt();
                     if (iRecords != 0) Common.PrintStatement(ref fSceneProps, ref fSource, iRecords, "      ");
                     fSource.WriteLine("    ]),");
                 }

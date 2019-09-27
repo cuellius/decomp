@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using DWORD = System.UInt32;
 
 namespace Decomp.Core.Vanilla
 {
@@ -13,7 +12,7 @@ namespace Decomp.Core.Vanilla
         {
             var fId = new Text(strFileName);
             fId.GetString();
-            int n = fId.GetInt();
+            var n = fId.GetInt();
             var aTroops = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -36,7 +35,7 @@ namespace Decomp.Core.Vanilla
             fSource.WriteLine("\r\ntroops = [");
 
             fTroops.GetString();
-            int iTroops = fTroops.GetInt();
+            var iTroops = fTroops.GetInt();
 
             var strUpList = new List<string>();
 
@@ -44,33 +43,36 @@ namespace Decomp.Core.Vanilla
             {
                 fSource.Write("  [\"{0}\", \"{1}\", \"{2}\",", fTroops.GetWord().Remove(0, 4), fTroops.GetWord().Replace('_', ' '), fTroops.GetWord().Replace('_', ' '));
 
-                DWORD dwFlag = fTroops.GetDWord();
+                var dwFlag = fTroops.GetDWord();
                 fSource.Write(" {0},", Core.Troops.DecompileFlags(dwFlag));
 
-                DWORD dwScene = fTroops.GetDWord();
+                var dwScene = fTroops.GetDWord();
                 fSource.Write(" {0},", dwScene == 0 ? "0" : Core.Troops.GetScene(dwScene));
 
                 fSource.Write(" {0},", fTroops.GetWord()); // reserved "0"
 
-                int iFaction = fTroops.GetInt();
+                var iFaction = fTroops.GetInt();
                 if (iFaction > 0 && iFaction < Common.Factions.Length)
                     fSource.WriteLine(" fac_{0},", Common.Factions[iFaction]);
                 else
                     fSource.WriteLine(" {0},", iFaction);
 
-                int iUp1 = fTroops.GetInt();
-                int iUp2 = fTroops.GetInt();
+                var iUp1 = fTroops.GetInt();
+                var iUp2 = fTroops.GetInt();
+
+                // ReSharper disable once InconsistentNaming
+                string fnGetTroopForUpgrade(int id) => id >= 0 && id < Common.Troops.Length ? '"' + Common.Troops[id] + '"' : id.ToString();
 
                 if (iUp1 != 0 && iUp2 != 0)
                     strUpList.Add(
-                        $"upgrade2(troops,\"{Common.Troops[t]}\",\"{Common.Troops[iUp1]}\",\"{Common.Troops[iUp2]}\")");
+                        $"upgrade2(troops,{fnGetTroopForUpgrade(t)},{fnGetTroopForUpgrade(iUp1)},{fnGetTroopForUpgrade(iUp2)})");
                 else if (iUp1 != 0 && iUp2 == 0)
-                    strUpList.Add($"upgrade(troops,\"{Common.Troops[t]}\",\"{Common.Troops[iUp1]}\")");
+                    strUpList.Add($"upgrade(troops,{fnGetTroopForUpgrade(t)},{fnGetTroopForUpgrade(iUp1)})");
 
-                var itemList = new List<int>();
+                var itemList = new List<int>(64);
                 for (int i = 0; i < 64; i++)
                 {
-                    int iItem = fTroops.GetInt();
+                    var iItem = fTroops.GetInt();
                     fTroops.GetInt(); //skip 0
                     if (-1 == iItem) continue;
                     itemList.Add(iItem);
@@ -98,12 +100,12 @@ namespace Decomp.Core.Vanilla
                 var sbKnow = new StringBuilder(512);
                 for (int x = 0; x < 6; x++)
                 {
-                    DWORD dword = fTroops.GetDWord();
+                    var dword = fTroops.GetDWord();
                     if (dword == 0) continue;
                     for (int q = 0; q < 8; q++)
                     {
-                        DWORD dwKnow = 0xF & (dword >> (q << 2));
-                        if (dwKnow != 0) sbKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
+                        var dwKnow = 0xF & (dword >> (q << 2));
+                        if (dwKnow != 0 && (x << 3) + q < Common.Skills.Length) sbKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
                     }
                 }
 
@@ -114,7 +116,7 @@ namespace Decomp.Core.Vanilla
 
                 fSource.Write(" {0},", sbKnow);
 
-                string strFace =
+                var strFace =
                     $"0x{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}, 0x{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}{fTroops.GetUInt64():x16}";
                 fSource.WriteLine("{0}],", strFace);
             }
