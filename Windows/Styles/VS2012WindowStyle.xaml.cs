@@ -15,7 +15,8 @@ namespace Decomp.Windows.Styles
             while (element != null)
             {
                 element = VisualTreeHelper.GetParent(element);
-                if (element is Window) { action(element as Window); break; }
+                if (!(element is Window window)) continue;
+                action(window); break;
             }
         }
 
@@ -27,18 +28,23 @@ namespace Decomp.Windows.Styles
         public static IntPtr GetWindowHandle(this Window window) => new WindowInteropHelper(window).Handle;
     }
 
+    // ReSharper disable once InconsistentNaming
+#pragma warning disable CA1010 // Collections should implement generic interface
+#pragma warning disable CA1710 // Identifiers should have correct suffix
     public partial class VS2012WindowStyle
+#pragma warning restore CA1710 // Identifiers should have correct suffix
+#pragma warning restore CA1010 // Collections should implement generic interface
     {
         #region sizing event handlers
 
-        private void OnSizeSouth(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.South); }
-        private void OnSizeNorth(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.North); }
-        private void OnSizeEast(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.East); }
-        private void OnSizeWest(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.West); }
-        private void OnSizeNorthWest(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.NorthWest); }
-        private void OnSizeNorthEast(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.NorthEast); }
-        private void OnSizeSouthEast(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.SouthEast); }
-        private void OnSizeSouthWest(object sender, MouseButtonEventArgs e) { OnSize(sender, SizingAction.SouthWest); }
+        private void OnSizeSouth(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.South);
+        private void OnSizeNorth(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.North);
+        private void OnSizeEast(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.East);
+        private void OnSizeWest(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.West);
+        private void OnSizeNorthWest(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.NorthWest);
+        private void OnSizeNorthEast(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.NorthEast);
+        private void OnSizeSouthEast(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.SouthEast);
+        private void OnSizeSouthWest(object sender, MouseButtonEventArgs e) => OnSize(sender, SizingAction.SouthWest);
 
         private void OnSize(object sender, SizingAction action)
         {

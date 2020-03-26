@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -48,17 +49,20 @@ namespace Decomp
             if (language == "Russian" || language == "English") Language = language;
         }
 
-        public static string[] CommandLineArgs;
+        public static IList<string> CommandLineArgs { get; private set; }
 
         public static string StartupPath => Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly()?.Location);
 
+        private static string _language = "";
         public static string Language
         {
+            get => _language;
             set
             {
+                _language = value;
                 var newDict = new ResourceDictionary { Source = new Uri($"Languages/{value}.xaml", UriKind.Relative) };
 
-                var oldDict = (from d in Current.Resources.MergedDictionaries where d.Source != null && d.Source.OriginalString.StartsWith("Languages/") select d).First();
+                var oldDict = (from d in Current.Resources.MergedDictionaries where d.Source != null && d.Source.OriginalString.StartsWith("Languages/", StringComparison.OrdinalIgnoreCase) select d).First();
 
                 if (oldDict != null)
                 {

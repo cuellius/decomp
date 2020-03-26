@@ -15,7 +15,9 @@ namespace Decomp.Windows
     public partial class AutoCompleteTextBox
     {
         // ReSharper disable InconsistentNaming
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private const int MAX_PATH = 260;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct WIN32_FIND_DATA
         {
             public readonly FileAttributes dwFileAttributes;
@@ -26,17 +28,23 @@ namespace Decomp.Windows
             private readonly uint nFileSizeLow;
             private readonly uint dwReserved0;
             private readonly uint dwReserved1;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
             public readonly string cFileName;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
             private readonly string cAlternateFileName;
         }
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+
+        [DllImport("Kernel32.dll", EntryPoint = "FindFirstFileW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         private static extern IntPtr FindFirstFile(string lpFileName, out WIN32_FIND_DATA lpFindFileData);
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+
+        [DllImport("Kernel32.dll", EntryPoint = "FindNextFileW", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool FindNextFile(IntPtr hFindFile, out WIN32_FIND_DATA lpFindFileData);
-        [DllImport("kernel32.dll")]
+
+        [DllImport("Kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool FindClose(IntPtr hFindFile);
+
         private readonly IntPtr INVALID_HANDLE_VALUE = new IntPtr(-1);
 
         private const int WM_NCLBUTTONDOWN = 0x00A1;
@@ -65,6 +73,8 @@ namespace Decomp.Windows
 
         public IEnumerable<string> GetItems(string textPattern)
         {
+            if (textPattern == null) throw new ArgumentNullException(nameof(textPattern));
+
             if (textPattern.Length < 2 || textPattern[1] != ':') yield break;
             var lastSlashPos = textPattern.LastIndexOf('\\');
             if (lastSlashPos == -1) yield break;
@@ -210,7 +220,8 @@ namespace Decomp.Windows
             var bindingExpression = GetBindingExpression(TextProperty);
             bindingExpression?.UpdateSource();
         }
-        
+
+#pragma warning disable CA1062 // Validate arguments of public methods
         protected override void OnDrop(DragEventArgs e)
         {
             base.OnDrop(e);
@@ -232,5 +243,6 @@ namespace Decomp.Windows
             e.Effects = DragDropEffects.All;
             e.Handled = true;
         }
+#pragma warning restore CA1062 // Validate arguments of public methods
     }
 }

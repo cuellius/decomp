@@ -10,10 +10,10 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if(!File.Exists(Path.Combine(Common.InputPath, "actions.txt"))) return new string[0];
+            if(!File.Exists(Path.Combine(Common.InputPath, "actions.txt"))) return Array.Empty<string>();
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "actions.txt"));
-            var n = Convert.ToInt32(fId.ReadLine());
+            var n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo(1033));
             var aAnimations = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -22,7 +22,7 @@ namespace Decomp.Core
 
                 aAnimations[i] = animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
-                var j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[3]);
+                var j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[3], CultureInfo.GetCultureInfo("en-US"));
                 while (j != 0)
                 {
                     fId.ReadLine();
@@ -38,16 +38,16 @@ namespace Decomp.Core
         {
             var sbFlag = new StringBuilder(2048);
             var dwAnimFlagsLength = dwFlag & 0xFF000000;
-            string[] strAnimFlags = { "acf_synch_with_horse", "acf_align_with_ground", "acf_enforce_lowerbody", "acf_enforce_rightside", "acf_enforce_all", 
-			"acf_parallels_for_look_slope", "acf_lock_camera", "acf_displace_position", "acf_ignore_slope", "acf_thrust", "acf_right_cut",
+            string[] strAnimFlags = { "acf_synch_with_horse", "acf_align_with_ground", "acf_enforce_lowerbody", "acf_enforce_rightside", "acf_enforce_all",
+            "acf_lock_rotation", "acf_parallels_for_look_slope", "acf_lock_camera", "acf_displace_position", "acf_ignore_slope", "acf_thrust", "acf_right_cut",
 			"acf_left_cut", "acf_overswing", "acf_rot_vertical_bow", "acf_rot_vertical_sword" };
-            DWORD[] dwAnimFlags = { 0x00000001, 0x00000002, 0x00000100, 0x00000200, 0x00000400, 0x00001000, 0x00002000, 0x00004000, 0x00008000, 0x00010000,
+            DWORD[] dwAnimFlags = { 0x00000001, 0x00000002, 0x00000100, 0x00000200, 0x00000400, 0x00000800, 0x00001000, 0x00002000, 0x00004000, 0x00008000, 0x00010000,
 			0x00020000, 0x00040000, 0x00080000, 0x00100000, 0x00200000 };
             if (dwAnimFlagsLength != 0)
             {
-                dwAnimFlagsLength = dwAnimFlagsLength >> 24;
+                dwAnimFlagsLength >>= 24;
                 dwFlag ^= 0xFF000000;
-                sbFlag.AppendFormat("acf_anim_length({0})", dwAnimFlagsLength);
+                sbFlag.AppendFormat(CultureInfo.GetCultureInfo(1033), "acf_anim_length({0})", dwAnimFlagsLength);
             }
 
             for (int f = 0; f < dwAnimFlags.Length; f++)
@@ -116,7 +116,7 @@ namespace Decomp.Core
         {
             var sbFlag = new StringBuilder(2048);
             DWORD dwSequenceBlend = dwFlag & 0xFF;
-            if (dwSequenceBlend != 0) sbFlag.AppendFormat("arf_blend_in_{0}", dwSequenceBlend - 1);
+            if (dwSequenceBlend != 0) sbFlag.AppendFormat(CultureInfo.GetCultureInfo("en-US"), "arf_blend_in_{0}", dwSequenceBlend - 1);
 
             string[] strAnimSequenceFlags = { "arf_make_walk_sound", "arf_make_custom_sound", "arf_two_handed_blade", "arf_lancer", "arf_stick_item_to_left_hand",
 				"arf_cyclic", "arf_use_walk_progress", "arf_use_stand_progress", "arf_use_inv_walk_progress" };
@@ -169,9 +169,9 @@ namespace Decomp.Core
             var iActions = fActions.GetInt();
             for (int a = 0; a < iActions; a++)
             {
-                string strAnimId = fActions.GetWord();
-                DWORD dwAnimFlags = fActions.GetDWord();
-                DWORD dwMasterAnimFlags = fActions.GetDWord();
+                var strAnimId = fActions.GetWord();
+                var dwAnimFlags = fActions.GetDWord();
+                var dwMasterAnimFlags = fActions.GetDWord();
                 fSource.WriteLine("  [\"{0}\", {1}, {2},", strAnimId, DecompileFlags(dwAnimFlags), DecompileMasterFlags(dwMasterAnimFlags));
                 var iAnimSequences = fActions.GetInt();
                 for (int s = 0; s < iAnimSequences; s++)

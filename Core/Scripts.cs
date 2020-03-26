@@ -1,14 +1,15 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Decomp.Core
 {
     public static class Scripts
     {
-        public static string[] InitializeVariables() => File.Exists(Path.Combine(Common.InputPath, "variables.txt")) ? Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "variables.txt")) : new string[0];
+        public static string[] InitializeVariables() => File.Exists(Path.Combine(Common.InputPath, "variables.txt")) ? Win32FileReader.ReadAllLines(Path.Combine(Common.InputPath, "variables.txt")) : Array.Empty<string>();
 
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "scripts.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "scripts.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "scripts.txt"));
             fId.GetString();

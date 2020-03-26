@@ -10,18 +10,20 @@ namespace Decomp.Core.Vanilla
 {
     public static class Items
     {
+        // ReSharper disable InconsistentNaming
         private const BYTE HORSE_TYPE = 0x1;
         private const BYTE GOODS_TYPE = 0xb;
         private const BYTE BOW_TYPE = 0x8;
         private const BYTE CROSSBOW_TYPE = 0x9;
         private const BYTE PISTOL_TYPE = 0x10;
         private const BYTE MUSKET_TYPE = 0x11;
+        // ReSharper restore InconsistentNaming
 
         public static string[] GetIdFromFile(string strFileName)
         {
             var fId = new Text(strFileName);
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            int n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -144,7 +146,7 @@ namespace Decomp.Core.Vanilla
                 {
                     var strMeshName = fItems.GetWord();
                     var dwMeshBits = fItems.GetUInt64();
-                    strMeshes = strMeshes + $"(\"{strMeshName}\", {Core.Items.DecompileMeshesImodBits(dwMeshBits)}),";
+                    strMeshes += $"(\"{strMeshName}\", {Core.Items.DecompileMeshesImodBits(dwMeshBits)}),";
                 }
                 if (strMeshes.Length > 0)
                     strMeshes = strMeshes.Remove(strMeshes.Length - 1, 1);

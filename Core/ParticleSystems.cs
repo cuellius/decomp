@@ -10,11 +10,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "particle_systems.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "particle_systems.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "particle_systems.txt"));
             fId.GetString();
-            var n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aParticleSystems = new string[n];
             for (int i = 0; i < n; i++)
             {

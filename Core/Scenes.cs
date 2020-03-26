@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
@@ -9,7 +10,7 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "scenes.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "scenes.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "scenes.txt"));
             fId.GetString();
@@ -88,7 +89,7 @@ namespace Decomp.Core
                     //else if (iScene == 0)
                     //    fprintf(g_fOutput, "\"\"");
                     else
-                        fSource.Write("{0}", iScene < Common.Scenes.Length ? '"' + Common.Scenes[iScene] + '"' : iScene.ToString());
+                        fSource.Write("{0}", iScene < Common.Scenes.Count ? '"' + Common.Scenes[iScene] + '"' : iScene.ToString(CultureInfo.GetCultureInfo("en-US")));
                     if (i < iPassages - 1)
                         fSource.Write(", ");
                 }
@@ -99,7 +100,7 @@ namespace Decomp.Core
                 for (int i = 0; i < iChestTroops; i++)
                 {
                     int iTroop = fScenes.GetInt();
-                    if (iTroop < Common.Troops.Length)
+                    if (iTroop < Common.Troops.Count)
                         fSource.Write("\"{0}\"", Common.Troops[iTroop]);
                     else
                         fSource.Write("{0}", iTroop);

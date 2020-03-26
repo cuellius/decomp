@@ -22,7 +22,8 @@ namespace Decomp.Core
             return Path.GetDirectoryName(message.Substring(beginPos + 1, endPos - beginPos - 1));
         }
 
-        public static MainWindow Window;
+        public static MainWindow Window { get; set; }
+
         private static string Status
         {
             set => Window.StatusTextBlock.SetText(value);
@@ -32,10 +33,7 @@ namespace Decomp.Core
 
         public static bool Alive => _workThread.IsAlive;
 
-        public static void StopDecompilation()
-        {
-            _workThread.Abort();
-        }
+        public static void StopDecompilation() => _workThread.Abort();
 
         public static void StartDecompilation()
         {
@@ -206,11 +204,12 @@ namespace Decomp.Core
         private static void InitializeOpCodes()
         {
             //Common.Operations = new Dictionary<long, string>();
-            Common.Operators = new Dictionary<int, Operator>();
-
+            //Common.Operators = new Dictionary<int, Operator>();
+            var opCodes = new Dictionary<int, Operator>();
             Window.ModeComboBox.Dispatcher?.Invoke(() => Common.SelectedMode = (Mode)Window.ModeComboBox.SelectedIndex);
             var operators = Operator.GetCollection(Common.SelectedMode);
-            foreach (var op in operators) Common.Operators[op.Code] = op;
+            foreach (var op in operators) opCodes[op.Code] = op;
+            Common.Operators = opCodes;
         }
 
         private static void InitializeModuleData()
@@ -459,7 +458,7 @@ namespace Decomp.Core
 
             iNumFiles += strModDataFiles.Count(strModDataFile => File.Exists(Path.Combine(Common.InputPath, "Data", strModDataFile)));
 
-            var sShadersFile = GetShadersFullFileName(out bool b);
+            var sShadersFile = GetShadersFullFileName(out var b);
             if (b && decompileShaders) iNumFiles++;
             
             double dblProgressForOneFile = 100.0 / iNumFiles, dblProgress = 0;

@@ -100,6 +100,7 @@ namespace Decomp.Core.Shaders
             public uint PresentationInterval;
         }
 
+#pragma warning disable CA1707 // Identifiers should not contain underscores
         public const uint WS_OVERLAPPED = 0x00000000;
         public const uint WS_POPUP = 0x80000000;
         public const uint WS_CHILD = 0x40000000;
@@ -131,10 +132,11 @@ namespace Decomp.Core.Shaders
 
         public const uint WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-        public const uint WS_POPUPWINDOW =  WS_POPUP | WS_BORDER | WS_SYSMENU;
+        public const uint WS_POPUPWINDOW = WS_POPUP | WS_BORDER | WS_SYSMENU;
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct IDirect3D9
+        private struct IDirect3D9
         {
             public IntPtr* lpVtbl;
             /*
@@ -170,19 +172,19 @@ namespace Decomp.Core.Shaders
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct IDirect3DDevice9
+        private struct IDirect3DDevice9
         {
             public IntPtr* lpVtbl;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct ID3DXEffect
+        private struct ID3DXEffect
         {
             public IntPtr* lpVtbl;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct ID3DXBuffer
+        private struct ID3DXBuffer
         {
             public IntPtr* lpVtbl;
             /*    
@@ -300,6 +302,7 @@ namespace Decomp.Core.Shaders
             ID3DXEffect* pD3DEffect = null;
             ID3DXBuffer* pD3DError = null;
             ID3DXBuffer* pDisassembler = null;
+
             D3DXCreateEffectFromFile(g_D3DDevice, sFileName, IntPtr.Zero, IntPtr.Zero, 0, IntPtr.Zero, &pD3DEffect, &pD3DError);
             D3DXDisassembleEffect(pD3DEffect, false, &pDisassembler);
 

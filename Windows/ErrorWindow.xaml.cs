@@ -13,7 +13,11 @@ namespace Decomp.Windows
         public static void CloseCurrentErrorWindow()
         {
             if (_window == null) return;
-            try { _window.Dispatcher?.Invoke(_window.Close); } catch { }
+            try { _window.Dispatcher?.Invoke(_window.Close); }
+            catch
+            {
+                // ignored
+            }
         }
 
         public ErrorWindow(Exception exception)
@@ -30,7 +34,7 @@ namespace Decomp.Windows
             hyperLink.RequestNavigate += BugRepostHyperlinkOnRequestNavigate;
             FatalErrorTextBlock.Inlines.Add(hyperLink);
 
-            InformationTextBlock.Text = exception.ToString();
+            InformationTextBlock.Text = exception?.ToString() ?? "";
             SizeChanged += (s, e) =>
             {
                 if (!e.WidthChanged) return;

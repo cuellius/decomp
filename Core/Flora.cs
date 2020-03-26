@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 using DWORD64 = System.UInt64;
@@ -12,11 +13,11 @@ namespace Decomp.Core
         public static string DecompileFlags(DWORD64 dwFlag)
         {
             DWORD64 dwDensity = (dwFlag & 0xFFFF00000000) >> 32;
-            dwFlag = dwFlag & 0xFFFFFFFF;
+            dwFlag &= 0xFFFFFFFF;
 
             var sbFlag = new StringBuilder(2048);
 
-            if (dwDensity != 0) sbFlag.AppendFormat("density({0})|", dwDensity);
+            if (dwDensity != 0) sbFlag.AppendFormat(CultureInfo.GetCultureInfo("en-US"),"density({0})|", dwDensity);
 
             string[] strFlags = { "fkf_plain", "fkf_steppe", "fkf_snow", "fkf_desert", "fkf_plain_forest", 
             "fkf_steppe_forest", "fkf_snow_forest", "fkf_desert_forest", "fkf_realtime_ligting", "fkf_point_up", "fkf_align_with_ground", 

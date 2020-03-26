@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using DWORD64 = System.UInt64;
@@ -11,11 +12,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "party_templates.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "party_templates.txt"))) return Array.Empty<string>();
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "party_templates.txt"));
             fId.ReadLine();
-            var n = Convert.ToInt32(fId.ReadLine());
+            var n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo("en-US"));
             var aPartyTemplates = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -35,7 +36,7 @@ namespace Decomp.Core
             var wCarriesGoods = (WORD)((dwFlag & 0x00FF000000000000) >> 48);
             var wCarriesGold = (WORD)((dwFlag & 0xFF00000000000000) >> 56);
 
-            if (wIcon != 0) sbFlag.Append(wIcon < Common.MapIcons.Length ? "icon_" + Common.MapIcons[wIcon] + "|" : Convert.ToString(wIcon) + "|"); 
+            if (wIcon != 0) sbFlag.Append(wIcon < Common.MapIcons.Count ? "icon_" + Common.MapIcons[wIcon] + "|" : Convert.ToString(wIcon, CultureInfo.GetCultureInfo("en-US")) + "|"); 
             if (wCarriesGoods != 0) sbFlag.Append("carries_goods(" + wCarriesGoods + ")|");
             if (wCarriesGold != 0) sbFlag.Append("carries_gold(" + wCarriesGold + ")|");
 
@@ -105,7 +106,7 @@ namespace Decomp.Core
                 fSource.Write(", {0}, {1}", DecompileFlags(dwFlag), fTemplates.GetInt());
 
                 var iFaction = fTemplates.GetInt();
-                if (iFaction >= 0 && iFaction < Common.Factions.Length)
+                if (iFaction >= 0 && iFaction < Common.Factions.Count)
                     fSource.Write(", fac_{0}", Common.Factions[iFaction]);
                 else
                     fSource.Write(", {0}", iFaction);
@@ -122,7 +123,7 @@ namespace Decomp.Core
                     var iMinTroops = fTemplates.GetInt();
                     var iMaxTroops = fTemplates.GetInt();
                     var dwMemberFlag = fTemplates.GetDWord();
-                    sbTroopList.Append($"({(iTroop < Common.Troops.Length ? "trp_" + Common.Troops[iTroop] : iTroop.ToString())}, {iMinTroops}, {iMaxTroops}{(dwMemberFlag == 1 ? ", pmf_is_prisoner" : "")}),");
+                    sbTroopList.Append($"({(iTroop < Common.Troops.Count ? "trp_" + Common.Troops[iTroop] : iTroop.ToString(CultureInfo.GetCultureInfo("en-US")))}, {iMinTroops}, {iMaxTroops}{(dwMemberFlag == 1 ? ", pmf_is_prisoner" : "")}),");
                 }
                 if (sbTroopList.Length != 0) sbTroopList.Length--;
                 fSource.WriteLine("{0}]),", sbTroopList);

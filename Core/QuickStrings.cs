@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace Decomp.Core
@@ -7,10 +8,10 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "quick_strings.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "quick_strings.txt"))) return Array.Empty<string>();
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "quick_strings.txt"));
-            int n = Convert.ToInt32(fId.ReadLine());
+            int n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo("en-US"));
             var aQuickStrings = new string[n];
             for (int i = 0; i < n; i++)
             {

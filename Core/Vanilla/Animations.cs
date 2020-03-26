@@ -10,7 +10,7 @@ namespace Decomp.Core.Vanilla
         public static string[] GetIdFromFile(string strFileName)
         {
             var fId = new StreamReader(strFileName);
-            int n = Convert.ToInt32(fId.ReadLine());
+            int n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo("en-US"));
             var aAnimations = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -20,7 +20,7 @@ namespace Decomp.Core.Vanilla
 
                 aAnimations[i] = animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[0];
 
-                int j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2]);
+                int j = Convert.ToInt32(animation.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[2], CultureInfo.GetCultureInfo("en-US"));
                 while (j != 0)
                 {
                     fId.ReadLine();

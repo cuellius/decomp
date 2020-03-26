@@ -8,10 +8,10 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "meshes.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "meshes.txt"))) return Array.Empty<string>();
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "meshes.txt"));
-            var n = Convert.ToInt32(fId.ReadLine());
+            var n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo("en-US"));
             var aMeshes = new string[n];
             for (int i = 0; i < n; i++)
             {

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Globalization;
 
 namespace Decomp.Windows.HtmlConverter
 {
@@ -17,7 +18,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		internal static bool IsEmptyElement(string xmlElementName)
 		{
-			return _htmlEmptyElements.Contains(xmlElementName.ToLower());
+			return _htmlEmptyElements.Contains(xmlElementName.ToLower(CultureInfo.GetCultureInfo("en-US")));
 		}
 
 		internal static bool IsBlockElement(string xmlElementName)
@@ -37,39 +38,27 @@ namespace Decomp.Windows.HtmlConverter
 
 		internal static bool ClosesOnParentElementEnd(string xmlElementName)
 		{
-			return _htmlElementsClosingOnParentElementEnd.Contains(xmlElementName.ToLower());
+			return _htmlElementsClosingOnParentElementEnd.Contains(xmlElementName.ToLower(CultureInfo.GetCultureInfo("en-US")));
 		}
 
         internal static bool ClosesOnNextElementStart(string currentElementName, string nextElementName)
 		{
-			switch (currentElementName)
-			{
-				case "colgroup":
-					return _htmlElementsClosingColgroup.Contains(nextElementName) && IsBlockElement(nextElementName);
-				case "dd":
-					return _htmlElementsClosingDd.Contains(nextElementName) && IsBlockElement(nextElementName);
-				case "dt":
-					return _htmlElementsClosingDt.Contains(nextElementName) && IsBlockElement(nextElementName);
-				case "li":
-					return _htmlElementsClosingLi.Contains(nextElementName);
-				case "p":
-					return IsBlockElement(nextElementName);
-				case "tbody":
-					return _htmlElementsClosingTbody.Contains(nextElementName);
-				case "tfoot":
-					return _htmlElementsClosingTfoot.Contains(nextElementName);
-				case "thead":
-					return _htmlElementsClosingThead.Contains(nextElementName);
-				case "tr":
-					return _htmlElementsClosingTr.Contains(nextElementName);
-				case "td":
-					return _htmlElementsClosingTd.Contains(nextElementName);
-				case "th":
-					return _htmlElementsClosingTh.Contains(nextElementName);
-                default:
-                    return false;
-			}
-		}
+            return currentElementName switch
+            {
+                "colgroup" => _htmlElementsClosingColgroup.Contains(nextElementName) && IsBlockElement(nextElementName),
+                "dd" => _htmlElementsClosingDd.Contains(nextElementName) && IsBlockElement(nextElementName),
+                "dt" => _htmlElementsClosingDt.Contains(nextElementName) && IsBlockElement(nextElementName),
+                "li" => _htmlElementsClosingLi.Contains(nextElementName),
+                "p" => IsBlockElement(nextElementName),
+                "tbody" => _htmlElementsClosingTbody.Contains(nextElementName),
+                "tfoot" => _htmlElementsClosingTfoot.Contains(nextElementName),
+                "thead" => _htmlElementsClosingThead.Contains(nextElementName),
+                "tr" => _htmlElementsClosingTr.Contains(nextElementName),
+                "td" => _htmlElementsClosingTd.Contains(nextElementName),
+                "th" => _htmlElementsClosingTh.Contains(nextElementName),
+                _ => false,
+            };
+        }
 
 		internal static bool IsEntity(string entityName)
 		{

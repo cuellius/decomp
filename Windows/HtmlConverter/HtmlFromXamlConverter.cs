@@ -9,8 +9,9 @@ namespace Decomp.Windows.HtmlConverter
 	internal static class HtmlFromXamlConverter
 	{
 		internal static string ConvertXamlToHtml(string xamlString)
-		{
-		    var xamlReader = new XmlTextReader(new StringReader(xamlString));
+        {
+            using var sr = new StringReader(xamlString);
+            using var xamlReader = new XmlTextReader(sr);
 
 			var htmlStringBuilder = new StringBuilder(100);
 			var htmlWriter = new XmlTextWriter(new StringWriter(htmlStringBuilder));
@@ -19,7 +20,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			var htmlString = htmlStringBuilder.ToString();
 
-			return htmlString;
+            return htmlString;
 		}
 
 		private static bool WriteFlowDocument(XmlTextReader xamlReader, XmlTextWriter htmlWriter)
@@ -64,10 +65,10 @@ namespace Decomp.Windows.HtmlConverter
 						css = "font-family:" + xamlReader.Value + ";";
 						break;
 					case "FontStyle":
-						css = "font-style:" + xamlReader.Value.ToLower() + ";";
+						css = "font-style:" + xamlReader.Value.ToLower(CultureInfo.GetCultureInfo("en-US")) + ";";
 						break;
 					case "FontWeight":
-						css = "font-weight:" + xamlReader.Value.ToLower() + ";";
+						css = "font-weight:" + xamlReader.Value.ToLower(CultureInfo.GetCultureInfo("en-US")) + ";";
 						break;
 					case "FontStretch":
 						break;
@@ -147,7 +148,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static string ParseXamlColor(string color)
 		{
-			if (color.StartsWith("#")) color = "#" + color.Substring(3);
+			if (color.Length > 0 && color[0] == '#') color = "#" + color.Substring(3);
 			return color;
 		}
 
@@ -162,25 +163,14 @@ namespace Decomp.Windows.HtmlConverter
 				else
 					values[i] = "1";
 			}
-
-			string cssThickness;
-			switch (values.Length)
-			{
-				case 1:
-					cssThickness = thickness;
-					break;
-				case 2:
-					cssThickness = values[1] + " " + values[0];
-					break;
-				case 4:
-					cssThickness = values[1] + " " + values[2] + " " + values[3] + " " + values[0];
-					break;
-				default:
-					cssThickness = values[0];
-					break;
-			}
-
-			return cssThickness;
+            var cssThickness = values.Length switch
+            {
+                1 => thickness,
+                2 => values[1] + " " + values[0],
+                4 => values[1] + " " + values[2] + " " + values[3] + " " + values[0],
+                _ => values[0],
+            };
+            return cssThickness;
 		}
 
 		private static void WriteElementContent(XmlTextReader xamlReader, XmlTextWriter htmlWriter, StringBuilder inlineStyle)
@@ -238,7 +228,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddComplexProperty(XmlTextReader xamlReader, StringBuilder inlineStyle)
 		{
-			if (inlineStyle != null && xamlReader.Name.EndsWith(".TextDecorations")) inlineStyle.Append("text-decoration:underline;");
+			if (inlineStyle != null && xamlReader.Name.EndsWith(".TextDecorations", StringComparison.Ordinal)) inlineStyle.Append("text-decoration:underline;");
             WriteElementContent(xamlReader, null, null);
 		}
 

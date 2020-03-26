@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -8,7 +9,7 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "scene_props.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "scene_props.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "scene_props.txt"));
             fId.GetString();

@@ -4,398 +4,414 @@ using System.Text;
 
 namespace Decomp.Windows.HtmlConverter
 {
-	internal class HtmlLexicalAnalyzer
-	{
-		internal HtmlLexicalAnalyzer(string inputTextString)
-		{
-			_inputStringReader = new StringReader(inputTextString);
-			_nextCharacterCode = 0;
-			NextCharacter = ' ';
-			_lookAheadCharacterCode = _inputStringReader.Read();
-			_lookAheadCharacter = (char)_lookAheadCharacterCode;
-			_previousCharacter = ' ';
-			_ignoreNextWhitespace = true;
-			_nextToken = new StringBuilder(100);
-			NextTokenType = HtmlTokenType.Text;
-			GetNextCharacter();
-		}
+    internal class HtmlLexicalAnalyzer : IDisposable
+    {
 
-		internal void GetNextContentToken()
-		{
-			_nextToken.Length = 0;
-			if (IsAtEndOfStream)
-			{
-				NextTokenType = HtmlTokenType.Eof;
-				return;
-			}
+    internal HtmlLexicalAnalyzer(string inputTextString)
+    {
+        _inputStringReader = new StringReader(inputTextString);
+        _nextCharacterCode = 0;
+        NextCharacter = ' ';
+        _lookAheadCharacterCode = _inputStringReader.Read();
+        _lookAheadCharacter = (char) _lookAheadCharacterCode;
+        _previousCharacter = ' ';
+        _ignoreNextWhitespace = true;
+        _nextToken = new StringBuilder(100);
+        NextTokenType = HtmlTokenType.Text;
+        GetNextCharacter();
+    }
 
-			if (IsAtTagStart)
-			{
-				GetNextCharacter();
+    internal void GetNextContentToken()
+    {
+        _nextToken.Length = 0;
+        if (IsAtEndOfStream)
+        {
+            NextTokenType = HtmlTokenType.Eof;
+            return;
+        }
 
-				if (NextCharacter == '/')
-				{
-					_nextToken.Append("</");
-					NextTokenType = HtmlTokenType.ClosingTagStart;
+        if (IsAtTagStart)
+        {
+            GetNextCharacter();
 
-					GetNextCharacter();
-					_ignoreNextWhitespace = false;
-				}
-				else
-				{
-					NextTokenType = HtmlTokenType.OpeningTagStart;
-					_nextToken.Append("<");
-					_ignoreNextWhitespace = true;
-				}
-			}
-			else if (IsAtDirectiveStart)
-			{
-			    GetNextCharacter();
-			    switch (_lookAheadCharacter)
-			    {
-			        case '[':
-			            ReadDynamicContent();
-			            break;
-			        case '-':
-			            ReadComment();
-			            break;
-			        default:
-			            ReadUnknownDirective();
-			            break;
-			    }
-			}
-			else
-			{
-				NextTokenType = HtmlTokenType.Text;
-				while (!IsAtTagStart && !IsAtEndOfStream && !IsAtDirectiveStart)
-				{
-					if (NextCharacter == '<' && !IsNextCharacterEntity && _lookAheadCharacter == '?')
-						SkipProcessingDirective();
-					else
-					{
-						if (NextCharacter <= ' ')
-						{
-							if (!_ignoreNextWhitespace) _nextToken.Append(' ');
-							_ignoreNextWhitespace = true;
-						}
-						else
-						{
-							_nextToken.Append(NextCharacter);
-							_ignoreNextWhitespace = false;
-						}
-						GetNextCharacter();
-					}
-				}
-			}
-		}
+            if (NextCharacter == '/')
+            {
+                _nextToken.Append("</");
+                NextTokenType = HtmlTokenType.ClosingTagStart;
 
-		internal void GetNextTagToken()
-		{
-			_nextToken.Length = 0;
-			if (IsAtEndOfStream)
-			{
-				NextTokenType = HtmlTokenType.Eof;
-				return;
-			}
+                GetNextCharacter();
+                _ignoreNextWhitespace = false;
+            }
+            else
+            {
+                NextTokenType = HtmlTokenType.OpeningTagStart;
+                _nextToken.Append("<");
+                _ignoreNextWhitespace = true;
+            }
+        }
+        else if (IsAtDirectiveStart)
+        {
+            GetNextCharacter();
+            switch (_lookAheadCharacter)
+            {
+                case '[':
+                    ReadDynamicContent();
+                    break;
+                case '-':
+                    ReadComment();
+                    break;
+                default:
+                    ReadUnknownDirective();
+                    break;
+            }
+        }
+        else
+        {
+            NextTokenType = HtmlTokenType.Text;
+            while (!IsAtTagStart && !IsAtEndOfStream && !IsAtDirectiveStart)
+            {
+                if (NextCharacter == '<' && !IsNextCharacterEntity && _lookAheadCharacter == '?')
+                    SkipProcessingDirective();
+                else
+                {
+                    if (NextCharacter <= ' ')
+                    {
+                        if (!_ignoreNextWhitespace) _nextToken.Append(' ');
+                        _ignoreNextWhitespace = true;
+                    }
+                    else
+                    {
+                        _nextToken.Append(NextCharacter);
+                        _ignoreNextWhitespace = false;
+                    }
 
-			SkipWhiteSpace();
+                    GetNextCharacter();
+                }
+            }
+        }
+    }
 
-			if (NextCharacter == '>' && !IsNextCharacterEntity)
-			{
-				NextTokenType = HtmlTokenType.TagEnd;
-				_nextToken.Append('>');
-				GetNextCharacter();
-			}
-			else if (NextCharacter == '/' && _lookAheadCharacter == '>')
-			{
-				NextTokenType = HtmlTokenType.EmptyTagEnd;
-				_nextToken.Append("/>");
-				GetNextCharacter();
-				GetNextCharacter();
-				_ignoreNextWhitespace = false;
-			}
-			else if (IsGoodForNameStart(NextCharacter))
-			{
-				NextTokenType = HtmlTokenType.Name;
+    internal void GetNextTagToken()
+    {
+        _nextToken.Length = 0;
+        if (IsAtEndOfStream)
+        {
+            NextTokenType = HtmlTokenType.Eof;
+            return;
+        }
 
-				while (IsGoodForName(NextCharacter) && !IsAtEndOfStream)
-				{
-					_nextToken.Append(NextCharacter);
-					GetNextCharacter();
-				}
-			}
-			else
-			{
-				NextTokenType = HtmlTokenType.Atom;
-				_nextToken.Append(NextCharacter);
-				GetNextCharacter();
-			}
-		}
+        SkipWhiteSpace();
 
-		internal void GetNextEqualSignToken()
-		{
-			_nextToken.Length = 0;
+        if (NextCharacter == '>' && !IsNextCharacterEntity)
+        {
+            NextTokenType = HtmlTokenType.TagEnd;
+            _nextToken.Append('>');
+            GetNextCharacter();
+        }
+        else if (NextCharacter == '/' && _lookAheadCharacter == '>')
+        {
+            NextTokenType = HtmlTokenType.EmptyTagEnd;
+            _nextToken.Append("/>");
+            GetNextCharacter();
+            GetNextCharacter();
+            _ignoreNextWhitespace = false;
+        }
+        else if (IsGoodForNameStart(NextCharacter))
+        {
+            NextTokenType = HtmlTokenType.Name;
 
-			_nextToken.Append('=');
-			NextTokenType = HtmlTokenType.EqualSign;
+            while (IsGoodForName(NextCharacter) && !IsAtEndOfStream)
+            {
+                _nextToken.Append(NextCharacter);
+                GetNextCharacter();
+            }
+        }
+        else
+        {
+            NextTokenType = HtmlTokenType.Atom;
+            _nextToken.Append(NextCharacter);
+            GetNextCharacter();
+        }
+    }
 
-			SkipWhiteSpace();
+    internal void GetNextEqualSignToken()
+    {
+        _nextToken.Length = 0;
 
-			if (NextCharacter == '=') GetNextCharacter();
-		}
+        _nextToken.Append('=');
+        NextTokenType = HtmlTokenType.EqualSign;
 
-		internal void GetNextAtomToken()
-		{
-			_nextToken.Length = 0;
+        SkipWhiteSpace();
 
-			SkipWhiteSpace();
+        if (NextCharacter == '=') GetNextCharacter();
+    }
 
-			NextTokenType = HtmlTokenType.Atom;
+    internal void GetNextAtomToken()
+    {
+        _nextToken.Length = 0;
 
-			if ((NextCharacter == '\'' || NextCharacter == '"') && !IsNextCharacterEntity)
-			{
-				var startingQuote = NextCharacter;
-				GetNextCharacter();
+        SkipWhiteSpace();
 
-				while (!(NextCharacter == startingQuote && !IsNextCharacterEntity) && !IsAtEndOfStream)
-				{
-					_nextToken.Append(NextCharacter);
-					GetNextCharacter();
-				}
-				if (NextCharacter == startingQuote) GetNextCharacter();
+        NextTokenType = HtmlTokenType.Atom;
 
-			}
-			else
-			{
-				while (!IsAtEndOfStream && !Char.IsWhiteSpace(NextCharacter) && NextCharacter != '>')
-				{
-					_nextToken.Append(NextCharacter);
-					GetNextCharacter();
-				}
-			}
-		}
+        if ((NextCharacter == '\'' || NextCharacter == '"') && !IsNextCharacterEntity)
+        {
+            var startingQuote = NextCharacter;
+            GetNextCharacter();
 
-		internal HtmlTokenType NextTokenType { get; private set; }
+            while (!(NextCharacter == startingQuote && !IsNextCharacterEntity) && !IsAtEndOfStream)
+            {
+                _nextToken.Append(NextCharacter);
+                GetNextCharacter();
+            }
 
-	    internal string NextToken => _nextToken.ToString();
+            if (NextCharacter == startingQuote) GetNextCharacter();
 
-		private void GetNextCharacter()
-		{
-			if (_nextCharacterCode == -1) throw new InvalidOperationException("GetNextCharacter method called at the end of a stream");
+        }
+        else
+        {
+            while (!IsAtEndOfStream && !Char.IsWhiteSpace(NextCharacter) && NextCharacter != '>')
+            {
+                _nextToken.Append(NextCharacter);
+                GetNextCharacter();
+            }
+        }
+    }
 
-			_previousCharacter = NextCharacter;
+    internal HtmlTokenType NextTokenType { get; private set; }
 
-			NextCharacter = _lookAheadCharacter;
-			_nextCharacterCode = _lookAheadCharacterCode;
-			IsNextCharacterEntity = false;
+    internal string NextToken => _nextToken.ToString();
 
-			ReadLookAheadCharacter();
+    private void GetNextCharacter()
+    {
+        if (_nextCharacterCode == -1)
+            throw new InvalidOperationException("GetNextCharacter method called at the end of a stream");
 
-			if (NextCharacter == '&')
-			{
-				if (_lookAheadCharacter == '#')
-				{
-				    var entityCode = 0;
-					ReadLookAheadCharacter();
+        _previousCharacter = NextCharacter;
 
-					for (var i = 0; i < 7 && Char.IsDigit(_lookAheadCharacter); i++)
-					{
-						entityCode = 10 * entityCode + (_lookAheadCharacterCode - '0');
-						ReadLookAheadCharacter();
-					}
-					if (_lookAheadCharacter == ';')
-					{
-						ReadLookAheadCharacter();
-						_nextCharacterCode = entityCode;
+        NextCharacter = _lookAheadCharacter;
+        _nextCharacterCode = _lookAheadCharacterCode;
+        IsNextCharacterEntity = false;
 
-						NextCharacter = (char)_nextCharacterCode;
+        ReadLookAheadCharacter();
 
-						IsNextCharacterEntity = true;
-					}
-					else
-					{
-						NextCharacter = _lookAheadCharacter;
-						_nextCharacterCode = _lookAheadCharacterCode;
-						ReadLookAheadCharacter();
-						IsNextCharacterEntity = false;
-					}
-				}
-				else if (Char.IsLetter(_lookAheadCharacter))
-				{
-					var entity = "";
+        if (NextCharacter == '&')
+        {
+            if (_lookAheadCharacter == '#')
+            {
+                var entityCode = 0;
+                ReadLookAheadCharacter();
 
-					for (var i = 0; i < 10 && (Char.IsLetter(_lookAheadCharacter) || Char.IsDigit(_lookAheadCharacter)); i++)
-					{
-						entity += _lookAheadCharacter;
-						ReadLookAheadCharacter();
-					}
-					if (_lookAheadCharacter == ';')
-					{
-						ReadLookAheadCharacter();
+                for (var i = 0; i < 7 && Char.IsDigit(_lookAheadCharacter); i++)
+                {
+                    entityCode = 10 * entityCode + (_lookAheadCharacterCode - '0');
+                    ReadLookAheadCharacter();
+                }
 
-						if (HtmlSchema.IsEntity(entity))
-						{
-							NextCharacter = HtmlSchema.EntityCharacterValue(entity);
-							_nextCharacterCode = NextCharacter;
-							IsNextCharacterEntity = true;
-						}
-						else
-						{
-							NextCharacter = _lookAheadCharacter;
-							_nextCharacterCode = _lookAheadCharacterCode;
-							ReadLookAheadCharacter();
+                if (_lookAheadCharacter == ';')
+                {
+                    ReadLookAheadCharacter();
+                    _nextCharacterCode = entityCode;
 
-							IsNextCharacterEntity = false;
-						}
-					}
-					else
-					{
-						NextCharacter = _lookAheadCharacter;
-						ReadLookAheadCharacter();
-						IsNextCharacterEntity = false;
-					}
-				}
-			}
-		}
+                    NextCharacter = (char) _nextCharacterCode;
 
-		private void ReadLookAheadCharacter()
-		{
-			if (_lookAheadCharacterCode != -1)
-			{
-				_lookAheadCharacterCode = _inputStringReader.Read();
-				_lookAheadCharacter = (char)_lookAheadCharacterCode;
-			}
-		}
+                    IsNextCharacterEntity = true;
+                }
+                else
+                {
+                    NextCharacter = _lookAheadCharacter;
+                    _nextCharacterCode = _lookAheadCharacterCode;
+                    ReadLookAheadCharacter();
+                    IsNextCharacterEntity = false;
+                }
+            }
+            else if (Char.IsLetter(_lookAheadCharacter))
+            {
+                var entity = "";
 
-		private void SkipWhiteSpace()
-		{
-			while (true)
-			{
-				if (NextCharacter == '<' && (_lookAheadCharacter == '?' || _lookAheadCharacter == '!'))
-				{
-					GetNextCharacter();
+                for (var i = 0;
+                    i < 10 && (Char.IsLetter(_lookAheadCharacter) || Char.IsDigit(_lookAheadCharacter));
+                    i++)
+                {
+                    entity += _lookAheadCharacter;
+                    ReadLookAheadCharacter();
+                }
 
-					if (_lookAheadCharacter == '[')
-					{
-						while (!IsAtEndOfStream && !(_previousCharacter == ']' && NextCharacter == ']' && _lookAheadCharacter == '>')) GetNextCharacter();
-						if (NextCharacter == '>') GetNextCharacter();
-					}
-					else
-					{
-						while (!IsAtEndOfStream && NextCharacter != '>') GetNextCharacter();
-						if (NextCharacter == '>') GetNextCharacter();
-					}
-				}
+                if (_lookAheadCharacter == ';')
+                {
+                    ReadLookAheadCharacter();
 
-				if (!Char.IsWhiteSpace(NextCharacter)) break;
+                    if (HtmlSchema.IsEntity(entity))
+                    {
+                        NextCharacter = HtmlSchema.EntityCharacterValue(entity);
+                        _nextCharacterCode = NextCharacter;
+                        IsNextCharacterEntity = true;
+                    }
+                    else
+                    {
+                        NextCharacter = _lookAheadCharacter;
+                        _nextCharacterCode = _lookAheadCharacterCode;
+                        ReadLookAheadCharacter();
 
-				GetNextCharacter();
-			}
-		}
+                        IsNextCharacterEntity = false;
+                    }
+                }
+                else
+                {
+                    NextCharacter = _lookAheadCharacter;
+                    ReadLookAheadCharacter();
+                    IsNextCharacterEntity = false;
+                }
+            }
+        }
+    }
 
-		private static bool IsGoodForNameStart(char character)
-		{
-			return character == '_' || Char.IsLetter(character);
-		}
+    private void ReadLookAheadCharacter()
+    {
+        if (_lookAheadCharacterCode != -1)
+        {
+            _lookAheadCharacterCode = _inputStringReader.Read();
+            _lookAheadCharacter = (char) _lookAheadCharacterCode;
+        }
+    }
 
-		private static bool IsGoodForName(char character)
-		{
-			return
-					IsGoodForNameStart(character) ||
-					character == '.' ||
-					character == '-' ||
-					character == ':' ||
-					Char.IsDigit(character);
-		}
+    private void SkipWhiteSpace()
+    {
+        while (true)
+        {
+            if (NextCharacter == '<' && (_lookAheadCharacter == '?' || _lookAheadCharacter == '!'))
+            {
+                GetNextCharacter();
 
-		private void ReadDynamicContent()
-		{
-			NextTokenType = HtmlTokenType.Text;
-			_nextToken.Length = 0;
+                if (_lookAheadCharacter == '[')
+                {
+                    while (!IsAtEndOfStream &&
+                           !(_previousCharacter == ']' && NextCharacter == ']' && _lookAheadCharacter == '>'))
+                        GetNextCharacter();
+                    if (NextCharacter == '>') GetNextCharacter();
+                }
+                else
+                {
+                    while (!IsAtEndOfStream && NextCharacter != '>') GetNextCharacter();
+                    if (NextCharacter == '>') GetNextCharacter();
+                }
+            }
 
-			GetNextCharacter();
-			GetNextCharacter();
+            if (!Char.IsWhiteSpace(NextCharacter)) break;
 
-			while (!(NextCharacter == ']' && _lookAheadCharacter == '>') && !IsAtEndOfStream) GetNextCharacter();
+            GetNextCharacter();
+        }
+    }
 
-		    if (IsAtEndOfStream) return;
-		    GetNextCharacter();
-		    GetNextCharacter();
-		}
+    private static bool IsGoodForNameStart(char character)
+    {
+        return character == '_' || Char.IsLetter(character);
+    }
 
-		private void ReadComment()
-		{
-			NextTokenType = HtmlTokenType.Comment;
-			_nextToken.Length = 0;
+    private static bool IsGoodForName(char character)
+    {
+        return
+            IsGoodForNameStart(character) ||
+            character == '.' ||
+            character == '-' ||
+            character == ':' ||
+            Char.IsDigit(character);
+    }
 
-			GetNextCharacter();
-			GetNextCharacter();
-			GetNextCharacter();
+    private void ReadDynamicContent()
+    {
+        NextTokenType = HtmlTokenType.Text;
+        _nextToken.Length = 0;
 
-			while (true)
-			{
-				while (!IsAtEndOfStream && !(NextCharacter == '-' && _lookAheadCharacter == '-' || NextCharacter == '!' && _lookAheadCharacter == '>'))
-				{
-					_nextToken.Append(NextCharacter);
-					GetNextCharacter();
-				}
+        GetNextCharacter();
+        GetNextCharacter();
 
-				GetNextCharacter();
-				if (_previousCharacter == '-' && NextCharacter == '-' && _lookAheadCharacter == '>')
-				{
-					GetNextCharacter();
-					break;
-				}
-			    if (_previousCharacter == '!' && NextCharacter == '>') break;
-			    _nextToken.Append(_previousCharacter);
-			}
+        while (!(NextCharacter == ']' && _lookAheadCharacter == '>') && !IsAtEndOfStream) GetNextCharacter();
 
-			if (NextCharacter == '>') GetNextCharacter();
-		}
+        if (IsAtEndOfStream) return;
+        GetNextCharacter();
+        GetNextCharacter();
+    }
 
-		private void ReadUnknownDirective()
-		{
-			NextTokenType = HtmlTokenType.Text;
-			_nextToken.Length = 0;
+    private void ReadComment()
+    {
+        NextTokenType = HtmlTokenType.Comment;
+        _nextToken.Length = 0;
 
-			GetNextCharacter();
+        GetNextCharacter();
+        GetNextCharacter();
+        GetNextCharacter();
 
-			while (!(NextCharacter == '>' && !IsNextCharacterEntity) && !IsAtEndOfStream) GetNextCharacter();
+        while (true)
+        {
+            while (!IsAtEndOfStream && !(NextCharacter == '-' && _lookAheadCharacter == '-' ||
+                                         NextCharacter == '!' && _lookAheadCharacter == '>'))
+            {
+                _nextToken.Append(NextCharacter);
+                GetNextCharacter();
+            }
 
-			if (!IsAtEndOfStream) GetNextCharacter();
-		}
+            GetNextCharacter();
+            if (_previousCharacter == '-' && NextCharacter == '-' && _lookAheadCharacter == '>')
+            {
+                GetNextCharacter();
+                break;
+            }
 
-		private void SkipProcessingDirective()
-		{
-			GetNextCharacter();
-			GetNextCharacter();
+            if (_previousCharacter == '!' && NextCharacter == '>') break;
+            _nextToken.Append(_previousCharacter);
+        }
 
-			while (!((NextCharacter == '?' || NextCharacter == '/') && _lookAheadCharacter == '>') && !IsAtEndOfStream) GetNextCharacter();
+        if (NextCharacter == '>') GetNextCharacter();
+    }
 
-		    if (IsAtEndOfStream) return;
-		    GetNextCharacter(); 
-		    GetNextCharacter();
-		}
+    private void ReadUnknownDirective()
+    {
+        NextTokenType = HtmlTokenType.Text;
+        _nextToken.Length = 0;
 
-		private char NextCharacter { get; set; }
+        GetNextCharacter();
 
-	    private bool IsAtEndOfStream => _nextCharacterCode == -1;
+        while (!(NextCharacter == '>' && !IsNextCharacterEntity) && !IsAtEndOfStream) GetNextCharacter();
 
-	    private bool IsAtTagStart => NextCharacter == '<' && (_lookAheadCharacter == '/' || IsGoodForNameStart(_lookAheadCharacter)) && !IsNextCharacterEntity;
+        if (!IsAtEndOfStream) GetNextCharacter();
+    }
 
-	    private bool IsAtDirectiveStart => NextCharacter == '<' && _lookAheadCharacter == '!' && !IsNextCharacterEntity;
+    private void SkipProcessingDirective()
+    {
+        GetNextCharacter();
+        GetNextCharacter();
 
-	    private bool IsNextCharacterEntity { get; set; }
+        while (!((NextCharacter == '?' || NextCharacter == '/') && _lookAheadCharacter == '>') && !IsAtEndOfStream)
+            GetNextCharacter();
 
-		private readonly StringReader _inputStringReader;
-		private int _nextCharacterCode;
+        if (IsAtEndOfStream) return;
+        GetNextCharacter();
+        GetNextCharacter();
+    }
 
-	    private int _lookAheadCharacterCode;
-		private char _lookAheadCharacter;
-		private char _previousCharacter;
-		private bool _ignoreNextWhitespace;
+    private char NextCharacter { get; set; }
 
-	    private readonly StringBuilder _nextToken;
+    private bool IsAtEndOfStream => _nextCharacterCode == -1;
 
-	}
+    private bool IsAtTagStart => NextCharacter == '<' &&
+                                 (_lookAheadCharacter == '/' || IsGoodForNameStart(_lookAheadCharacter)) &&
+                                 !IsNextCharacterEntity;
+
+    private bool IsAtDirectiveStart => NextCharacter == '<' && _lookAheadCharacter == '!' && !IsNextCharacterEntity;
+
+    private bool IsNextCharacterEntity { get; set; }
+
+    private readonly StringReader _inputStringReader;
+    private int _nextCharacterCode;
+
+    private int _lookAheadCharacterCode;
+    private char _lookAheadCharacter;
+    private char _previousCharacter;
+    private bool _ignoreNextWhitespace;
+
+    private readonly StringBuilder _nextToken;
+
+    public void Dispose() => _inputStringReader?.Dispose();
+    }
 }

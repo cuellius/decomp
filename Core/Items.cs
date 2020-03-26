@@ -13,11 +13,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "item_kinds1.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "item_kinds1.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "item_kinds1.txt"));
             fId.GetString();
-            var n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aItems = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -251,7 +251,7 @@ namespace Decomp.Core
             switch (bType)
             {
                 case HEAD_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_offset_lance", "itp_fit_to_head").Replace("itp_couchable", "itp_covers_head").Replace("itp_can_penetrate_shield", "itp_doesnt_cover_hair"); break; //head armor
-                case BODY_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_can_penetrate_shield", "itp_covers_legs").Replace("itp_offset_lance", "itp_show_body"); break; //body armor
+                case BODY_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_can_penetrate_shield", "itp_covers_legs").Replace("itp_offset_lance", "itp_show_body").Replace("itp_offset_mortschlag", "itp_covers_hands"); break; //body armor
                 case FOOT_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian"); break; //legs armor
                 case HAND_ARMOR_TYPE: strFlag = strFlag.Replace("itp_next_item_as_melee", "itp_civilian").Replace("itp_offset_lance", "itp_show_left_hand").Replace("itp_couchable", "itp_show_right_hand"); break; //hand armor
             }
@@ -482,7 +482,7 @@ namespace Decomp.Core
                 int iFactions = fItems.GetInt();
                 var factionsList = new int[iFactions];
                 for (int f = 0; f < iFactions; f++) factionsList[f] = fItems.GetInt();
-                string strFactionList = String.Join(",", factionsList.Select(f => f >= 0 && f < Common.Factions.Length ? "fac_" + Common.Factions[f] : Convert.ToString(f)));
+                string strFactionList = String.Join(",", factionsList.Select(f => f >= 0 && f < Common.Factions.Count ? "fac_" + Common.Factions[f] : Convert.ToString(f, CultureInfo.GetCultureInfo("en-US"))));
 
                 int iTriggers = fItems.GetInt();
                 if (iTriggers != 0)

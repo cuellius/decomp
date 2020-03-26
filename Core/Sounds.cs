@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using DWORD = System.UInt32;
 
@@ -8,7 +10,7 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "sounds.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "sounds.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "sounds.txt"));
             fId.GetString();
@@ -91,7 +93,7 @@ namespace Decomp.Core
                 {
                     int iSample = fSounds.GetInt();
                     fSounds.GetInt();
-                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(), l == iListCount - 1 ? "" : ", ");
+                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(CultureInfo.GetCultureInfo("en-US")), l == iListCount - 1 ? "" : ", ");
                 }
                 fSource.WriteLine("]),");
             }

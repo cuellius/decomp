@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Xml;
 
@@ -25,8 +26,8 @@ namespace Decomp.Windows.HtmlConverter
 		        var styleNameValue = t.Split(':');
 		        if (styleNameValue.Length != 2) continue;
 
-		        var styleName = styleNameValue[0].Trim().ToLower();
-		        var styleValue = HtmlToXamlConverter.UnQuote(styleNameValue[1].Trim()).ToLower();
+		        var styleName = styleNameValue[0].Trim().ToLower(CultureInfo.GetCultureInfo("en-US"));
+		        var styleValue = HtmlToXamlConverter.UnQuote(styleNameValue[1].Trim()).ToLower(CultureInfo.GetCultureInfo("en-US"));
 		        var nextIndex = 0;
 
 		        switch (styleName)
@@ -254,13 +255,13 @@ namespace Decomp.Windows.HtmlConverter
 		        nextIndex++;
 		        while (nextIndex < styleValue.Length)
 		        {
-		            character = Char.ToUpper(styleValue[nextIndex]);
+		            character = Char.ToUpperInvariant(styleValue[nextIndex]);
 		            if (!('0' <= character && character <= '9' || 'A' <= character && character <= 'F')) break;
 		            nextIndex++;
 		        }
 		        if (nextIndex > startIndex + 1) color = styleValue.Substring(startIndex, nextIndex - startIndex);
 		    }
-		    else if (styleValue.Substring(nextIndex, 3).ToLower() == "rbg")
+		    else if (styleValue.Substring(nextIndex, 3).ToLower(CultureInfo.GetCultureInfo("en-US")) == "rbg")
 		    {
 		        while (nextIndex < styleValue.Length && styleValue[nextIndex] != ')') nextIndex++;
 		        if (nextIndex < styleValue.Length) nextIndex++;
@@ -475,14 +476,14 @@ namespace Decomp.Windows.HtmlConverter
 
 		public void DiscoverStyleDefinitions(XmlElement htmlElement)
 		{
-			if (htmlElement.LocalName.ToLower() == "link") return;
+            if (String.Compare(htmlElement.LocalName, "link", StringComparison.OrdinalIgnoreCase) == 0) return;
 
-			if (htmlElement.LocalName.ToLower() != "style")
-			{
-				for (var htmlChildNode = htmlElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
+            if (String.Compare(htmlElement.LocalName, "style", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                for (var htmlChildNode = htmlElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 				{
-				    var node = htmlChildNode as XmlElement;
-				    if (node != null) DiscoverStyleDefinitions(node); }
+                    if (htmlChildNode is XmlElement node) DiscoverStyleDefinitions(node);
+                }
 				return;
 			}
 
@@ -535,8 +536,8 @@ namespace Decomp.Windows.HtmlConverter
 
 		public void AddStyleDefinition(string selector, string definition)
 		{
-			selector = selector.Trim().ToLower();
-			definition = definition.Trim().ToLower();
+			selector = selector.Trim().ToLower(CultureInfo.GetCultureInfo("en-US"));
+			definition = definition.Trim().ToLower(CultureInfo.GetCultureInfo("en-US"));
 			if (selector.Length == 0 || definition.Length == 0) return;
 
 			if (_styleDefinitions == null) _styleDefinitions = new List<StyleDefinition>();
@@ -550,9 +551,11 @@ namespace Decomp.Windows.HtmlConverter
 			}
 		}
 
-		public string GetStyle(string elementName, List<XmlElement> sourceContext)
-		{
-		    if (_styleDefinitions == null) return null;
+#pragma warning disable CA1801 // Remove unused parameter
+        public string GetStyle(string elementName, List<XmlElement> sourceContext)
+#pragma warning restore CA1801 // Remove unused parameter
+        {
+            if (_styleDefinitions == null) return null;
 		    for (var i = _styleDefinitions.Count - 1; i >= 0; i--)
 		    {
 		        var selector = _styleDefinitions[i].Selector;

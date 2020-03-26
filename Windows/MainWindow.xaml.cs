@@ -41,7 +41,7 @@ namespace Decomp.Windows
             if (objects == null)
                 Print(message);
             else
-                LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += String.Format(message, objects));
+                LogTextBox.Dispatcher?.Invoke(() => LogTextBox.Text += String.Format(CultureInfo.GetCultureInfo("en-US"), message, objects));
         }
 
         private void DecompileButtonClick(object sender, RoutedEventArgs e)
@@ -55,8 +55,8 @@ namespace Decomp.Windows
             else
             {
                 LogTextBox.Text = "";
-                if (SourcePathTextBox.Text.Trim() == "") SourcePathTextBox.Text = Application.StartupPath;
-                if (OutputPathTextBox.Text.Trim() == "") OutputPathTextBox.Text = Application.StartupPath;
+                if (String.IsNullOrWhiteSpace(SourcePathTextBox.Text)) SourcePathTextBox.Text = Application.StartupPath;
+                if (String.IsNullOrWhiteSpace(OutputPathTextBox.Text)) OutputPathTextBox.Text = Application.StartupPath;
 
                 DecompileButton.Content = Application.GetResource("LocalizationStop");
                 StatusTextBlock.Text = Application.GetResource("LocalizationDecompilation");
@@ -111,12 +111,12 @@ namespace Decomp.Windows
 
             string source = "", output = "";
 
-            if (Application.CommandLineArgs.Length > 0 && Directory.Exists(Application.CommandLineArgs[0]))
+            if (Application.CommandLineArgs.Count > 0 && Directory.Exists(Application.CommandLineArgs[0]))
             {
                 source = Application.CommandLineArgs[0];
                 output = Application.CommandLineArgs[0];
             }
-            else if (Application.CommandLineArgs.Length > 0 && File.Exists(Application.CommandLineArgs[0]))
+            else if (Application.CommandLineArgs.Count > 0 && File.Exists(Application.CommandLineArgs[0]))
             {
                 source = Application.CommandLineArgs[0];
                 output = Path.GetDirectoryName(Application.CommandLineArgs[0]);
@@ -154,15 +154,13 @@ namespace Decomp.Windows
 
         protected void SaveUserInterface()
         {
-            using (var key = Registry.CurrentUser.OpenSubKey("Software\\WMD", true))
-            {
-                key?.SetValue("LastSource", File.Exists(SourcePathTextBox.Text) ? SourcePathTextBox.Text : SourcePathTextBox.Text + "\\");
-                key?.SetValue("LastOutput", OutputPathTextBox.Text + "\\");
-                key?.SetValue("OpenAfterComplete", OpenAfterCompleteCheckBox.IsChecked(), RegistryValueKind.DWord);
-                key?.SetValue("Mode", ModeComboBox.SelectedIndex, RegistryValueKind.DWord);
-                key?.SetValue("DecompileShaders", DecompileShadersCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
-                key?.SetValue("MakeID", GenerateIdFilesCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
-            }
+            using var key = Registry.CurrentUser.OpenSubKey("Software\\WMD", true);
+            key?.SetValue("LastSource", File.Exists(SourcePathTextBox.Text) ? SourcePathTextBox.Text : SourcePathTextBox.Text + "\\");
+            key?.SetValue("LastOutput", OutputPathTextBox.Text + "\\");
+            key?.SetValue("OpenAfterComplete", OpenAfterCompleteCheckBox.IsChecked(), RegistryValueKind.DWord);
+            key?.SetValue("Mode", ModeComboBox.SelectedIndex, RegistryValueKind.DWord);
+            key?.SetValue("DecompileShaders", DecompileShadersCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
+            key?.SetValue("MakeID", GenerateIdFilesCheckBox.IsChecked == true ? 1 : 0, RegistryValueKind.DWord);
         }
 
         private Window _helpWindow;

@@ -37,11 +37,11 @@ namespace Decomp.Windows.HtmlConverter
 
 		public static string GetAttribute(XmlElement element, string attributeName)
 		{
-			attributeName = attributeName.ToLower();
+			attributeName = attributeName?.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
-			for (var i = 0; i < element.Attributes.Count; i++)
+			for (var i = 0; i < element?.Attributes.Count; i++)
 			{
-				if (element.Attributes[i].Name.ToLower() == attributeName) return element.Attributes[i].Value;
+				if (element.Attributes[i].Name.ToLower(CultureInfo.GetCultureInfo("en-US")) == attributeName) return element.Attributes[i].Value;
 			}
 
 			return null;
@@ -49,7 +49,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		internal static string UnQuote(string value)
 		{
-			if (value.StartsWith("\"") && value.EndsWith("\"") || value.StartsWith("'") && value.EndsWith("'")) value = value.Substring(1, value.Length - 2).Trim();
+			if (value.StartsWith("\"", StringComparison.OrdinalIgnoreCase) && value.EndsWith("\"", StringComparison.OrdinalIgnoreCase) || value.StartsWith("'", StringComparison.OrdinalIgnoreCase) && value.EndsWith("'", StringComparison.OrdinalIgnoreCase)) value = value.Substring(1, value.Length - 2).Trim();
 			return value;
 		}
 
@@ -68,7 +68,7 @@ namespace Decomp.Windows.HtmlConverter
 
                 sourceContext.Add(htmlElement);
 
-                htmlElementName = htmlElementName.ToLower();
+                htmlElementName = htmlElementName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
                 switch (htmlElementName)
                 {
@@ -168,7 +168,7 @@ namespace Decomp.Windows.HtmlConverter
 			for (var htmlChildNode = htmlElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 			{
 			    if (!(htmlChildNode is XmlElement element)) continue;
-			    var htmlChildName = element.LocalName.ToLower();
+			    var htmlChildName = element.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 			    if (!HtmlSchema.IsBlockElement(htmlChildName)) continue;
 			    htmlElementContainsBlocks = true;
 			    break;
@@ -222,11 +222,11 @@ namespace Decomp.Windows.HtmlConverter
 		        {
 		            if (htmlNode.Value.Trim().Length > 0) AddTextRun(xamlParagraph, htmlNode.Value);
 		        }
-		        else if (htmlNode is XmlElement)
+		        else if (htmlNode is XmlElement node)
 		        {
-		            var htmlChildName = ((XmlElement)htmlNode).LocalName.ToLower();
+		            var htmlChildName = node.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 		            if (HtmlSchema.IsBlockElement(htmlChildName)) break;
-		            AddInline(xamlParagraph, (XmlElement)htmlNode, inheritedProperties, stylesheet, sourceContext);
+		            AddInline(xamlParagraph, node, inheritedProperties, stylesheet, sourceContext);
 		        }
 
 		        lastNodeProcessed = htmlNode;
@@ -248,7 +248,7 @@ namespace Decomp.Windows.HtmlConverter
             {
                 if (htmlElement.NamespaceURI != HtmlParser.XhtmlNamespace) return;
 
-                var htmlElementName = htmlElement.LocalName.ToLower();
+                var htmlElementName = htmlElement.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
                 sourceContext.Add(htmlElement);
 
@@ -279,7 +279,7 @@ namespace Decomp.Windows.HtmlConverter
 			for (var htmlNode = htmlElement.FirstChild; htmlNode != null; htmlNode = htmlNode.NextSibling)
 			{
 			    if (!(htmlNode is XmlElement node)) continue;
-			    var htmlChildName = node.LocalName.ToLower();
+			    var htmlChildName = node.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 			    if (!HtmlSchema.IsInlineElement(htmlChildName) && !HtmlSchema.IsBlockElement(htmlChildName) &&
 			        htmlChildName != "img" && htmlChildName != "br" && htmlChildName != "hr") continue;
 			    elementHasChildren = true;
@@ -380,7 +380,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddList(XmlNode xamlParentElement, XmlElement htmlListElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-			var htmlListElementName = htmlListElement.LocalName.ToLower();
+			var htmlListElementName = htmlListElement.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
 		    var currentProperties = GetElementProperties(htmlListElement, inheritedProperties, out var localProperties, stylesheet, sourceContext);
 
@@ -394,7 +394,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		    for (var htmlChildNode = htmlListElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 		    {
-		        if (!(htmlChildNode is XmlElement node) || htmlChildNode.LocalName.ToLower() != "li") continue;
+		        if (!(htmlChildNode is XmlElement node) || htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "li") continue;
 		        sourceContext.Add(node);
 		        AddListItem(xamlListElement, node, currentProperties, stylesheet, sourceContext);
 		        sourceContext.RemoveAt(sourceContext.Count - 1);
@@ -419,14 +419,14 @@ namespace Decomp.Windows.HtmlConverter
 			}
 
 			var htmlChildNode = htmlLiElement;
-			var htmlChildNodeName = htmlChildNode?.LocalName.ToLower();
+			var htmlChildNodeName = htmlChildNode?.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
 			while (htmlChildNode != null && htmlChildNodeName == "li")
 			{
 				AddListItem(xamlListElement, (XmlElement)htmlChildNode, inheritedProperties, stylesheet, sourceContext);
 				lastProcessedListItemElement = (XmlElement)htmlChildNode;
 				htmlChildNode = htmlChildNode.NextSibling;
-				htmlChildNodeName = htmlChildNode?.LocalName.ToLower();
+				htmlChildNodeName = htmlChildNode?.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 			}
 
 			return lastProcessedListItemElement;
@@ -447,7 +447,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddTable(XmlElement xamlParentElement, XmlElement htmlTableElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-            var currentProperties = GetElementProperties(htmlTableElement, inheritedProperties, out var _, stylesheet, sourceContext);
+            var currentProperties = GetElementProperties(htmlTableElement, inheritedProperties, out _, stylesheet, sourceContext);
             var singleCell = GetCellFromSingleCellTable(htmlTableElement);
 
 			if (singleCell != null)
@@ -472,7 +472,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			    while (htmlChildNode != null)
 			    {
-			        var htmlChildName = htmlChildNode.LocalName.ToLower();
+			        var htmlChildName = htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
 			        if (htmlChildName == "tbody" || htmlChildName == "thead" || htmlChildName == "tfoot")
 			        {
@@ -515,29 +515,29 @@ namespace Decomp.Windows.HtmlConverter
 
 			for (var tableChild = htmlTableElement.FirstChild; tableChild != null; tableChild = tableChild.NextSibling)
 			{
-				var elementName = tableChild.LocalName.ToLower();
+				var elementName = tableChild.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 				if (elementName == "tbody" || elementName == "thead" || elementName == "tfoot")
 				{
 					if (singleCell != null) return null;
 					for (var tbodyChild = tableChild.FirstChild; tbodyChild != null; tbodyChild = tbodyChild.NextSibling)
 					{
-					    if (tbodyChild.LocalName.ToLower() != "tr") continue;
+					    if (tbodyChild.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "tr") continue;
 					    if (singleCell != null) return null;
 					    for (var trChild = tbodyChild.FirstChild; trChild != null; trChild = trChild.NextSibling)
 					    {
-					        var cellName = trChild.LocalName.ToLower();
+					        var cellName = trChild.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 					        if (cellName != "td" && cellName != "th") continue;
 					        if (singleCell != null) return null;
 					        singleCell = (XmlElement)trChild;
 					    }
 					}
 				}
-				else if (tableChild.LocalName.ToLower() == "tr")
+				else if (tableChild.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "tr")
 				{
 					if (singleCell != null) return null;
 					for (var trChild = tableChild.FirstChild; trChild != null; trChild = trChild.NextSibling)
 					{
-						var cellName = trChild.LocalName.ToLower();
+						var cellName = trChild.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 					    if (cellName != "td" && cellName != "th") continue;
 					    if (singleCell != null) return null;
 					    singleCell = (XmlElement)trChild;
@@ -564,9 +564,9 @@ namespace Decomp.Windows.HtmlConverter
 			{
 				for (var htmlChildNode = htmlTableElement.FirstChild; htmlChildNode != null; htmlChildNode = htmlChildNode.NextSibling)
 				{
-					if (htmlChildNode.LocalName.ToLower() == "colgroup")
+					if (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "colgroup")
 						AddTableColumnGroup(xamlTableElement, (XmlElement)htmlChildNode, currentProperties, stylesheet, sourceContext);
-					else if (htmlChildNode.LocalName.ToLower() == "col")
+					else if (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "col")
 						AddTableColumn(xamlTableElement);
 					else if (htmlChildNode is XmlElement)
 						break;
@@ -576,11 +576,11 @@ namespace Decomp.Windows.HtmlConverter
 
 		private static void AddTableColumnGroup(XmlNode xamlTableElement, XmlElement htmlColgroupElement, IDictionary inheritedProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
-            GetElementProperties(htmlColgroupElement, inheritedProperties, out var _, stylesheet, sourceContext);
+            GetElementProperties(htmlColgroupElement, inheritedProperties, out _, stylesheet, sourceContext);
 
             for (var htmlNode = htmlColgroupElement.FirstChild; htmlNode != null; htmlNode = htmlNode.NextSibling)
 			{
-			    if (htmlNode is XmlElement && htmlNode.LocalName.ToLower() == "col") AddTableColumn(xamlTableElement);
+			    if (htmlNode is XmlElement && htmlNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "col") AddTableColumn(xamlTableElement);
 			}
 		}
 
@@ -601,20 +601,20 @@ namespace Decomp.Windows.HtmlConverter
 				InitializeActiveRowSpans(activeRowSpans, columnStarts.Count);
 			}
 
-			while (htmlChildNode != null && htmlChildNode.LocalName.ToLower() != "tbody")
+			while (htmlChildNode != null && htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "tbody")
 			{
 			    XmlElement xamlTableRowElement;
-                switch (htmlChildNode.LocalName.ToLower())
+                switch (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")))
 			    {
 			        case "tr":
-			            xamlTableRowElement = xamlTableBodyElement.OwnerDocument.CreateElement(null, XamlTableRow, XamlNamespace);
+			            xamlTableRowElement = xamlTableBodyElement.OwnerDocument?.CreateElement(null, XamlTableRow, XamlNamespace);
 
 			            sourceContext.Add((XmlElement)htmlChildNode);
 
 			            var trElementCurrentProperties = GetElementProperties((XmlElement)htmlChildNode, currentProperties, out _, stylesheet, sourceContext);
 
 			            AddTableCellsToTableRow(xamlTableRowElement, htmlChildNode.FirstChild, trElementCurrentProperties, columnStarts, activeRowSpans, stylesheet, sourceContext);
-			            if (xamlTableRowElement.HasChildNodes) xamlTableBodyElement.AppendChild(xamlTableRowElement);
+			            if (xamlTableRowElement?.HasChildNodes ?? false) xamlTableBodyElement.AppendChild(xamlTableRowElement);
 
 			            sourceContext.RemoveAt(sourceContext.Count - 1);
 
@@ -622,10 +622,10 @@ namespace Decomp.Windows.HtmlConverter
 
 			            break;
 			        case "td":
-			            xamlTableRowElement = xamlTableBodyElement.OwnerDocument.CreateElement(null, XamlTableRow, XamlNamespace);
+			            xamlTableRowElement = xamlTableBodyElement.OwnerDocument?.CreateElement(null, XamlTableRow, XamlNamespace);
 
 			            htmlChildNode = AddTableCellsToTableRow(xamlTableRowElement, htmlChildNode, currentProperties, columnStarts, activeRowSpans, stylesheet, sourceContext);
-			            if (xamlTableRowElement.HasChildNodes) xamlTableBodyElement.AppendChild(xamlTableRowElement);
+			            if (xamlTableRowElement?.HasChildNodes ?? false) xamlTableBodyElement.AppendChild(xamlTableRowElement);
 			            break;
 			        default:
 			            htmlChildNode = htmlChildNode.NextSibling;
@@ -640,9 +640,9 @@ namespace Decomp.Windows.HtmlConverter
 			var htmlChildNode = htmlTdStartNode;
 		    var columnIndex = 0;
 
-		    while (htmlChildNode != null && htmlChildNode.LocalName.ToLower() != "tr" && htmlChildNode.LocalName.ToLower() != "tbody" && htmlChildNode.LocalName.ToLower() != "thead" && htmlChildNode.LocalName.ToLower() != "tfoot")
+		    while (htmlChildNode != null && htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "tr" && htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "tbody" && htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "thead" && htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) != "tfoot")
 			{
-				if (htmlChildNode.LocalName.ToLower() == "td" || htmlChildNode.LocalName.ToLower() == "th")
+				if (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "td" || htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")) == "th")
 				{
 				    if (xamlTableRowElement.OwnerDocument != null)
 				    {
@@ -665,12 +665,12 @@ namespace Decomp.Windows.HtmlConverter
 				            var columnSpan = CalculateColumnSpan(columnIndex, columnWidth, columnStarts);
 				            var rowSpan = GetRowSpan((XmlElement)htmlChildNode);
 
-				            xamlTableCellElement.SetAttribute(XamlTableCellColumnSpan, columnSpan.ToString());
+				            xamlTableCellElement.SetAttribute(XamlTableCellColumnSpan, columnSpan.ToString(CultureInfo.GetCultureInfo("en-US")));
 
 				            for (var spannedColumnIndex = columnIndex; spannedColumnIndex < columnIndex + columnSpan; spannedColumnIndex++)
 				                activeRowSpans[spannedColumnIndex] = rowSpan - 1;
 
-				            columnIndex = columnIndex + columnSpan;
+				            columnIndex += columnSpan;
 				        }
 
 				        AddDataToTableCell(xamlTableCellElement, htmlChildNode.FirstChild, tdElementCurrentProperties, stylesheet, sourceContext);
@@ -706,7 +706,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			while (htmlChildNode != null && columnWidthsAvailable)
 			{
-				switch (htmlChildNode.LocalName.ToLower())
+				switch (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")))
 				{
 					case "tbody":
 						var tbodyWidth = AnalyzeTbodyStructure((XmlElement)htmlChildNode, columnStarts, activeRowSpans);
@@ -751,7 +751,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			while (htmlChildNode != null && columnWidthsAvailable)
 			{
-				switch (htmlChildNode.LocalName.ToLower())
+				switch (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")))
 				{
 					case "tr":
 						var trWidth = AnalyzeTrStructure((XmlElement)htmlChildNode, columnStarts, activeRowSpans);
@@ -794,7 +794,7 @@ namespace Decomp.Windows.HtmlConverter
 
 			while (htmlChildNode != null && columnWidthsAvailable)
 			{
-				switch (htmlChildNode.LocalName.ToLower())
+				switch (htmlChildNode.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US")))
 				{
 					case "td":
 						if (columnIndex < columnStarts.Count)
@@ -823,7 +823,7 @@ namespace Decomp.Windows.HtmlConverter
 
 								columnIndex = nextColumnIndex;
 
-								columnStart = columnStart + columnWidth;
+								columnStart += columnWidth;
 
 								if (columnIndex < activeRowSpans.Count)
 								{
@@ -1064,44 +1064,21 @@ namespace Decomp.Windows.HtmlConverter
 					case "list-style-type":
 						if (xamlElement.LocalName == XamlList)
 						{
-							string markerStyle;
-							switch (((string)propertyEnumerator.Value).ToLower())
-							{
-								case "disc":
-									markerStyle = XamlListMarkerStyleDisc;
-									break;
-								case "circle":
-									markerStyle = XamlListMarkerStyleCircle;
-									break;
-								case "none":
-									markerStyle = XamlListMarkerStyleNone;
-									break;
-								case "square":
-									markerStyle = XamlListMarkerStyleSquare;
-									break;
-								case "box":
-									markerStyle = XamlListMarkerStyleBox;
-									break;
-								case "lower-latin":
-									markerStyle = XamlListMarkerStyleLowerLatin;
-									break;
-								case "upper-latin":
-									markerStyle = XamlListMarkerStyleUpperLatin;
-									break;
-								case "lower-roman":
-									markerStyle = XamlListMarkerStyleLowerRoman;
-									break;
-								case "upper-roman":
-									markerStyle = XamlListMarkerStyleUpperRoman;
-									break;
-								case "decimal":
-									markerStyle = XamlListMarkerStyleDecimal;
-									break;
-								default:
-									markerStyle = XamlListMarkerStyleDisc;
-									break;
-							}
-							xamlElement.SetAttribute(XamlListMarkerStyle, markerStyle);
+                            var markerStyle = (((string)propertyEnumerator.Value).ToLower(CultureInfo.GetCultureInfo("en-US"))) switch
+                            {
+                                "disc" => XamlListMarkerStyleDisc,
+                                "circle" => XamlListMarkerStyleCircle,
+                                "none" => XamlListMarkerStyleNone,
+                                "square" => XamlListMarkerStyleSquare,
+                                "box" => XamlListMarkerStyleBox,
+                                "lower-latin" => XamlListMarkerStyleLowerLatin,
+                                "upper-latin" => XamlListMarkerStyleUpperLatin,
+                                "lower-roman" => XamlListMarkerStyleLowerRoman,
+                                "upper-roman" => XamlListMarkerStyleUpperRoman,
+                                "decimal" => XamlListMarkerStyleDecimal,
+                                _ => XamlListMarkerStyleDisc,
+                            };
+                            xamlElement.SetAttribute(XamlListMarkerStyle, markerStyle);
 						}
 						break;
 
@@ -1145,8 +1122,11 @@ namespace Decomp.Windows.HtmlConverter
 				var convertedValue = typeConverter.ConvertFromInvariantString(stringValue);
 				if (convertedValue != null) xamlElement.SetAttribute(property.Name, stringValue);
 			}
-			catch (Exception) { }
-		}
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
 
 		private static Hashtable GetElementProperties(XmlElement htmlElement, IDictionary inheritedProperties, out Hashtable localProperties, CssStylesheet stylesheet, List<XmlElement> sourceContext)
 		{
@@ -1154,7 +1134,7 @@ namespace Decomp.Windows.HtmlConverter
 			var propertyEnumerator = inheritedProperties.GetEnumerator();
 			while (propertyEnumerator.MoveNext()) currentProperties[propertyEnumerator.Key] = propertyEnumerator.Value;
 
-			var elementName = htmlElement.LocalName.ToLower();
+			var elementName = htmlElement.LocalName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
 		    localProperties = new Hashtable();
 			switch (elementName)
@@ -1180,7 +1160,7 @@ namespace Decomp.Windows.HtmlConverter
 					attributeValue = GetAttribute(htmlElement, "size");
 					if (attributeValue != null)
 					{
-						var fontSize = double.Parse(attributeValue) * (12.0 / 3.0);
+						var fontSize = double.Parse(attributeValue, CultureInfo.GetCultureInfo("en-US")) * (12.0 / 3.0);
 						if (fontSize < 1.0)
 							fontSize = 1.0;
 						else if (fontSize > 1000.0)
@@ -1260,9 +1240,9 @@ namespace Decomp.Windows.HtmlConverter
 		private static string GetCssAttribute(string cssStyle, string attributeName)
 		{
 		    if (cssStyle == null) return null;
-		    attributeName = attributeName.ToLower();
+		    attributeName = attributeName.ToLower(CultureInfo.GetCultureInfo("en-US"));
 		    var styleValues = cssStyle.Split(';');
-		    return (from t in styleValues select t.Split(':') into styleNameValue where styleNameValue.Length == 2 where styleNameValue[0].Trim().ToLower() == attributeName select styleNameValue[1].Trim()).FirstOrDefault();
+		    return (from t in styleValues select t.Split(':') into styleNameValue where styleNameValue.Length == 2 where styleNameValue[0].Trim().ToLower(CultureInfo.GetCultureInfo("en-US")) == attributeName select styleNameValue[1].Trim()).FirstOrDefault();
 		}
 
 		private static bool TryGetLengthValue(string lengthAsString, out double length)
@@ -1270,9 +1250,9 @@ namespace Decomp.Windows.HtmlConverter
 			length = Double.NaN;
 
 		    if (lengthAsString == null) return !Double.IsNaN(length);
-		    lengthAsString = lengthAsString.Trim().ToLower();
+		    lengthAsString = lengthAsString.Trim().ToLower(CultureInfo.GetCultureInfo("en-US"));
 
-		    if (lengthAsString.EndsWith("pt"))
+		    if (lengthAsString.EndsWith("pt", StringComparison.OrdinalIgnoreCase))
 		    {
 		        lengthAsString = lengthAsString.Substring(0, lengthAsString.Length - 2);
 		        if (Double.TryParse(lengthAsString, out length))
@@ -1280,7 +1260,7 @@ namespace Decomp.Windows.HtmlConverter
 		        else
 		            length = Double.NaN;
 		    }
-		    else if (lengthAsString.EndsWith("px"))
+		    else if (lengthAsString.EndsWith("px", StringComparison.OrdinalIgnoreCase))
 		    {
 		        lengthAsString = lengthAsString.Substring(0, lengthAsString.Length - 2);
 		        if (!Double.TryParse(lengthAsString, out length)) length = Double.NaN;

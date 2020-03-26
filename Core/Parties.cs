@@ -18,7 +18,7 @@ namespace Decomp.Core
 
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "parties.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "parties.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "parties.txt"));
             fId.GetString();
@@ -57,7 +57,7 @@ namespace Decomp.Core
 
             DWORD dwIcon = dwFlag & 0xFF;
             if (dwIcon != 0)
-                sbFlag.Append(dwIcon < Common.MapIcons.Length ? "icon_" + Common.MapIcons[dwIcon] + "|" : Convert.ToString(dwIcon) + "|");
+                sbFlag.Append(dwIcon < Common.MapIcons.Count ? "icon_" + Common.MapIcons[(int)dwIcon] + "|" : Convert.ToString(dwIcon, CultureInfo.GetCultureInfo("en-US")) + "|");
             
             string[] strFlags = { "pf_town", "pf_castle", "pf_village", "pf_disabled", "pf_is_ship", "pf_is_static", "pf_label_medium", 
             "pf_label_large", "pf_always_visible", "pf_default_behavior", "pf_auto_remove_in_town", "pf_quest_party", "pf_no_label", "pf_limit_members", 
@@ -102,7 +102,7 @@ namespace Decomp.Core
                 fSource.Write(", {0}", iParty == 0 ? "pt_none" : "pt_" + Common.PTemps[iParty]);
 
                 var iFaction = fParties.GetInt();
-                fSource.Write(", {0}", iFaction < Common.Factions.Length ? "fac_" + Common.Factions[iFaction] : iFaction.ToString(CultureInfo.GetCultureInfo("en-US")));
+                fSource.Write(", {0}", iFaction < Common.Factions.Count ? "fac_" + Common.Factions[iFaction] : iFaction.ToString(CultureInfo.GetCultureInfo("en-US")));
 
                 var iPersonality = fParties.GetInt(); fParties.GetInt(); 
                 fSource.Write(", {0}", iPersonality);
@@ -126,7 +126,7 @@ namespace Decomp.Core
                     var iTroop = fParties.GetInt();
                     var iNumTroops = fParties.GetInt(); fParties.GetInt();
                     var iFlag = fParties.GetInt();
-                    fSource.Write("(trp_{0}, {1}, {2}){3}", iTroop < Common.Troops.Length ? "trp_" + Common.Troops[iTroop] : iTroop.ToString(CultureInfo.GetCultureInfo("en-US")), iNumTroops, iFlag == 1 ? "pmf_is_prisoner" : "0", j == (iRecords - 1) ? "" : ",");
+                    fSource.Write("(trp_{0}, {1}, {2}){3}", iTroop < Common.Troops.Count ? "trp_" + Common.Troops[iTroop] : iTroop.ToString(CultureInfo.GetCultureInfo("en-US")), iNumTroops, iFlag == 1 ? "pmf_is_prisoner" : "0", j == (iRecords - 1) ? "" : ",");
                 }
                 fSource.Write("]");
                 var dAngle = fParties.GetDouble();

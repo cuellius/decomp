@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
 
 namespace Decomp.Windows.HtmlConverter
 {
-	internal class HtmlParser
+	internal class HtmlParser : IDisposable
 	{
 		private HtmlParser(string inputString)
 		{
 			_document = new XmlDocument();
-			_openedElements = new Stack<XmlElement>();
+            _openedElements = new Stack<XmlElement>();
 			_pendingInlineElements = new Stack<XmlElement>();
 			_htmlLexicalAnalyzer = new HtmlLexicalAnalyzer(inputString);
 			_htmlLexicalAnalyzer.GetNextContentToken();
@@ -19,7 +20,7 @@ namespace Decomp.Windows.HtmlConverter
 
 		internal static XmlElement ParseHtml(string htmlString)
 		{
-			var htmlParser = new HtmlParser(htmlString);
+			using var htmlParser = new HtmlParser(htmlString);
 			var htmlRootElement = htmlParser.ParseHtmlContent();
 			return htmlRootElement;
 		}
@@ -32,12 +33,12 @@ namespace Decomp.Windows.HtmlConverter
 		{
 			var startHtmlIndex = htmlDataString.IndexOf("StartHTML:", StringComparison.Ordinal);
 			if (startHtmlIndex < 0) return "ERROR: Urecognized html header";
-			startHtmlIndex = Int32.Parse(htmlDataString.Substring(startHtmlIndex + "StartHTML:".Length, "0123456789".Length));
+			startHtmlIndex = Int32.Parse(htmlDataString.Substring(startHtmlIndex + "StartHTML:".Length, "0123456789".Length), CultureInfo.GetCultureInfo("en-US"));
 			if (startHtmlIndex < 0 || startHtmlIndex > htmlDataString.Length) return "ERROR: Urecognized html header";
 
 			var endHtmlIndex = htmlDataString.IndexOf("EndHTML:", StringComparison.Ordinal);
 			if (endHtmlIndex < 0) return "ERROR: Urecognized html header";
-			endHtmlIndex = Int32.Parse(htmlDataString.Substring(endHtmlIndex + "EndHTML:".Length, "0123456789".Length));
+			endHtmlIndex = Int32.Parse(htmlDataString.Substring(endHtmlIndex + "EndHTML:".Length, "0123456789".Length), CultureInfo.GetCultureInfo("en-US"));
 			if (endHtmlIndex > htmlDataString.Length) endHtmlIndex = htmlDataString.Length;
 
 			return htmlDataString.Substring(startHtmlIndex, endHtmlIndex - startHtmlIndex);
@@ -60,7 +61,7 @@ namespace Decomp.Windows.HtmlConverter
 			else
 				endFragment = endHtml;
 
-			stringBuilder.AppendFormat(HtmlHeader, startHtml, endHtml, startFragment, endFragment, startFragment, endFragment);
+			stringBuilder.AppendFormat(CultureInfo.GetCultureInfo("en-US"), HtmlHeader, startHtml, endHtml, startFragment, endFragment, startFragment, endFragment);
 
 			stringBuilder.Append(htmlString);
 
@@ -80,7 +81,7 @@ namespace Decomp.Windows.HtmlConverter
 			            _htmlLexicalAnalyzer.GetNextTagToken();
 			            if (_htmlLexicalAnalyzer.NextTokenType == HtmlTokenType.Name)
 			            {
-			                var htmlElementName = _htmlLexicalAnalyzer.NextToken.ToLower();
+			                var htmlElementName = _htmlLexicalAnalyzer.NextToken.ToLower(CultureInfo.GetCultureInfo("en-US"));
 			                _htmlLexicalAnalyzer.GetNextTagToken();
 
 			                var htmlElement = _document.CreateElement(htmlElementName, XhtmlNamespace);
@@ -99,7 +100,7 @@ namespace Decomp.Windows.HtmlConverter
 			            _htmlLexicalAnalyzer.GetNextTagToken();
 			            if (_htmlLexicalAnalyzer.NextTokenType == HtmlTokenType.Name)
 			            {
-			                var htmlElementName = _htmlLexicalAnalyzer.NextToken.ToLower();
+			                var htmlElementName = _htmlLexicalAnalyzer.NextToken.ToLower(CultureInfo.GetCultureInfo("en-US"));
 
 			                _htmlLexicalAnalyzer.GetNextTagToken();
 
@@ -117,15 +118,15 @@ namespace Decomp.Windows.HtmlConverter
 			    _htmlLexicalAnalyzer.GetNextContentToken();
 			}
 
-		    if (htmlRootElement.FirstChild is XmlElement child && htmlRootElement.FirstChild == htmlRootElement.LastChild && htmlRootElement.FirstChild.LocalName.ToLower() == "html") htmlRootElement = child;
+		    if (htmlRootElement.FirstChild is XmlElement child && htmlRootElement.FirstChild == htmlRootElement.LastChild && String.Compare(htmlRootElement.FirstChild.LocalName, "html", StringComparison.OrdinalIgnoreCase) == 0) htmlRootElement = child;
 
 			return htmlRootElement;
 		}
 
-		private XmlElement CreateElementCopy(XmlElement htmlElement)
+		private XmlElement CreateElementCopy(XmlNode htmlElement)
 		{
 			var htmlElementCopy = _document.CreateElement(htmlElement.LocalName, XhtmlNamespace);
-			for (var i = 0; i < htmlElement.Attributes.Count; i++)
+			for (var i = 0; i < htmlElement.Attributes?.Count; i++)
 			{
 				var attribute = htmlElement.Attributes[i];
 				htmlElementCopy.SetAttribute(attribute.Name, attribute.Value);
@@ -252,5 +253,6 @@ namespace Decomp.Windows.HtmlConverter
 	    private readonly Stack<XmlElement> _openedElements;
 	    private readonly Stack<XmlElement> _pendingInlineElements;
 
-	}
+        public void Dispose() => _htmlLexicalAnalyzer?.Dispose();
+    }
 }

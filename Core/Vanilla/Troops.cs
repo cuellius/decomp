@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace Decomp.Core.Vanilla
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Troops);
 
-            for (int s = 0; s < Common.Skins.Length; s++) fSource.WriteLine("tf_" + Common.Skins[s] + " = " + s);
+            for (int s = 0; s < Common.Skins.Count; s++) fSource.WriteLine("tf_" + Common.Skins[s] + " = " + s);
             fSource.WriteLine("\r\ntroops = [");
 
             fTroops.GetString();
@@ -52,7 +53,7 @@ namespace Decomp.Core.Vanilla
                 fSource.Write(" {0},", fTroops.GetWord()); // reserved "0"
 
                 var iFaction = fTroops.GetInt();
-                if (iFaction > 0 && iFaction < Common.Factions.Length)
+                if (iFaction > 0 && iFaction < Common.Factions.Count)
                     fSource.WriteLine(" fac_{0},", Common.Factions[iFaction]);
                 else
                     fSource.WriteLine(" {0},", iFaction);
@@ -61,7 +62,7 @@ namespace Decomp.Core.Vanilla
                 var iUp2 = fTroops.GetInt();
 
                 // ReSharper disable once InconsistentNaming
-                string fnGetTroopForUpgrade(int id) => id >= 0 && id < Common.Troops.Length ? '"' + Common.Troops[id] + '"' : id.ToString();
+                string fnGetTroopForUpgrade(int id) => id >= 0 && id < Common.Troops.Count ? '"' + Common.Troops[id] + '"' : id.ToString(CultureInfo.GetCultureInfo("en-US"));
 
                 if (iUp1 != 0 && iUp2 != 0)
                     strUpList.Add(
@@ -77,7 +78,7 @@ namespace Decomp.Core.Vanilla
                     if (-1 == iItem) continue;
                     itemList.Add(iItem);
                 }
-                fSource.WriteLine("  [{0}],", String.Join(",", itemList.Select(item => item < Common.Items.Length ? $"itm_{Common.Items[item]}" : $"{item}")));
+                fSource.WriteLine("  [{0}],", String.Join(",", itemList.Select(item => item < Common.Items.Count ? $"itm_{Common.Items[item]}" : $"{item}")));
 
                 int iStregth = fTroops.GetInt(),
                     iAgility = fTroops.GetInt(),
@@ -105,7 +106,7 @@ namespace Decomp.Core.Vanilla
                     for (int q = 0; q < 8; q++)
                     {
                         var dwKnow = 0xF & (dword >> (q << 2));
-                        if (dwKnow != 0 && (x << 3) + q < Common.Skills.Length) sbKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
+                        if (dwKnow != 0 && (x << 3) + q < Common.Skills.Count) sbKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
                     }
                 }
 

@@ -9,11 +9,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "map_icons.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "map_icons.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "map_icons.txt"));
             fId.GetString();
-            var n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aMapIcons = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -72,7 +72,7 @@ namespace Decomp.Core
                 int iSound = fIcons.GetInt();
                 double dX = fIcons.GetDouble(), dY = fIcons.GetDouble(), dZ = fIcons.GetDouble();
 
-                fSource.Write(" {0}, {1}, {2}, {3}, {4}", dScale.ToString(CultureInfo.GetCultureInfo("en-US")), iSound != 0 ? (iSound < Common.Sounds.Length ? "snd_" + Common.Sounds[iSound] : iSound.ToString()) : "0", 
+                fSource.Write(" {0}, {1}, {2}, {3}, {4}", dScale.ToString(CultureInfo.GetCultureInfo("en-US")), iSound != 0 ? iSound < Common.Sounds.Count ? "snd_" + Common.Sounds[iSound] : iSound.ToString(CultureInfo.GetCultureInfo("en-US")) : "0", 
                     dX.ToString(CultureInfo.GetCultureInfo("en-US")), dY.ToString(CultureInfo.GetCultureInfo("en-US")), dZ.ToString(CultureInfo.GetCultureInfo("en-US")));
 
                 int iTriggers = fIcons.GetInt();

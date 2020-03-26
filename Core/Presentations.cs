@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace Decomp.Core
@@ -7,7 +8,7 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "presentations.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "presentations.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "presentations.txt"));
             fId.GetString();
@@ -43,20 +44,13 @@ namespace Decomp.Core
             return aPresentations;
         }
 
-        public static string DecompileFlags(int iFlag)
+        public static string DecompileFlags(int iFlag) => iFlag switch
         {
-            switch (iFlag)
-            {
-                case 3:
-                    return "prsntf_read_only|prsntf_manual_end_only";
-                case 2:
-                    return "prsntf_manual_end_only";
-                case 1:
-                    return "prsntf_read_only";
-                default:
-                    return iFlag.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
+            3 => "prsntf_read_only|prsntf_manual_end_only",
+            2 => "prsntf_manual_end_only",
+            1 => "prsntf_read_only",
+            _ => iFlag.ToString(CultureInfo.GetCultureInfo("en-US"))
+        };
 
         public static void Decompile()
         {
@@ -74,7 +68,7 @@ namespace Decomp.Core
                 fSource.Write(", {0}", DecompileFlags(iFlag));
 
                 int iMesh = fPresentations.GetInt();
-                if (iMesh >= 0 && iMesh < Common.Meshes.Length)
+                if (iMesh >= 0 && iMesh < Common.Meshes.Count)
                     fSource.Write(", mesh_{0}", Common.Meshes[iMesh]);
                 else
                     fSource.Write(", {0}", iMesh);

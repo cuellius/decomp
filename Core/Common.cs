@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Decomp.Core.Operators;
 
@@ -17,7 +18,7 @@ namespace Decomp.Core
 
     public static class Common
     {
-        public static string ModuleConstantsText = @"from ID_animations import *
+        public static string ModuleConstantsText { get; set; } = @"from ID_animations import *
 from ID_factions import *
 from ID_info_pages import *
 from ID_items import *
@@ -41,7 +42,7 @@ from ID_strings import *
 from ID_tableau_materials import *
 from ID_troops import *";
 
-        public static string ModuleConstantsVanillaText = @"from ID_animations import *
+        public static string ModuleConstantsVanillaText { get; set; } = @"from ID_animations import *
 from ID_factions import *
 from ID_items import *
 from ID_map_icons import *
@@ -63,59 +64,87 @@ from ID_strings import *
 from ID_tableau_materials import *
 from ID_troops import *";
 
-        public static Mode SelectedMode = Mode.WarbandScriptEnhancer450;
+        public static Mode SelectedMode { get; set; } = Mode.WarbandScriptEnhancer450;
 
         public static bool IsVanillaMode => SelectedMode == Mode.Vanilla;
 
-        public static string[] Procedures;
-        public static string[] QuickStrings;
-        public static string[] Strings;
-        public static string[] Items;
-        public static string[] Troops;
-        public static string[] Factions;
-        public static string[] Quests;
-        public static string[] PTemps;
-        public static string[] Parties;
-        public static string[] Menus;
-        public static string[] Sounds;
-        public static string[] Skills;
-        public static string[] Meshes;
-        public static string[] Variables;
-        public static string[] DialogStates;
-        public static string[] Scenes;
-        public static string[] MissionTemplates;
-        public static string[] ParticleSystems;
-        public static string[] SceneProps;
-        public static string[] MapIcons;
-        public static string[] Presentations;
-        public static string[] Tableaus;
-        public static string[] Animations;
-        public static string[] Music;
-        public static string[] Skins;
-        public static string[] InfoPages;
+        public static IReadOnlyList<string> Procedures { get; set; }
+        public static IReadOnlyList<string> QuickStrings { get; set; }
+        public static IReadOnlyList<string> Strings { get; set; }
+        public static IReadOnlyList<string> Items { get; set; }
+        public static IReadOnlyList<string> Troops { get; set; }
+        public static IReadOnlyList<string> Factions { get; set; }
+        public static IReadOnlyList<string> Quests { get; set; }
+        public static IReadOnlyList<string> PTemps { get; set; }
+        public static IReadOnlyList<string> Parties { get; set; }
+        public static IReadOnlyList<string> Menus { get; set; }
+        public static IReadOnlyList<string> Sounds { get; set; }
+        public static IReadOnlyList<string> Skills { get; set; }
+        public static IReadOnlyList<string> Meshes { get; set; }
+        public static IReadOnlyList<string> Variables { get; set; }
+        public static IReadOnlyList<string> DialogStates { get; set; }
+        public static IReadOnlyList<string> Scenes { get; set; }
+        public static IReadOnlyList<string> MissionTemplates { get; set; }
+        public static IReadOnlyList<string> ParticleSystems { get; set; }
+        public static IReadOnlyList<string> SceneProps { get; set; }
+        public static IReadOnlyList<string> MapIcons { get; set; }
+        public static IReadOnlyList<string> Presentations { get; set; }
+        public static IReadOnlyList<string> Tableaus { get; set; }
+        public static IReadOnlyList<string> Animations { get; set; }
+        public static IReadOnlyList<string> Music { get; set; }
+        public static IReadOnlyList<string> Skins { get; set; }
+        public static IReadOnlyList<string> InfoPages { get; set; }
 
-        public static string GetCommonIdentifier(string prefix, string[] array, int index, bool useQuotes = false)
+        public static string GetCommonIdentifier(string prefix, IList<string> array, int index, bool useQuotes = false)
         {
-            if (index < 0 || index >= array.Length) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+
+            if (index < 0 || index >= array.Count) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
             var s = prefix + (prefix.Length > 0 && prefix[prefix.Length - 1] == '_' ? "" : "_") +
                     array[index];
             return useQuotes ? "\"" + s + "\"" : s;
         }
 
-        public static string GetCommonIdentifier(string prefix, string[] array, ulong index, bool useQuotes = false)
+        public static string GetCommonIdentifier(string prefix, IList<string> array, ulong index, bool useQuotes = false)
         {
-            if (index >= (ulong)array.Length) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+
+            if (index >= (ulong)array.Count) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
+            var s = prefix + (prefix.Length > 0 && prefix[prefix.Length - 1] == '_' ? "" : "_") +
+                    array[(int)index];
+            return useQuotes ? "\"" + s + "\"" : s;
+        }
+
+        public static string GetCommonIdentifier(string prefix, IReadOnlyList<string> array, int index, bool useQuotes = false)
+        {
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+
+            if (index < 0 || index >= array.Count) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
             var s = prefix + (prefix.Length > 0 && prefix[prefix.Length - 1] == '_' ? "" : "_") +
                     array[index];
             return useQuotes ? "\"" + s + "\"" : s;
         }
 
-        public static Dictionary<int, Operator> Operators;
+        public static string GetCommonIdentifier(string prefix, IReadOnlyList<string> array, ulong index, bool useQuotes = false)
+        {
+            if (array == null) throw new ArgumentNullException(nameof(array));
+            if (prefix == null) throw new ArgumentNullException(nameof(prefix));
+
+            if (index >= (ulong)array.Count) return index.ToString(CultureInfo.GetCultureInfo("en-US"));
+            var s = prefix + (prefix.Length > 0 && prefix[prefix.Length - 1] == '_' ? "" : "_") +
+                    array[(int)index];
+            return useQuotes ? "\"" + s + "\"" : s;
+        }
+
+        public static IReadOnlyDictionary<int, Operator> Operators { get; set; }
 
         public static Operator FindOperator(int operatorCode) => Operators.ContainsKey(operatorCode) ?  Operators[operatorCode] : new Operator(operatorCode.ToString(CultureInfo.GetCultureInfo("en-US")), operatorCode);
 
-        public static string InputPath;
-        public static string OutputPath;
+        public static string InputPath { get; set; }
+        public static string OutputPath { get; set; }
 
         public static string GetParam(ulong lParam)
         {
@@ -124,152 +153,152 @@ from ID_troops import *";
             {
                 case 1:
                     var iReg = (int)lParam;
-                    return "reg" + Convert.ToString(iReg);
+                    return "reg" + Convert.ToString(iReg, CultureInfo.GetCultureInfo("en-US"));
                 case 2:
                     var iVariable = (int)lParam;
-                    if (iVariable < Variables.Length)
+                    if (iVariable < Variables.Count)
                         return "\"$" + Variables[iVariable] + "\"";
                     return $"0x{lParam:x16}";
                 case 3:
                     var iString = (int)lParam;
-                    return iString < Strings.Length ? "\"str_" + Strings[iString] + "\"" : $"0x{lParam:x16}";
+                    return iString < Strings.Count ? "\"str_" + Strings[iString] + "\"" : $"0x{lParam:x16}";
                 case 4:
                     var iItem = (int)lParam;
-                    return iItem < Items.Length ? "\"itm_" + Items[iItem] + "\"" : $"0x{lParam:x16}";
+                    return iItem < Items.Count ? "\"itm_" + Items[iItem] + "\"" : $"0x{lParam:x16}";
                 case 5:
                     var iTroop = (int)lParam;
-                    return iTroop < Troops.Length ? "\"trp_" + Troops[iTroop] + "\"" : $"0x{lParam:x16}";
+                    return iTroop < Troops.Count ? "\"trp_" + Troops[iTroop] + "\"" : $"0x{lParam:x16}";
                 case 6:
                     var iFaction = (int)lParam;
-                    return iFaction < Factions.Length ? "\"fac_" + Factions[iFaction] + "\"" : $"0x{lParam:x16}";
+                    return iFaction < Factions.Count ? "\"fac_" + Factions[iFaction] + "\"" : $"0x{lParam:x16}";
                 case 7:
                     var iQuest = (int)lParam;
-                    return iQuest < Quests.Length ? "\"qst_" + Quests[iQuest] + "\"" : $"0x{lParam:x16}";
+                    return iQuest < Quests.Count ? "\"qst_" + Quests[iQuest] + "\"" : $"0x{lParam:x16}";
                 case 8:
                     var iPTemplate = (int)lParam;
-                    return iPTemplate < PTemps.Length ? "\"pt_" + PTemps[iPTemplate] + "\"" : $"0x{lParam:x16}";
+                    return iPTemplate < PTemps.Count ? "\"pt_" + PTemps[iPTemplate] + "\"" : $"0x{lParam:x16}";
                 case 9:
                     var iParty = (int)lParam;
-                    return iParty < Parties.Length ? "\"p_" + Parties[iParty] + "\"" : $"0x{lParam:x16}";
+                    return iParty < Parties.Count ? "\"p_" + Parties[iParty] + "\"" : $"0x{lParam:x16}";
                 case 10:
                     var iScene = (int)lParam;
-                    return iScene < Scenes.Length ? "\"scn_" + Scenes[iScene] + "\"" : $"0x{lParam:x16}";
+                    return iScene < Scenes.Count ? "\"scn_" + Scenes[iScene] + "\"" : $"0x{lParam:x16}";
                 case 11:
                     var iMTemplate = (int)lParam;
-                    return iMTemplate < MissionTemplates.Length ? "\"mt_" + MissionTemplates[iMTemplate] + "\"" : $"0x{lParam:x16}";
+                    return iMTemplate < MissionTemplates.Count ? "\"mt_" + MissionTemplates[iMTemplate] + "\"" : $"0x{lParam:x16}";
                 case 12:
                     var iMenu = (int)lParam;
-                    return iMenu < Menus.Length ? "\"mnu_" + Menus[iMenu] + "\"" : $"0x{lParam:x16}";
+                    return iMenu < Menus.Count ? "\"mnu_" + Menus[iMenu] + "\"" : $"0x{lParam:x16}";
                 case 13:
                     var iProcedure = (int)lParam;
-                    return iProcedure < Procedures.Length ? "\"script_" + Procedures[iProcedure] + "\"" : $"0x{lParam:x16}";
+                    return iProcedure < Procedures.Count ? "\"script_" + Procedures[iProcedure] + "\"" : $"0x{lParam:x16}";
                 case 14:
                     var iParticle = (int)lParam;
-                    return iParticle < ParticleSystems.Length ? "\"psys_" + ParticleSystems[iParticle] + "\"" :
+                    return iParticle < ParticleSystems.Count ? "\"psys_" + ParticleSystems[iParticle] + "\"" :
                         $"0x{lParam:x16}";
                 case 15:
                     var iSceneProp = (int)lParam;
-                    return iSceneProp < SceneProps.Length ? "\"spr_" + SceneProps[iSceneProp] + "\"" : $"0x{lParam:x16}";
+                    return iSceneProp < SceneProps.Count ? "\"spr_" + SceneProps[iSceneProp] + "\"" : $"0x{lParam:x16}";
                 case 16:
                     var iSound = (int)lParam;
-                    return iSound < Sounds.Length ? "\"snd_" + Sounds[iSound] + "\"" : $"0x{lParam:x16}";
+                    return iSound < Sounds.Count ? "\"snd_" + Sounds[iSound] + "\"" : $"0x{lParam:x16}";
                 case 17:
-                    return "\":var" + Convert.ToString((int)lParam) + "\"";
+                    return "\":var" + Convert.ToString((int)lParam, CultureInfo.GetCultureInfo("en-US")) + "\"";
                 case 18:
                     var iIcon = (int)lParam;
-                    return iIcon < MapIcons.Length ? "\"icon_" + MapIcons[iIcon] + "\"" : $"0x{lParam:x16}";
+                    return iIcon < MapIcons.Count ? "\"icon_" + MapIcons[iIcon] + "\"" : $"0x{lParam:x16}";
                 case 19:
                     var iSkill = (int)lParam;
-                    return iSkill < Skills.Length ? "\"skl_" + Skills[iSkill] + "\"" : $"0x{lParam:x16}";
+                    return iSkill < Skills.Count ? "\"skl_" + Skills[iSkill] + "\"" : $"0x{lParam:x16}";
                 case 20:
                     var iMesh = (int)lParam;
-                    return iMesh < Meshes.Length ? "\"mesh_" + Meshes[iMesh] + "\"" : $"0x{lParam:x16}";
+                    return iMesh < Meshes.Count ? "\"mesh_" + Meshes[iMesh] + "\"" : $"0x{lParam:x16}";
                 case 21:
                     var iPresentation = (int)lParam;
-                    return iPresentation < Presentations.Length ? "\"prsnt_" + Presentations[iPresentation] + "\"" : $"0x{lParam:x16}";
+                    return iPresentation < Presentations.Count ? "\"prsnt_" + Presentations[iPresentation] + "\"" : $"0x{lParam:x16}";
                 case 22:
                     var iQuickString = (int)lParam;
-                    return iQuickString < QuickStrings.Length ? "\"@" + QuickStrings[iQuickString] + "\"" : $"0x{lParam:x16}";
+                    return iQuickString < QuickStrings.Count ? "\"@" + QuickStrings[iQuickString] + "\"" : $"0x{lParam:x16}";
                 case 23:
                     var iTrack = (int)lParam;
-                    return iTrack < Music.Length ? "\"track_" + Music[iTrack] + "\"" : $"0x{lParam:x16}";
+                    return iTrack < Music.Count ? "\"track_" + Music[iTrack] + "\"" : $"0x{lParam:x16}";
                 case 24:
                     var iTableau = (int)lParam;
-                    return iTableau < Tableaus.Length ? "\"tableau_" + Tableaus[iTableau] + "\"" : $"0x{lParam:x16}";
+                    return iTableau < Tableaus.Count ? "\"tableau_" + Tableaus[iTableau] + "\"" : $"0x{lParam:x16}";
                 case 25:
                     var iAnim = (int)lParam;
-                    return iAnim < Animations.Length ? "\"anim_" + Animations[iAnim] + "\"" : $"0x{lParam:x16}";
+                    return iAnim < Animations.Count ? "\"anim_" + Animations[iAnim] + "\"" : $"0x{lParam:x16}";
                 default:
                     return lParam.ToString(CultureInfo.GetCultureInfo("en-US"));
             }
         }
 
-        public static string GetTriggerParam(double dblParam)
+        public static string GetTriggerParam(double dblParam) => (int)dblParam switch
         {
-            switch ((int)dblParam)
-            {
-                case -2: return "ti_on_game_start";
-                case -5: return "ti_simulate_battle";
-                case -6: return "ti_on_party_encounter";
-                case -8: return "ti_question_answered";
-                case -15: return "ti_server_player_joined";
-                case -16: return "ti_on_multiplayer_mission_end";
-                case -19: return "ti_before_mission_start";
-                case -20: return "ti_after_mission_start";
-                case -21: return "ti_tab_pressed";
-                case -22: return "ti_inventory_key_pressed";
-                case -23: return "ti_escape_pressed";
-                case -24: return "ti_battle_window_opened";
-                case -25: return "ti_on_agent_spawn";
-                case -26: return "ti_on_agent_killed_or_wounded";
-                case -27: return "ti_on_agent_knocked_down";
-                case -28: return "ti_on_agent_hit";
-                case -29: return "ti_on_player_exit";
-                case -30: return "ti_on_leave_area";
-                case -40: return "ti_on_scene_prop_init";
-                case -42: return "ti_on_scene_prop_hit";
-                case -43: return "ti_on_scene_prop_destroy";
-                case -44: return "ti_on_scene_prop_use";
-                case -45: return "ti_on_scene_prop_is_animating";
-                case -46: return "ti_on_scene_prop_animation_finished";
-                case -47: return "ti_on_scene_prop_start_use";
-                case -48: return "ti_on_scene_prop_cancel_use";
-                case -50: return "ti_on_init_item";
-                case -51: return "ti_on_weapon_attack";
-                case -52: return "ti_on_missile_hit";
-                case -53: return "ti_on_item_picked_up";
-                case -54: return "ti_on_item_dropped";
-                case -55: return "ti_on_agent_mount";
-                case -56: return "ti_on_agent_dismount";
-                case -57: return "ti_on_item_wielded";
-                case -58: return "ti_on_item_unwielded";
-                case -60: return "ti_on_presentation_load";
-                case -61: return "ti_on_presentation_run";
-                case -62: return "ti_on_presentation_event_state_change";
-                case -63: return "ti_on_presentation_mouse_enter_leave";
-                case -64: return "ti_on_presentation_mouse_press";
-                case -70: return "ti_on_init_map_icon";
-                case -71: return "ti_on_order_issued";
-                case -75: return "ti_on_switch_to_map";
-                case -76: return "ti_scene_prop_deformation_finished";
-                case -80: return "ti_on_shield_hit";
-                case -100: return "ti_on_scene_prop_stepped_on";
-                case -101: return "ti_on_init_missile";
-                case -102: return "ti_on_agent_turn";
-                case -103: return SelectedMode == Mode.WarbandScriptEnhancer450 ? "ti_on_agent_blocked" : "ti_on_shield_hit"; 
-                case -104: return "ti_on_missile_dive";
-                case -105: return "ti_on_agent_start_reloading";
-                case -106: return "ti_on_agent_end_reloading";
-                case -107: return "ti_on_shield_penetrated";
-                case 100000000: return "ti_once";
-                default: return dblParam.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
+            -2 => "ti_on_game_start",
+            -5 => "ti_simulate_battle",
+            -6 => "ti_on_party_encounter",
+            -8 => "ti_question_answered",
+            -15 => "ti_server_player_joined",
+            -16 => "ti_on_multiplayer_mission_end",
+            -19 => "ti_before_mission_start",
+            -20 => "ti_after_mission_start",
+            -21 => "ti_tab_pressed",
+            -22 => "ti_inventory_key_pressed",
+            -23 => "ti_escape_pressed",
+            -24 => "ti_battle_window_opened",
+            -25 => "ti_on_agent_spawn",
+            -26 => "ti_on_agent_killed_or_wounded",
+            -27 => "ti_on_agent_knocked_down",
+            -28 => "ti_on_agent_hit",
+            -29 => "ti_on_player_exit",
+            -30 => "ti_on_leave_area",
+            -40 => "ti_on_scene_prop_init",
+            -42 => "ti_on_scene_prop_hit",
+            -43 => "ti_on_scene_prop_destroy",
+            -44 => "ti_on_scene_prop_use",
+            -45 => "ti_on_scene_prop_is_animating",
+            -46 => "ti_on_scene_prop_animation_finished",
+            -47 => "ti_on_scene_prop_start_use",
+            -48 => "ti_on_scene_prop_cancel_use",
+            -50 => "ti_on_init_item",
+            -51 => "ti_on_weapon_attack",
+            -52 => "ti_on_missile_hit",
+            -53 => "ti_on_item_picked_up",
+            -54 => "ti_on_item_dropped",
+            -55 => "ti_on_agent_mount",
+            -56 => "ti_on_agent_dismount",
+            -57 => "ti_on_item_wielded",
+            -58 => "ti_on_item_unwielded",
+            -60 => "ti_on_presentation_load",
+            -61 => "ti_on_presentation_run",
+            -62 => "ti_on_presentation_event_state_change",
+            -63 => "ti_on_presentation_mouse_enter_leave",
+            -64 => "ti_on_presentation_mouse_press",
+            -70 => "ti_on_init_map_icon",
+            -71 => "ti_on_order_issued",
+            -75 => "ti_on_switch_to_map",
+            -76 => "ti_scene_prop_deformation_finished",
+            -80 => "ti_on_shield_hit",
+            -100 => "ti_on_scene_prop_stepped_on",
+            -101 => "ti_on_init_missile",
+            -102 => "ti_on_agent_turn",
+            -103 => SelectedMode == Mode.WarbandScriptEnhancer450 ? "ti_on_agent_blocked" : "ti_on_shield_hit",
+            -104 => "ti_on_missile_dive",
+            -105 => "ti_on_agent_start_reloading",
+            -106 => "ti_on_agent_end_reloading",
+            -107 => "ti_on_shield_penetrated",
+            100000000 => "ti_once",
+            _ => dblParam.ToString(CultureInfo.GetCultureInfo("en-US"))
+        };
 
         public static string GetIndentations(int indentation) => new String(' ', Math.Max(indentation, 0) << 1);
         
         public static void PrintStatement(ref Text fInput, ref Win32FileWriter fOutput, int iRecords, string strDefaultIndentation)
         {
+            if (fInput == null) throw new ArgumentNullException(nameof(fInput));
+            if (fOutput == null) throw new ArgumentNullException(nameof(fOutput));
+
             var indentations = 0;
             for (int r = 0; r < iRecords; r++)
             {
@@ -300,7 +329,7 @@ from ID_troops import *";
                                       iOpCode == 18 ? GetIndentations(indentations - 1) : GetIndentations(indentations);
 
                 string strOpCode = null;
-                if (strPrefixNeg != "" && iOpCode >= 30 && iOpCode <= 32)
+                if (strPrefixNeg.Length > 0 && iOpCode >= 30 && iOpCode <= 32)
                 {
                     switch (iOpCode)
                     {
@@ -333,197 +362,192 @@ from ID_troops import *";
             }
         }
 
-        public static string GetKey(ulong lKeyCode)
+        public static string GetKey(ulong lKeyCode) => lKeyCode switch
         {
-            switch (lKeyCode)
-            {
-                case 0x02: return "key_1";
-                case 0x03: return "key_2";
-                case 0x04: return "key_3";
-                case 0x05: return "key_4";
-                case 0x06: return "key_5";
-                case 0x07: return "key_6";
-                case 0x08: return "key_7";
-                case 0x09: return "key_8";
-                case 0x0a: return "key_9";
-                case 0x0b: return "key_0";
-                case 0x1e: return "key_a";
-                case 0x30: return "key_b";
-                case 0x2e: return "key_c";
-                case 0x20: return "key_d";
-                case 0x12: return "key_e";
-                case 0x21: return "key_f";
-                case 0x22: return "key_g";
-                case 0x23: return "key_h";
-                case 0x17: return "key_i";
-                case 0x24: return "key_j";
-                case 0x25: return "key_k";
-                case 0x26: return "key_l";
-                case 0x32: return "key_m";
-                case 0x31: return "key_n";
-                case 0x18: return "key_o";
-                case 0x19: return "key_p";
-                case 0x10: return "key_q";
-                case 0x13: return "key_r";
-                case 0x1f: return "key_s";
-                case 0x14: return "key_t";
-                case 0x16: return "key_u";
-                case 0x2f: return "key_v";
-                case 0x11: return "key_w";
-                case 0x2d: return "key_x";
-                case 0x15: return "key_y";
-                case 0x2c: return "key_z";
-                case 0x52: return "key_numpad_0";
-                case 0x4f: return "key_numpad_1";
-                case 0x50: return "key_numpad_2";
-                case 0x51: return "key_numpad_3";
-                case 0x4b: return "key_numpad_4";
-                case 0x4c: return "key_numpad_5";
-                case 0x4d: return "key_numpad_6";
-                case 0x47: return "key_numpad_7";
-                case 0x48: return "key_numpad_8";
-                case 0x49: return "key_numpad_9";
-                case 0x45: return "key_num_lock";
-                case 0xb5: return "key_numpad_slash";
-                case 0x37: return "key_numpad_multiply";
-                case 0x4a: return "key_numpad_minus";
-                case 0x4e: return "key_numpad_plus";
-                case 0x9c: return "key_numpad_enter";
-                case 0x53: return "key_numpad_period";
-                case 0xd2: return "key_insert";
-                case 0xd3: return "key_delete";
-                case 0xc7: return "key_home";
-                case 0xcf: return "key_end";
-                case 0xc9: return "key_page_up";
-                case 0xd1: return "key_page_down";
-                case 0xc8: return "key_up";
-                case 0xd0: return "key_down";
-                case 0xcb: return "key_left";
-                case 0xcd: return "key_right";
-                case 0x3b: return "key_f1";
-                case 0x3c: return "key_f2";
-                case 0x3d: return "key_f3";
-                case 0x3e: return "key_f4";
-                case 0x3f: return "key_f5";
-                case 0x40: return "key_f6";
-                case 0x41: return "key_f7";
-                case 0x42: return "key_f8";
-                case 0x43: return "key_f9";
-                case 0x44: return "key_f10";
-                case 0x57: return "key_f11";
-                case 0x58: return "key_f12";
-                case 0x39: return "key_space";
-                case 0x01: return "key_escape";
-                case 0x1c: return "key_enter";
-                case 0x0f: return "key_tab";
-                case 0x0e: return "key_back_space";
-                case 0x1a: return "key_open_braces";
-                case 0x1b: return "key_close_braces";
-                case 0x33: return "key_comma";
-                case 0x34: return "key_period";
-                case 0x35: return "key_slash";
-                case 0x2b: return "key_back_slash";
-                case 0x0d: return "key_equals";
-                case 0x0c: return "key_minus";
-                case 0x27: return "key_semicolon";
-                case 0x28: return "key_apostrophe";
-                case 0x29: return "key_tilde";
-                case 0x3a: return "key_caps_lock";
-                case 0x2a: return "key_left_shift";
-                case 0x36: return "key_right_shift";
-                case 0x1d: return "key_left_control";
-                case 0x9d: return "key_right_control";
-                case 0x38: return "key_left_alt";
-                case 0xb8: return "key_right_alt";
-                case 0xe0: return "key_left_mouse_button";
-                case 0xe1: return "key_right_mouse_button";
-                case 0xe2: return "key_middle_mouse_button";
-                case 0xe3: return "key_mouse_button_4";
-                case 0xe4: return "key_mouse_button_5";
-                case 0xe5: return "key_mouse_button_6";
-                case 0xe6: return "key_mouse_button_7";
-                case 0xe7: return "key_mouse_button_8";
-                case 0xee: return "key_mouse_scroll_up";
-                case 0xef: return "key_mouse_scroll_down";
-                case 0xf0: return "key_xbox_a";
-                case 0xf1: return "key_xbox_b";
-                case 0xf2: return "key_xbox_x";
-                case 0xf3: return "key_xbox_y";
-                case 0xf4: return "key_xbox_dpad_up";
-                case 0xf5: return "key_xbox_dpad_down";
-                case 0xf6: return "key_xbox_dpad_right";
-                case 0xf7: return "key_xbox_dpad_left";
-                case 0xf8: return "key_xbox_start";
-                case 0xf9: return "key_xbox_back";
-                case 0xfa: return "key_xbox_rbumber";
-                case 0xfb: return "key_xbox_lbumber";
-                case 0xfc: return "key_xbox_ltrigger";
-                case 0xfd: return "key_xbox_rtrigger";
-                case 0xfe: return "key_xbox_rstick";
-                case 0xff: return "key_xbox_lstick";
-                default: return $"0x{lKeyCode:x}";
-            }
-        }
+            0x02 => "key_1",
+            0x03 => "key_2",
+            0x04 => "key_3",
+            0x05 => "key_4",
+            0x06 => "key_5",
+            0x07 => "key_6",
+            0x08 => "key_7",
+            0x09 => "key_8",
+            0x0a => "key_9",
+            0x0b => "key_0",
+            0x1e => "key_a",
+            0x30 => "key_b",
+            0x2e => "key_c",
+            0x20 => "key_d",
+            0x12 => "key_e",
+            0x21 => "key_f",
+            0x22 => "key_g",
+            0x23 => "key_h",
+            0x17 => "key_i",
+            0x24 => "key_j",
+            0x25 => "key_k",
+            0x26 => "key_l",
+            0x32 => "key_m",
+            0x31 => "key_n",
+            0x18 => "key_o",
+            0x19 => "key_p",
+            0x10 => "key_q",
+            0x13 => "key_r",
+            0x1f => "key_s",
+            0x14 => "key_t",
+            0x16 => "key_u",
+            0x2f => "key_v",
+            0x11 => "key_w",
+            0x2d => "key_x",
+            0x15 => "key_y",
+            0x2c => "key_z",
+            0x52 => "key_numpad_0",
+            0x4f => "key_numpad_1",
+            0x50 => "key_numpad_2",
+            0x51 => "key_numpad_3",
+            0x4b => "key_numpad_4",
+            0x4c => "key_numpad_5",
+            0x4d => "key_numpad_6",
+            0x47 => "key_numpad_7",
+            0x48 => "key_numpad_8",
+            0x49 => "key_numpad_9",
+            0x45 => "key_num_lock",
+            0xb5 => "key_numpad_slash",
+            0x37 => "key_numpad_multiply",
+            0x4a => "key_numpad_minus",
+            0x4e => "key_numpad_plus",
+            0x9c => "key_numpad_enter",
+            0x53 => "key_numpad_period",
+            0xd2 => "key_insert",
+            0xd3 => "key_delete",
+            0xc7 => "key_home",
+            0xcf => "key_end",
+            0xc9 => "key_page_up",
+            0xd1 => "key_page_down",
+            0xc8 => "key_up",
+            0xd0 => "key_down",
+            0xcb => "key_left",
+            0xcd => "key_right",
+            0x3b => "key_f1",
+            0x3c => "key_f2",
+            0x3d => "key_f3",
+            0x3e => "key_f4",
+            0x3f => "key_f5",
+            0x40 => "key_f6",
+            0x41 => "key_f7",
+            0x42 => "key_f8",
+            0x43 => "key_f9",
+            0x44 => "key_f10",
+            0x57 => "key_f11",
+            0x58 => "key_f12",
+            0x39 => "key_space",
+            0x01 => "key_escape",
+            0x1c => "key_enter",
+            0x0f => "key_tab",
+            0x0e => "key_back_space",
+            0x1a => "key_open_braces",
+            0x1b => "key_close_braces",
+            0x33 => "key_comma",
+            0x34 => "key_period",
+            0x35 => "key_slash",
+            0x2b => "key_back_slash",
+            0x0d => "key_equals",
+            0x0c => "key_minus",
+            0x27 => "key_semicolon",
+            0x28 => "key_apostrophe",
+            0x29 => "key_tilde",
+            0x3a => "key_caps_lock",
+            0x2a => "key_left_shift",
+            0x36 => "key_right_shift",
+            0x1d => "key_left_control",
+            0x9d => "key_right_control",
+            0x38 => "key_left_alt",
+            0xb8 => "key_right_alt",
+            0xe0 => "key_left_mouse_button",
+            0xe1 => "key_right_mouse_button",
+            0xe2 => "key_middle_mouse_button",
+            0xe3 => "key_mouse_button_4",
+            0xe4 => "key_mouse_button_5",
+            0xe5 => "key_mouse_button_6",
+            0xe6 => "key_mouse_button_7",
+            0xe7 => "key_mouse_button_8",
+            0xee => "key_mouse_scroll_up",
+            0xef => "key_mouse_scroll_down",
+            0xf0 => "key_xbox_a",
+            0xf1 => "key_xbox_b",
+            0xf2 => "key_xbox_x",
+            0xf3 => "key_xbox_y",
+            0xf4 => "key_xbox_dpad_up",
+            0xf5 => "key_xbox_dpad_down",
+            0xf6 => "key_xbox_dpad_right",
+            0xf7 => "key_xbox_dpad_left",
+            0xf8 => "key_xbox_start",
+            0xf9 => "key_xbox_back",
+            0xfa => "key_xbox_rbumber",
+            0xfb => "key_xbox_lbumber",
+            0xfc => "key_xbox_ltrigger",
+            0xfd => "key_xbox_rtrigger",
+            0xfe => "key_xbox_rstick",
+            0xff => "key_xbox_lstick",
+            _ => $"0x{lKeyCode:x}"
+        };
 
-        public static string GetGameKey(ulong lKeyCode)
+        public static string GetGameKey(ulong lKeyCode) => lKeyCode switch
         {
-            switch (lKeyCode)
-            {
-                case 0: return "gk_move_forward";
-                case 1: return "gk_move_backward";
-                case 2: return "gk_move_left";
-                case 3: return "gk_move_right";
-                case 4: return "gk_action";
-                case 5: return "gk_jump";
-                case 6: return "gk_attack";
-                case 7: return "gk_defend";
-                case 8: return "gk_kick";
-                case 9: return "gk_toggle_weapon_mode";
-                case 10: return "gk_equip_weapon_1";
-                case 11: return "gk_equip_weapon_2";
-                case 12: return "gk_equip_weapon_3";
-                case 13: return "gk_equip_weapon_4";
-                case 14: return "gk_equip_primary_weapon";
-                case 15: return "gk_equip_secondary_weapon";
-                case 16: return "gk_drop_weapon";
-                case 17: return "gk_sheath_weapon";
-                case 18: return "gk_leave";
-                case 19: return "gk_zoom";
-                case 20: return "gk_view_char";
-                case 21: return "gk_cam_toggle";
-                case 22: return "gk_view_orders";
-                case 23: return "gk_order_1";
-                case 24: return "gk_order_2";
-                case 25: return "gk_order_3";
-                case 26: return "gk_order_4";
-                case 27: return "gk_order_5";
-                case 28: return "gk_order_6";
-                case 29: return "gk_everyone_hear";
-                case 30: return "gk_infantry_hear";
-                case 31: return "gk_archers_hear";
-                case 32: return "gk_cavalry_hear";
-                case 33: return "gk_group3_hear";
-                case 34: return "gk_group4_hear";
-                case 35: return "gk_group5_hear";
-                case 36: return "gk_group6_hear";
-                case 37: return "gk_group7_hear";
-                case 38: return "gk_group8_hear";
-                case 39: return "gk_reverse_order_group";
-                case 40: return "gk_everyone_around_hear";
-                case 41: return "gk_mp_message_all";
-                case 42: return "gk_mp_message_team";
-                case 43: return "gk_character_window";
-                case 44: return "gk_inventory_window";
-                case 45: return "gk_party_window";
-                case 46: return "gk_quests_window";
-                case 47: return "gk_game_log_window";
-                case 48: return "gk_quick_save";
-                case 49: return "gk_crouch";
-                case 50: return "gk_order_7";
-                case 51: return "gk_order_8";
-                default: return $"0x{lKeyCode:x}";
-            }
-        }
+            0 => "gk_move_forward",
+            1 => "gk_move_backward",
+            2 => "gk_move_left",
+            3 => "gk_move_right",
+            4 => "gk_action",
+            5 => "gk_jump",
+            6 => "gk_attack",
+            7 => "gk_defend",
+            8 => "gk_kick",
+            9 => "gk_toggle_weapon_mode",
+            10 => "gk_equip_weapon_1",
+            11 => "gk_equip_weapon_2",
+            12 => "gk_equip_weapon_3",
+            13 => "gk_equip_weapon_4",
+            14 => "gk_equip_primary_weapon",
+            15 => "gk_equip_secondary_weapon",
+            16 => "gk_drop_weapon",
+            17 => "gk_sheath_weapon",
+            18 => "gk_leave",
+            19 => "gk_zoom",
+            20 => "gk_view_char",
+            21 => "gk_cam_toggle",
+            22 => "gk_view_orders",
+            23 => "gk_order_1",
+            24 => "gk_order_2",
+            25 => "gk_order_3",
+            26 => "gk_order_4",
+            27 => "gk_order_5",
+            28 => "gk_order_6",
+            29 => "gk_everyone_hear",
+            30 => "gk_infantry_hear",
+            31 => "gk_archers_hear",
+            32 => "gk_cavalry_hear",
+            33 => "gk_group3_hear",
+            34 => "gk_group4_hear",
+            35 => "gk_group5_hear",
+            36 => "gk_group6_hear",
+            37 => "gk_group7_hear",
+            38 => "gk_group8_hear",
+            39 => "gk_reverse_order_group",
+            40 => "gk_everyone_around_hear",
+            41 => "gk_mp_message_all",
+            42 => "gk_mp_message_team",
+            43 => "gk_character_window",
+            44 => "gk_inventory_window",
+            45 => "gk_party_window",
+            46 => "gk_quests_window",
+            47 => "gk_game_log_window",
+            48 => "gk_quick_save",
+            49 => "gk_crouch",
+            50 => "gk_order_7",
+            51 => "gk_order_8",
+            _ => $"0x{lKeyCode:x}",
+        };
+        
 
         public static bool IsStringRegister(ulong lParam)
         {
@@ -567,7 +591,7 @@ from ID_troops import *";
             return lTag == 0;
         }
 
-        public static string GetFaceKey(ulong lFaceKeyCode) => Convert.ToString(lFaceKeyCode);
+        public static string GetFaceKey(ulong lFaceKeyCode) => Convert.ToString(lFaceKeyCode, CultureInfo.GetCultureInfo("en-US"));
 
         public static string DecompileTextFlags(uint dwFlag)
         {
@@ -592,58 +616,47 @@ from ID_troops import *";
             return sbFlag.ToString();
         }
 
-        public static string GetAgentClass(ulong lClass)
+        public static string GetAgentClass(ulong lClass) => lClass switch 
         {
-            switch (lClass)
-            {
-                case 0:
-                    return "grc_infantry";
-                case 1:
-                    return "grc_archers";
-                case 2:
-                    return "grc_cavalry";
-                case 3:
-                    return "grc_infantry";
-                case 9:
-                    return "grc_everyone";
-                default:
-                    return lClass.ToString(CultureInfo.GetCultureInfo(1033));
-            }
-        }
+            0 => "grc_infantry",
+            1 => "grc_archers",
+            2 => "grc_cavalry",
+            3 => "grc_infantry",
+            9 => "grc_everyone",
+            _ => lClass.ToString(CultureInfo.GetCultureInfo(1033))
+        };
 
-        public static string GetTeamOrder(ulong lOrder)
+        public static string GetTeamOrder(ulong lOrder) => lOrder switch
         {
-            switch (lOrder)
-            {
-                case 0: return "mordr_hold";
-                case 1: return "mordr_follow";
-                case 2: return "mordr_charge";
-                case 3: return "mordr_mount";
-                case 4: return "mordr_dismount";
-                case 5: return "mordr_advance";
-                case 6: return "mordr_fall_back";
-                case 7: return "mordr_stand_closer";
-                case 8: return "mordr_spread_out";
-                case 9: return "mordr_use_blunt_weapons";
-                case 10: return "mordr_use_melee_weapons";
-                case 11: return "mordr_use_ranged_weapons";
-                case 12: return "mordr_use_any_weapon";
-                case 13: return "mordr_stand_ground";
-                case 14: return "mordr_fire_at_my_command";
-                case 15: return "mordr_all_fire_now";
-                case 16: return "mordr_left_fire_now";
-                case 17: return "mordr_middle_fire_now";
-                case 18: return "mordr_right_fire_now";
-                case 19: return "mordr_fire_at_will";
-                case 20: return "mordr_retreat";
-                case 21: return "mordr_form_1_row";
-                case 22: return "mordr_form_2_row";
-                case 23: return "mordr_form_3_row";
-                case 24: return "mordr_form_4_row";
-                case 25: return "mordr_form_5_row";
-                default: return lOrder.ToString(CultureInfo.GetCultureInfo(1033));
-            }
-        }
+            0 => "mordr_hold",
+            1 => "mordr_follow",
+            2 => "mordr_charge",
+            3 => "mordr_mount",
+            4 => "mordr_dismount",
+            5 => "mordr_advance",
+            6 => "mordr_fall_back",
+            7 => "mordr_stand_closer",
+            8 => "mordr_spread_out",
+            9 => "mordr_use_blunt_weapons",
+            10 => "mordr_use_melee_weapons",
+            11 => "mordr_use_ranged_weapons",
+            12 => "mordr_use_any_weapon",
+            13 => "mordr_stand_ground",
+            14 => "mordr_fire_at_my_command",
+            15 => "mordr_all_fire_now",
+            16 => "mordr_left_fire_now",
+            17 => "mordr_middle_fire_now",
+            18 => "mordr_right_fire_now",
+            19 => "mordr_fire_at_will",
+            20 => "mordr_retreat",
+            21 => "mordr_form_1_row",
+            22 => "mordr_form_2_row",
+            23 => "mordr_form_3_row",
+            24 => "mordr_form_4_row",
+            25 => "mordr_form_5_row",
+            _ => lOrder.ToString(CultureInfo.GetCultureInfo(1033)),
+        };
+        
 
         public static string GetPartyBehavior(ulong lBehavior)
         {
@@ -654,107 +667,86 @@ from ID_troops import *";
             return iAIbehaviour <= 11 ? strAIbehaviours[iAIbehaviour] : iAIbehaviour.ToString(CultureInfo.GetCultureInfo("en-US"));
         }
 
-        public static string GetCharacterAttribute(ulong lAttribute)
+        public static string GetCharacterAttribute(ulong lAttribute) => lAttribute switch
         {
-            switch (lAttribute)
-            {
-                case 0:
-                    return "ca_strength";
-                case 1:
-                    return "ca_agility";
-                case 2:
-                    return "ca_intelligence";
-                case 3:
-                    return "ca_charisma";
-                default:
-                    return lAttribute.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
-
-        public static string GetWeaponProficiency(ulong lProficiency)
-        {
-            switch (lProficiency)
-            {
-                case 0: return "wpt_one_handed_weapon";
-                case 1: return "wpt_two_handed_weapon";
-                case 2: return "wpt_polearm";
-                case 3: return "wpt_archery";
-                case 4: return "wpt_crossbow";
-                case 5: return "wpt_throwing";
-                case 6: return "wpt_firearm";
-                default: return lProficiency.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
-
-        public static string GetInventorySlot(ulong lSlot)
-        {
-            switch (lSlot)
-            {
-                case 0: return "ek_item_0";
-                case 1: return "ek_item_1";
-                case 2: return "ek_item_2";
-                case 3: return "ek_item_3";
-                case 4: return "ek_head";
-                case 5: return "ek_body";
-                case 6: return "ek_foot";
-                case 7: return "ek_gloves";
-                case 8: return "ek_horse";
-                case 9: return "ek_food";
-                default: return lSlot.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
+            0 => "ca_strength",
+            1 => "ca_agility",
+            2 => "ca_intelligence",
+            3 => "ca_charisma",
+            _ => lAttribute.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
         
-        public static string GetTooltip(ulong t)
+
+        public static string GetWeaponProficiency(ulong lProficiency) => lProficiency switch
         {
-            switch (t)
-            {
-                case 1: return "tooltip_agent";
-                case 2: return "tooltip_horse";
-                case 3: return "tooltip_my_horse";
-                case 5: return "tooltip_container";
-                case 6: return "tooltip_door";
-                case 7: return "tooltip_item";
-                case 8: return "tooltip_leave_area";
-                case 9: return "tooltip_prop";
-                case 10: return "tooltip_destructible_prop";
-                default: return t.ToString(CultureInfo.GetCultureInfo("en-US"));
-            }
-        }
+            0 => "wpt_one_handed_weapon",
+            1 => "wpt_two_handed_weapon",
+            2 => "wpt_polearm",
+            3 => "wpt_archery",
+            4 => "wpt_crossbow",
+            5 => "wpt_throwing",
+            6 => "wpt_firearm",
+            _ => lProficiency.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
+
+        public static string GetInventorySlot(ulong lSlot) => lSlot switch
+        {
+            0 => "ek_item_0",
+            1 => "ek_item_1",
+            2 => "ek_item_2",
+            3 => "ek_item_3",
+            4 => "ek_head",
+            5 => "ek_body",
+            6 => "ek_foot",
+            7 => "ek_gloves",
+            8 => "ek_horse",
+            9 => "ek_food",
+            _ => lSlot.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
+        
+        
+        public static string GetTooltip(ulong t) => t switch
+        {
+            1 => "tooltip_agent",
+            2 => "tooltip_horse",
+            3 => "tooltip_my_horse",
+            5 => "tooltip_container",
+            6 => "tooltip_door",
+            7 => "tooltip_item",
+            8 => "tooltip_leave_area",
+            9 => "tooltip_prop",
+            10 => "tooltip_destructible_prop",
+            _ => t.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
 
         public static string GetColor(ulong color)
         {
-            if (color <= 0xFFFFFFFF && color > 0x00FFFFFF) return "0x" + color.ToString("X8");
-            if (color <= 0x00FFFFFF) return "0x" + color.ToString("X6");
-            return "0x" + color.ToString("X");
+            if (color <= 0xFFFFFFFF && color > 0x00FFFFFF) return "0x" + color.ToString("X8", CultureInfo.GetCultureInfo("en-US"));
+            if (color <= 0x00FFFFFF) return "0x" + color.ToString("X6", CultureInfo.GetCultureInfo("en-US"));
+            return "0x" + color.ToString("X", CultureInfo.GetCultureInfo("en-US"));
         }
 
-        public static string GetAlpha(ulong alpha) => String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2") : alpha.ToString("X"));
+        public static string GetAlpha(ulong alpha) => String.Concat("0x", alpha <= 0xFF ? alpha.ToString("X2", CultureInfo.GetCultureInfo("en-US")) : alpha.ToString("X", CultureInfo.GetCultureInfo("en-US")));
 
-        public static string DecompileSortMode(ulong sm)
+        public static string DecompileSortMode(ulong sm) => (sm & 3) switch
         {
-            switch (sm & 3)
-            {
-                case 0x0:
-                    return "0";
-                case 0x1:
-                    return "sort_f_desc";
-                case 0x10:
-                    return "sort_f_ci";
-                case 0x11:
-                    return "sort_f_ci | sort_f_desc";
-                default:
-                    return sm.ToString();
-            }
-        }
+            0x0 => "0",
+            0x1 => "sort_f_desc",
+            0x10 => "sort_f_ci",
+            0x11 => "sort_f_ci | sort_f_desc",
+            _ => sm.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
+        
 
-        public static bool NeedId = true;
-        public static void GenerateId(string fileOut, string[] content, string prefix = "")
+        public static bool NeedId { get; set; } = true;
+        public static void GenerateId(string fileOut, IEnumerable<string> content, string prefix = "")
         {
-            if (!NeedId) return;
+            if (!NeedId || prefix == null || content == null) return;
             var f = new Win32FileWriter(Path.Combine(OutputPath, fileOut));
             if (prefix.Length > 0 && prefix[prefix.Length - 1] != '_') prefix += '_';
-            for (int i = 0; i < content.Length; i++) f.WriteLine("{0}{1} = {2}", prefix, content[i], i);
+            var enumerable = content.ToArray();
+            for (int i = 0; i < enumerable.Length; i++) f.WriteLine("{0}{1} = {2}", prefix, enumerable[i], i);
             f.Close();
-        } 
+        }
     }
 }

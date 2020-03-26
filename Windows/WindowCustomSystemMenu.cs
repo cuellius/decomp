@@ -18,13 +18,15 @@ namespace Decomp.Windows
 
         public static void AttachCustomSystemMenu(this Window w)
         {
-            w.Loaded += (s, e) => 
+#pragma warning disable CA1062 // Validate arguments of public methods
+            w.Loaded += (s, e) =>
             {
                 var hwnd = new WindowInteropHelper(w).Handle;
                 _dictionary[hwnd] = w;
                 var hwndSource = HwndSource.FromHwnd(hwnd);
                 hwndSource?.AddHook(WindowProc);
             };
+#pragma warning restore CA1062 // Validate arguments of public methods
         }
 
         // ReSharper disable InconsistentNaming

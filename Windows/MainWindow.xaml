@@ -6,7 +6,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:decompwindows="clr-namespace:Decomp.Windows"
         mc:Ignorable="d"
-        Title="M&amp;B Warband Module Decompiler" WindowStartupLocation="CenterScreen" Height="465" Width="800" Style="{StaticResource VS2012WindowStyle}" Icon="Images/knight.ico">
+        Title="M&amp;B Warband Module Decompiler" WindowStartupLocation="CenterScreen" Height="465" Width="849" Style="{StaticResource VS2012WindowStyle}" Icon="Images/knight.ico">
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Help" Executed="HelpCommandExecuted" CanExecute="HelpCommandCanExecute" />
     </Window.CommandBindings>
@@ -73,11 +73,11 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Button Grid.Column="0" Content="{DynamicResource LocalizationAbout}" Height="24" x:Name="button5" Click="AboutButtonClick"/>
-                <Label HorizontalAlignment="Right" Grid.Column="1" Content="{DynamicResource LocalizationMode}" Height="24"/>
+                <Label VerticalContentAlignment="Center" HorizontalAlignment="Right" Grid.Column="1" Content="{DynamicResource LocalizationMode}" Height="24"/>
                 <ComboBox Grid.Column="2" Name="ModeComboBox" Height="24">
                     <system:String>Vanilla</system:String>
                     <system:String>WSE v3.2.0</system:String>
-                    <system:String>WSE v4.7.3</system:String>
+                    <system:String>WSE v4.7.7</system:String>
                     <system:String>Caribbean</system:String>
                 </ComboBox>
                 <Grid HorizontalAlignment="Center" Grid.Column="4">
@@ -93,8 +93,8 @@
                     <CheckBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="6,5,0,0" Content="{DynamicResource LocalizationOpenAfter}" x:Name="OpenAfterCompleteCheckBox" IsChecked="False" />
                     <CheckBox Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" Margin="6,5,0,0" Content="{DynamicResource LocalizationDecompileShaders}" x:Name="DecompileShadersCheckBox" IsChecked="False" />
                 </Grid>
-                <Button Margin="0,0,2.5,0" Grid.Column="5" Content="{DynamicResource LocalizationDecompile}" Height="24" x:Name="DecompileButton" Click="DecompileButtonClick" IsDefault="True" />
-                <Button Margin="2.5,0,0,0" Grid.Column="6" Content="{DynamicResource LocalizationClose}" Height="24" x:Name="button3" Click="CloseButtonClick" />
+                <Button SnapsToDevicePixels="True" Margin="0,0,2,0" Grid.Column="5" Content="{DynamicResource LocalizationDecompile}" Height="24" x:Name="DecompileButton" Click="DecompileButtonClick" IsDefault="True" />
+                <Button SnapsToDevicePixels="True" Margin="2,0,0,0" Grid.Column="6" Content="{DynamicResource LocalizationClose}" Height="24" x:Name="button3" Click="CloseButtonClick" />
             </Grid>
         </Grid>
         <StatusBar Grid.Row="1" Style="{StaticResource VS2012StatusBarStyle}"

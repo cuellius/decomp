@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "mission_templates.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "mission_templates.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "mission_templates.txt"));
             fId.GetString();
-            int n = Convert.ToInt32(fId.GetString());
+            int n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aMissionTemplates = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -74,7 +75,7 @@ namespace Decomp.Core
             if (dwTeam == 8)
                 sbSpawnFlag.Append("mtef_team_member_2|");
             else if (dwTeam != 0)
-                sbSpawnFlag.AppendFormat("mtef_team_{0}|", dwTeam - 1);
+                sbSpawnFlag.AppendFormat(CultureInfo.GetCultureInfo("en-US"), "mtef_team_{0}|", dwTeam - 1);
 
             string[] strSpawnFlags = { "mtef_enemy_party", "mtef_ally_party", "mtef_scene_source", "mtef_conversation_source", "mtef_visitor_source",
 				"mtef_defenders", "mtef_attackers", "mtef_no_leader", "mtef_no_companions", "mtef_no_regulars", "mtef_infantry_first",
@@ -172,7 +173,7 @@ namespace Decomp.Core
                 else if (iType == 10)
                     strType = "charge_with_ally";
 
-                if (strType != "")
+                if (strType.Length > 0)
                     fSource.WriteLine(" {0},", strType);
                 else
                     fSource.WriteLine(" {0},", iType);
@@ -198,7 +199,7 @@ namespace Decomp.Core
                     
                     var itemsList = new int[iItems];
                     for (int j = 0; j < iItems; j++) itemsList[j] = fMissionTemplates.GetInt();
-                    fSource.WriteLine("{0}]),", String.Join(",", itemsList.Select(t => t < Common.Items.Length && t > -1 ? $"itm_{Common.Items[t]}" : t.ToString())));
+                    fSource.WriteLine("{0}]),", String.Join(",", itemsList.Select(t => t < Common.Items.Count && t > -1 ? $"itm_{Common.Items[t]}" : t.ToString(CultureInfo.GetCultureInfo("en-US")))));
                 }
                 fSource.WriteLine("  ],\r\n  [");
 

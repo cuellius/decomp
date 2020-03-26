@@ -46,21 +46,21 @@ namespace Decomp.Core.Vanilla
                 else if (dwPartner != 0)
                 {
                     if ((dwDialogPartner & PARTY_TPL) != 0)
-                        sbDialogPartner.Append(dwPartner < Common.PTemps.Length ? "pt_" + Common.PTemps[dwPartner] + "|" : $"{dwPartner}|");
+                        sbDialogPartner.Append(dwPartner < Common.PTemps.Count ? "pt_" + Common.PTemps[(int)dwPartner] + "|" : $"{dwPartner}|");
                     else
-                        sbDialogPartner.Append(dwPartner < Common.Troops.Length ? "trp_" + Common.Troops[dwPartner] + "|" : $"{dwPartner}|");
+                        sbDialogPartner.Append(dwPartner < Common.Troops.Count ? "trp_" + Common.Troops[(int)dwPartner] + "|" : $"{dwPartner}|");
                 }
 
                 DWORD dwOther = (dwDialogPartner & 0xFFF00000) >> 20;
                 if (dwOther != 0)
-                    sbDialogPartner.Append(dwOther < Common.Troops.Length ? "other(trp_" + Common.Troops[dwOther] + ")|" : $"other({dwOther})|");
+                    sbDialogPartner.Append(dwOther < Common.Troops.Count ? "other(trp_" + Common.Troops[(int)dwOther] + ")|" : $"other({dwOther})|");
 
                 if (sbDialogPartner.Length == 0)
                     sbDialogPartner.Append('0');
                 else
                     sbDialogPartner.Length--;
                 
-                if (iStartingDialogState < Common.DialogStates.Length)
+                if (iStartingDialogState < Common.DialogStates.Count)
                     fSource.Write("  [{0}, \"{1}\",\r\n    [", sbDialogPartner, Common.DialogStates[iStartingDialogState]);
                 else
                     fSource.Write("  [{0}, {1},\r\n    [", sbDialogPartner, iStartingDialogState);
@@ -80,7 +80,7 @@ namespace Decomp.Core.Vanilla
 
                 int iEndingDialogState = fDialogs.GetInt();
                 
-                if (iEndingDialogState < Common.DialogStates.Length)
+                if (iEndingDialogState < Common.DialogStates.Count)
                     fSource.Write("    \"{0}\",\r\n    [", Common.DialogStates[iEndingDialogState]);
                 else
                     fSource.Write("    {0},\r\n    [", iEndingDialogState);

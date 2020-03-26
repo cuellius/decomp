@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Decomp.Core.Caribbean
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "troops.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "troops.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "troops.txt"));
             fId.GetString();
@@ -31,23 +32,21 @@ namespace Decomp.Core.Caribbean
             return aTroops;
         }
 
-        public static string DecompileCharacterAttribute(DWORD dwAttribute)
+        public static string DecompileCharacterAttribute(DWORD dwAttribute) => dwAttribute switch
         {
-            switch (dwAttribute)
-            {
-                case 0: return "ca_strength";
-                case 1: return "ca_agility";
-                case 2: return "ca_intelligence";
-                case 3: return "ca_charisma";
-                default: return dwAttribute.ToString();
-            }
-        }
+            0 => "ca_strength",
+            1 => "ca_agility",
+            2 => "ca_intelligence",
+            3 => "ca_charisma",
+            _ => dwAttribute.ToString(CultureInfo.GetCultureInfo("en-US")),
+        };
+        
 
         public static string GetScene(DWORD dwScene)
         {
             DWORD dwEntry = (dwScene & 0xFFFF0000) >> 16;
             DWORD dwId = dwScene & 0xFFFF;
-            return dwId < Common.Scenes.Length ? $"scn_{Common.Scenes[dwId]}|entry({dwEntry})" : $"{dwId}|entry({dwEntry})";
+            return dwId < Common.Scenes.Count ? $"scn_{Common.Scenes[(int)dwId]}|entry({dwEntry})" : $"{dwId}|entry({dwEntry})";
         }
 
         public static string DecompileFlags(DWORD dwFlag)
@@ -55,7 +54,7 @@ namespace Decomp.Core.Caribbean
             var sbFlag = new StringBuilder(1024);
 
             DWORD dwSkin = dwFlag & 0xF;
-            if (dwSkin > 0) sbFlag.Append(dwSkin < Common.Skins.Length ? "tf_" + Common.Skins[dwSkin] + "|" : $"{dwSkin}|");
+            if (dwSkin > 0) sbFlag.Append(dwSkin < Common.Skins.Count ? "tf_" + Common.Skins[(int)dwSkin] + "|" : $"{dwSkin}|");
 
             if ((dwFlag & 0x7F00000) - 0x7F00000 == 0)
             {
@@ -117,7 +116,7 @@ namespace Decomp.Core.Caribbean
             fSource.WriteLine(Header.Standard);
             fSource.WriteLine(Header.Troops);
 
-            for (int s = 0; s < Common.Skins.Length; s++) fSource.WriteLine("tf_" + Common.Skins[s] + " = " + s);
+            for (int s = 0; s < Common.Skins.Count; s++) fSource.WriteLine("tf_" + Common.Skins[s] + " = " + s);
 
             fSource.WriteLine("\r\ntroops = [");
 
@@ -141,7 +140,7 @@ namespace Decomp.Core.Caribbean
                 fSource.Write(" {0},", fTroops.GetWord()); // reserved "0"
 
                 var iFaction = fTroops.GetInt();
-                if (iFaction > 0 && iFaction < Common.Factions.Length)
+                if (iFaction > 0 && iFaction < Common.Factions.Count)
                     fSource.WriteLine(" fac_{0},", Common.Factions[iFaction]);
                 else
                     fSource.WriteLine(" {0},", iFaction);
@@ -170,7 +169,7 @@ namespace Decomp.Core.Caribbean
                 }
                 fSource.WriteLine("  [{0}],", String.Join(",", itemList.Select(item =>
                 {
-                    var u = item.Key < Common.Items.Length ? $"itm_{Common.Items[item.Key]}" : $"{item.Key}";
+                    var u = item.Key < Common.Items.Count ? $"itm_{Common.Items[item.Key]}" : $"{item.Key}";
                     return item.Value <= 0 || item.Value >= aImods.Count ? u : $"({u}, {aImods[item.Value]})";
                 })));
 
@@ -200,7 +199,7 @@ namespace Decomp.Core.Caribbean
                     for (int q = 0; q < 8; q++)
                     {
                         DWORD dwKnow = 0xF & (dword >> (q << 2));
-                        if (dwKnow != 0 && (x << 3) + q < Common.Skills.Length) strKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
+                        if (dwKnow != 0 && (x << 3) + q < Common.Skills.Count) strKnow.Append($"knows_{Common.Skills[(x << 3) + q]}_{dwKnow}|");
                     }
                 }
                 if (strKnow.Length == 0) strKnow.Append('0'); else strKnow.Length--;

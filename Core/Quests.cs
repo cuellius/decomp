@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace Decomp.Core
@@ -7,11 +8,11 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "quests.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "quests.txt"))) return Array.Empty<string>();
 
             var fId = new Win32FileReader(Path.Combine(Common.InputPath, "quests.txt"));
             fId.ReadLine();
-            int n = Convert.ToInt32(fId.ReadLine());
+            int n = Convert.ToInt32(fId.ReadLine(), CultureInfo.GetCultureInfo("en-US"));
             var aQuests = new string[n];
             for (int i = 0; i < n; i++)
             {
@@ -24,20 +25,13 @@ namespace Decomp.Core
             return aQuests;
         }
 
-        public static string DecompileFlags(int iFlag)
+        public static string DecompileFlags(int iFlag) => iFlag switch
         {
-            switch (iFlag)
-            {
-                case 0x00000001:
-                    return "qf_show_progression";
-                case 0x00000002:
-                    return "qf_random_quest";
-                case 0x00000003:
-                    return "qf_show_progression|qf_random_quest";
-                default:
-                    return "0";
-            }
-        }
+            0x00000001 => "qf_show_progression",
+            0x00000002 => "qf_random_quest",
+            0x00000003 => "qf_show_progression|qf_random_quest",
+            _ => "0",
+        };
 
         public static void Decompile()
         {

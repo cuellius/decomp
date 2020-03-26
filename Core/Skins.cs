@@ -1,6 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
-using DWORD = System.UInt32;
 
 namespace Decomp.Core
 {
@@ -8,7 +8,7 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "skins.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "skins.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "skins.txt"));
             fId.GetString();
@@ -172,8 +172,8 @@ namespace Decomp.Core
                 int ixParticleSystem1 = fSkins.GetInt(),
                     ixParticleSystem2 = fSkins.GetInt();
                 fSource.WriteLine("    {0}, {1},", 
-                    ixParticleSystem1 < Common.ParticleSystems.Length ? "psys_" + Common.ParticleSystems[ixParticleSystem1] : ixParticleSystem1.ToString(),
-                    ixParticleSystem2 < Common.ParticleSystems.Length ? "psys_" + Common.ParticleSystems[ixParticleSystem2] : ixParticleSystem2.ToString());
+                    ixParticleSystem1 < Common.ParticleSystems.Count ? "psys_" + Common.ParticleSystems[ixParticleSystem1] : ixParticleSystem1.ToString(CultureInfo.GetCultureInfo("en-US")),
+                    ixParticleSystem2 < Common.ParticleSystems.Count ? "psys_" + Common.ParticleSystems[ixParticleSystem2] : ixParticleSystem2.ToString(CultureInfo.GetCultureInfo("en-US")));
 
                 int iConstraints = fSkins.GetInt();
                 fSource.Write("    [");

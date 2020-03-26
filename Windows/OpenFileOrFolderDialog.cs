@@ -101,9 +101,12 @@ namespace Decomp.Windows
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
+        private struct RECT
         {
-            public int left, top, right, bottom;
+            public readonly int left;
+            public readonly int top;
+            public readonly int right;
+            public readonly int bottom;
         }
 
         [InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("00000002-0000-0000-C000-000000000046")]
@@ -155,7 +158,7 @@ namespace Decomp.Windows
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("Shell32.dll", CallingConvention = CallingConvention.StdCall)]
-        public static extern unsafe void SHParseDisplayName([MarshalAs(UnmanagedType.LPWStr)] string name, IntPtr bindingContext, IntPtr *pidl, uint sfgaoIn, uint *psfgaoOut);
+        private static extern unsafe void SHParseDisplayName([MarshalAs(UnmanagedType.LPWStr)] string name, IntPtr bindingContext, IntPtr *pidl, uint sfgaoIn, uint *psfgaoOut);
         
         [DllImport("User32.dll", CharSet = CharSet.Unicode, EntryPoint = "PostMessageW")]
         private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
@@ -208,6 +211,8 @@ namespace Decomp.Windows
 
         internal static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, WndProcDelegate dwNewLong) => IntPtr.Size == 8 ? SetWindowLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong));
 
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable CA1712 // Do not prefix enum values with type name
         public enum GWL
         {
             GWL_WNDPROC = -4,
@@ -218,14 +223,8 @@ namespace Decomp.Windows
             GWL_USERDATA = -21,
             GWL_ID = -12
         }
-
-        public static IntPtr SetClassLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong) => IntPtr.Size > 4 ? SetClassLongPtr64(hWnd, nIndex, dwNewLong) : new IntPtr(SetClassLongPtr32(hWnd, nIndex, unchecked((uint)dwNewLong.ToInt32())));
-        
-        [DllImport("User32.dll", EntryPoint = "SetClassLong")]
-        public static extern uint SetClassLongPtr32(IntPtr hWnd, int nIndex, uint dwNewLong);
-
-        [DllImport("User32.dll", EntryPoint = "SetClassLongPtr")]
-        public static extern IntPtr SetClassLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+#pragma warning restore CA1712 // Do not prefix enum values with type name
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 
         [DllImport("User32.dll")]
         private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
@@ -240,7 +239,7 @@ namespace Decomp.Windows
         private static extern IntPtr CreateSolidBrush(uint crColor);
 
         [DllImport("Gdi32.dll")]
-        public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
 
         [DllImport("User32.dll")]
         private static extern int FillRect(IntPtr hDC, [In] ref RECT lprc, IntPtr hbr);
@@ -409,7 +408,7 @@ namespace Decomp.Windows
                     var nm = (NMHDR*)lParam;
                     var sb = new StringBuilder(256);
                     GetClassName(nm->hwndFrom, sb, sb.Capacity);
-                    if (sb.ToString().ToLower() == "button" && nm->code == NM_CUSTOMDRAW)
+                    if (String.Compare(sb.ToString(), "button", StringComparison.OrdinalIgnoreCase) == 0 && nm->code == NM_CUSTOMDRAW)
                     {
                         var cd = (NMCUSTOMDRAW*)nm;
                         var hPen = CreatePen(0, 0, (cd->uItemState & CDIS_HOT) != 0 ? RGB(0x3C, 0x7F, 0xB1) : RGB(0x70, 0x70, 0x70));
@@ -480,8 +479,10 @@ namespace Decomp.Windows
             finally
             {
                 SHGetMalloc(out var malloc);
+#pragma warning disable CA2010 // Always consume the value returned by methods marked with PreserveSigAttribute
                 if (pidlRoot != IntPtr.Zero) malloc.Free(pidlRoot);
                 if (pidlList != IntPtr.Zero) malloc.Free(pidlList);
+#pragma warning restore CA2010 // Always consume the value returned by methods marked with PreserveSigAttribute
             }
             return true;
         }

@@ -33,7 +33,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBoxBase}">
-                        <Border Name="Border" CornerRadius="0" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" 
+                        <Border SnapsToDevicePixels="True" Name="Border" CornerRadius="0" Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" 
                             BorderBrush="#FFABADB3" BorderThickness="1" Padding="1" >
                             <Grid x:Name="root">
                                 <ScrollViewer Margin="0" x:Name="PART_ContentHost" />

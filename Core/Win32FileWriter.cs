@@ -174,6 +174,8 @@ namespace Decomp.Core
 
         public static unsafe void WriteAllText(string fileName, string data)
         {
+            if (data == null) data = "";
+
             var bufferSize = WideCharToMultiByte(CP_UTF8, 0, data, data.Length, null, 0, null, null);
             var buffer = new byte[bufferSize];
 

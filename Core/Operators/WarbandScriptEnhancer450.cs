@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Decomp.Core.Operators
 {
-    //real version: 4.7.3
+    //real version: 4.7.7
     public class WarbandScriptEnhancer450Version : IGameVersion
     {
         public IEnumerable<Operator> GetOperators()
@@ -121,6 +121,11 @@ namespace Decomp.Core.Operators
                 new Operator("agent_cancel_current_animation", 3322),
                 new Operator("agent_get_ranged_damage_modifier", 3323),
                 new Operator("agent_add_stun", 3324),
+                new Operator("agent_body_meta_mesh_deform_in_range", 3325),
+                new Operator("agent_body_meta_mesh_deform_in_cycle_loop", 3326),
+                new Operator("agent_body_meta_mesh_get_current_deform_progress", 3327),
+                new Operator("agent_body_meta_mesh_get_current_deform_frame", 3328),
+                new Operator("agent_set_footstep_sound", 3329, Parameter.None, Parameter.None, Parameter.SoundIdentifier),
                 new Operator("multiplayer_send_chat_message_to_player", 3400),
                 new Operator("multiplayer_send_composite_message_to_player", 3401),
                 new Operator("multiplayer_send_composite_message_to_server", 3402),
@@ -190,6 +195,7 @@ namespace Decomp.Core.Operators
                 new Operator("item_set_speed_rating", 3807, Parameter.ItemIdentifier),
                 new Operator("item_set_missile_speed", 3808, Parameter.ItemIdentifier),
                 new Operator("item_set_horse_blood_particles", 3809, Parameter.ItemIdentifier),
+                new Operator("item_set_horse_blood_color", 3810, Parameter.ItemIdentifier, Parameter.Color),
                 new Operator("party_stack_get_experience", 3900, Parameter.None, Parameter.PartyIdentifier),
                 new Operator("party_stack_get_num_upgradeable", 3901, Parameter.None, Parameter.PartyIdentifier),
                 new Operator("party_has_flag", 3902, Parameter.PartyIdentifier, Parameter.PartyFlags),
@@ -354,6 +360,7 @@ namespace Decomp.Core.Operators
                 new Operator("lua_get_type", 5111),
                 new Operator("lua_call", 5112, Parameter.String),
                 new Operator("lua_triggerCallback", 5113),
+                new Operator("skin_set_blood_color", 5200, Parameter.SkinIdentifier, Parameter.Color),
 
             };
         }

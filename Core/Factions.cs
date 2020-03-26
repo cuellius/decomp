@@ -9,15 +9,15 @@ namespace Decomp.Core
     {
         public static string[] Initialize()
         {
-            if (!File.Exists(Path.Combine(Common.InputPath, "factions.txt"))) return new string[0];
+            if (!File.Exists(Path.Combine(Common.InputPath, "factions.txt"))) return Array.Empty<string>();
 
             var fId = new Text(Path.Combine(Common.InputPath, "factions.txt"));
             fId.GetString();
-            var n = Convert.ToInt32(fId.GetString());
+            var n = Convert.ToInt32(fId.GetString(), CultureInfo.GetCultureInfo("en-US"));
             var aFactions = new string[n];
             for (int i = 0; i < n; i++)
             {
-                string strFacId = fId.GetWord();
+                var strFacId = fId.GetWord();
                 if (strFacId == "0") strFacId = fId.GetWord();
                 aFactions[i] = strFacId.Remove(0, 4);
 

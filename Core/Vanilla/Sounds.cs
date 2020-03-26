@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Globalization;
+using System.IO;
 
 namespace Decomp.Core.Vanilla
 {
@@ -28,7 +29,7 @@ namespace Decomp.Core.Vanilla
                 for (int l = 0; l < iListCount; l++)
                 {
                     var iSample = fSounds.GetInt();
-                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(), l == iListCount - 1 ? "" : ", ");
+                    fSource.Write("{0}{1}", iSample < aSamples.Length ? '"' + aSamples[iSample] + '"' : iSample.ToString(CultureInfo.GetCultureInfo("en-US")), l == iListCount - 1 ? "" : ", ");
                 }
                 fSource.WriteLine("]),");
             }
